@@ -1,5 +1,5 @@
-TARGET=sample1
-C_SRCFILES=main.c expr_parser.c sample1.c
+TARGET=exec
+C_SRCFILES=main.c parser.c lexer.c
 OBJ_FILES=${C_SRCFILES:.c=.o}
 .PHONY: clean run
 
@@ -16,6 +16,6 @@ run: $(TARGET)
 	./$(TARGET) < input1.txt
 
 clean:
-	rm -f sample1.c
+	rm -f lexer.c
 	rm -f $(TARGET)
 	rm -f $(OBJ_FILES)
