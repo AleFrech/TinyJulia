@@ -4,7 +4,7 @@ OBJ_FILES=${C_SRCFILES:.c=.o}
 .PHONY: clean run
 
 $(TARGET): $(OBJ_FILES)
-		gcc -o $@ $(OBJ_FILES)
+	gcc -o $@ $(OBJ_FILES)
 
 sample1.c: lexer.l
 	flex -o $@ $^
@@ -13,9 +13,9 @@ sample1.c: lexer.l
 	gcc -c -o $@ $<
 
 run: $(TARGET)
-		./$(TARGET) < input1.txt
+	./$(TARGET) < input1.txt
 
 clean:
-		rm -f sample1.c
-		rm -f $(TARGET)
-		rm -f $(OBJ_FILES)
+	rm -f sample1.c
+	rm -f $(TARGET)
+	rm -f $(OBJ_FILES)
