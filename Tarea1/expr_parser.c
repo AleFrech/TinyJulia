@@ -11,12 +11,13 @@ extern int token;
     E -> TE`
 
     E' -> +TE'
+        -TE'
         ~e
-
 
     T -> FT'
     
     T' -> *FT'
+        /FT'
         ~e
 
     F -> num
@@ -39,6 +40,8 @@ int expr()
         token = yylex();
         return result - expr();
     }
+    printf("Error Expected Term, + or - found : %s", yytext);
+    exit(-1);
 }
 
 int term()
@@ -56,6 +59,8 @@ int term()
         token = yylex();
         return result / term();
     }
+    printf("Error Expected Factor, * or / found : %s", yytext);
+    exit(-1);
 }
 
 int factor()
@@ -72,11 +77,12 @@ int factor()
         int result = expr();
         if (token != PAR_RIGHT)
         {
-            printf("Error Expected ) found:%s", yytext);
+            printf("Error Expected ) found : %s", yytext);
             exit(-1);
         }
         token = yylex();
         return result;
     }
-    printf("Error Expected NUM or ) found:%s", yytext);
+    printf("Error Expected NUM or ( found : %s", yytext);
+    exit(-1);
 }

@@ -4,5 +4,5 @@ extern int yylex();
 int token;
 int main(){
     token = yylex();
-    printf("Result :%d",expr());
+    printf("Result :%d\n",expr());
 }
