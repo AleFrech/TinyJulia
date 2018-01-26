@@ -6,7 +6,6 @@ map<string , int> variables;
 int AddExpr::evaluate(){
     int v1=expr1->evaluate();
     int v2=expr2->evaluate();
-
     return v1+v2;
 }
 
@@ -44,7 +43,7 @@ void BlockStatement::execute(){
         st->execute();
     }
     for(auto var :variables){
-        printf("%s = %d\n",var->first,var->second);
+        printf("%s = %d\n",(var.first).c_str(),var.second);
     }
 }
 

@@ -5,7 +5,6 @@
     #include "tokens.h"
 %}
 
-idRegex [_a-zA-z][_a-zA-z0-9]*
 %%
 [ \t]   { }
 "+"     {return OP_ADD;}
@@ -15,7 +14,7 @@ idRegex [_a-zA-z][_a-zA-z0-9]*
 "("     {return PAR_LEFT;}
 ")"     {return PAR_RIGHT;}
 [0-9]+  {return LIT_NUM;}
-idRegex {return TK_ID;}
+[_a-zA-z][_a-zA-z0-9]* {return TK_ID;}
 "\n"    { }
 ";"     {return TK_EOS;}
 "="     {return OP_ASG;}

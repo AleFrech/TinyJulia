@@ -11,13 +11,17 @@ statement -> asignacion ;
 asignacion -> ID = expr
 
 
-expr -> expr + term
-    | expr - term
-    | term
+expr -> term E'
 
-term -> term * factor
-    | term / factor
-    | factor
+E' -> + term E'
+    | - term E'
+    | ~e
+
+term ->factor T'
+
+T' -> * factor T'
+    | / factor T'
+    | ~
 
 factor -> num
     | ID

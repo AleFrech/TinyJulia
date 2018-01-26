@@ -82,12 +82,7 @@ class BlockStatement : public Statement{
 public:
     list<Statement*> statementList;
     BlockStatement(){}
-    void addStatement(Statement * statement){
-        statementList.push_back(statement);
-    }
     void execute();
-
-
 };
 
 #endif
