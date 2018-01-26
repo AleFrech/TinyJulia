@@ -1,0 +1,4 @@
+--- Listas de expresiones aritmeticas ----
+--- Fin de sentencias ';'----------
+----- agregar identificadores ------------
+----- Crear un AST ------------
