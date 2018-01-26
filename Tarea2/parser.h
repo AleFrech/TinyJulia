@@ -10,6 +10,7 @@ class Parser{
     public:
         Statement * Parse();
     private:
+        Statement * Code();
         BlockStatement * StatementListFunction();
         Statement * StatementFuntion();
         Statement * AssignStatementFunction();
