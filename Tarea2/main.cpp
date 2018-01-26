@@ -6,9 +6,6 @@ int token;
 int main(){
     auto *parser = new Parser();
     token = yylex();
-    auto st = parser->parse();
+    auto st = parser->Parse();
     st->execute();
-    for(auto var :variables){
-        printf("%s = %d\n",var->first,var->second);
-    }
 }

@@ -43,6 +43,9 @@ void BlockStatement::execute(){
     for(auto st:statementList){
         st->execute();
     }
+    for(auto var :variables){
+        printf("%s = %d\n",var->first,var->second);
+    }
 }
 
 
