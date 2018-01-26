@@ -1,6 +1,6 @@
 TARGET=exec
-C_SRCFILES=main.c parser.c lexer.c
-OBJ_FILES=${C_SRCFILES:.c=.o}
+C_SRCFILES=main.cpp parser.cpp lexer.c
+OBJ_FILES=${C_SRCFILES:.cpp=.o}
 .PHONY: clean run
 
 $(TARGET): $(OBJ_FILES)

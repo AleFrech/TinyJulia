@@ -20,4 +20,5 @@ term -> term * factor
     | factor
 
 factor -> num
+    | ID
     | (expr)
