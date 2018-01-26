@@ -1,5 +1,6 @@
 #include "ast.h"
 #include <stdio.h>
+#include <iostream>
 using namespace std;
 map<string , int> variables;
 
@@ -39,11 +40,11 @@ void AssignStatement::execute(){
 }
 
 void BlockStatement::execute(){
-    for(auto st:statementList){
+    for(auto st : statementList){
         st->execute();
     }
-    for(auto var :variables){
-        printf("%s = %d\n",(var.first).c_str(),var.second);
+    for(auto var : variables){
+        cout<<var.first << " = " << var.second<<endl; 
     }
 }
 
