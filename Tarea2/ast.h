@@ -6,8 +6,9 @@
 using namespace std;
 
 class Expr {
-public:
-    virtual int evaluate()=0;
+    public:
+        virtual int evaluate()=0;
+        virtual ~Expr()=0;
 };
 
 class BinaryExpr : public Expr {
@@ -19,6 +20,7 @@ class BinaryExpr : public Expr {
 
     public:
         Expr *expr1, *expr2;
+        ~BinaryExpr();
 };
 
 class AddExpr : public BinaryExpr {
@@ -56,15 +58,16 @@ class NumberExpr : public Expr {
 };
 
 class VarExpr : public Expr {
-public:
-  VarExpr(string  id) { this->Id = id; }
-  string  Id;
-  int evaluate();
+    public:
+        VarExpr(string  id) { this->Id = id; }
+        string  Id;
+        int evaluate();
 };
 
 class Statement {
-public:
-    virtual void execute()=0;
+    public:
+        virtual void execute()=0;
+        virtual ~Statement()=0; 
 };
 
 class AssignStatement : public Statement{
@@ -74,6 +77,7 @@ public:
         this->expr=expr;
     }
     void execute();
+    ~AssignStatement();
     string var;
     Expr * expr;
 };
@@ -81,8 +85,8 @@ public:
 class BlockStatement : public Statement{
 public:
     list<Statement*> statementList;
-    BlockStatement(){}
     void execute();
+    ~BlockStatement();
 };
 
 #endif

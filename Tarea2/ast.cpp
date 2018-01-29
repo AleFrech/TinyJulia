@@ -4,6 +4,11 @@
 using namespace std;
 map<string , int> variables;
 
+BinaryExpr::~BinaryExpr(){
+    delete expr1;
+    delete expr2;
+}
+
 int AddExpr::evaluate(){
     int v1=expr1->evaluate();
     int v2=expr2->evaluate();
@@ -39,6 +44,10 @@ void AssignStatement::execute(){
     variables[var]=this->expr->evaluate();
 }
 
+AssignStatement:: ~AssignStatement(){
+    delete expr;
+}
+
 void BlockStatement::execute(){
     for(auto st : statementList){
         st->execute();
@@ -48,4 +57,9 @@ void BlockStatement::execute(){
     }
 }
 
+BlockStatement:: ~BlockStatement(){
+    for(auto st : statementList){
+        delete st;
+    }
+}
 
