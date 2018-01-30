@@ -1,0 +1,15 @@
+/*
+    testing ergergerg
+    ergergergerg
+    ergergerger
+    g
+    regregregergregreger e greter gerger gergerg er
+*/
+x = (10/2) *2;
+// testenado 
+y = x + 90;
+/*
+    21312312 3123 123213213213 1 213213
+*/
+z = (x * 5 + y)/2 + x*y;
+//ojala funca plox
