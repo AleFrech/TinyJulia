@@ -1,0 +1,28 @@
+
+
+Codigo -> statementList
+    | ~E
+
+statementList -> statementList statement
+    | statement
+
+statement -> asignacion ;
+
+asignacion -> ID = expr
+
+
+expr -> term E'
+
+E' -> + term E'
+    | - term E'
+    | ~e
+
+term ->factor T'
+
+T' -> * factor T'
+    | / factor T'
+    | ~
+
+factor -> num
+    | ID
+    | (expr)
