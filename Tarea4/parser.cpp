@@ -6,10 +6,10 @@ using namespace std;
 Statement* Parser::Parse()
 {
     Statement *code = Code();
-    // if (token != TK_EOF){
-    //     printf("%d\n",token);
-    //     throw invalid_argument("End of file expected");
-    // }
+    if (token != TK_EOF){
+        printf("%d\n",token);
+        throw invalid_argument("End of file expected");
+    }
     return code;
 }
 

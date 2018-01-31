@@ -1,6 +1,9 @@
 %option noyywrap
 %option yylineno
 
+%x commentState
+%x includeState
+
 %{
     #include <stdio.h>
     #include "tokens.h"
@@ -9,21 +12,16 @@
     int popInclude();
     char *yyfilename;
 
-    typedef struct stack{
-        struct stack *prev;
+    typedef struct inlcudeStack{
+        struct inlcudeStack *prev;
         YY_BUFFER_STATE bs;
         FILE *file;
         char *filename;
         int lineno;
-    } stack_t ;
+    } includeStack_t ;
 
-    stack_t * st = NULL;
-    
-
+    includeStack_t * st = NULL;
 %}
-
-%x commentState
-%x includeState
 
 %%
 [ \t]   { }
@@ -43,26 +41,28 @@
 "="     {return OP_ASG;}
 <INITIAL><<EOF>> {
                     int result = popInclude();
-                    if(result != 0) 
-                        yyterminate();
+                    printf("result in EOF inital is :%d\n",result);
+                    if(result != 0) {
+                        return TK_EOF;
+                    }
+                    
                  }
 .       {return TK_ERROR;}
 
-<commentState>.|\n {}
 <commentState>"*/" {BEGIN(INITIAL);}
-<commentState><<EOF>> {printf("Line %d : un closed block comment\n",yylineno); return TK_ERROR;}
+<commentState>.|\n {}
+<commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return TK_ERROR;}
 
 <includeState>[^\"\n]+ {
                             int counter;
-                            counter = yyinput();
-                            while((counter!= 0) && counter != '\n');
+                            while((counter=yyinput()) && counter != '\n');
                             yylineno++;
                             int result = pushInclude(yytext);
                             if(result != 0){
                                 yyterminate();
                             }
                             BEGIN(INITIAL);
-                       }
+                        }
 <includeState>"\"" {BEGIN(INITIAL);}
 
 
@@ -73,13 +73,13 @@ int pushInclude(char * fileName){
     FILE *file =fopen(fileName,"r");
 
     if(file == NULL){
-        fprintf(stderr,"File %s not found.",fileName);
+        fprintf(stderr,"File %s not found.\n",fileName);
         return 1;
     }
 
-    stack_t * tmpStack = new stack_t;
+    auto tmpStack = new inlcudeStack;
     if(tmpStack == NULL){
-        fprintf(stderr,"Out of memory.");
+        fprintf(stderr,"Out of memory.\n");
         return 1;
     }
 
@@ -98,12 +98,12 @@ int pushInclude(char * fileName){
 }
 
 int popInclude(){
-    stack_t * prev_st =  st-> prev;
+    auto prev_st =  st-> prev;
     fclose(st->file);
     yy_delete_buffer(st->bs);
     yylineno=st->lineno;
     yyfilename=st->filename;
-    free(st);
+    delete st;
 
     if(prev_st == NULL) 
         return 1;
