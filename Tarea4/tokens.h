@@ -6,7 +6,6 @@
 #define PAR_RIGHT 6
 #define LIT_NUM 7
 #define TK_EOL 8
-#define TK_EOF 9
 #define TK_EOS 10
 #define TK_ID 11
 #define OP_ASG 12

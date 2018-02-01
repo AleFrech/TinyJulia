@@ -42,7 +42,7 @@
 <INITIAL><<EOF>> {
                     int result = popInclude();
                     if(result != 0) {
-                        return TK_EOF;
+                        yyterminate();
                     }
                     
                  }
