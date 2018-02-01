@@ -17,8 +17,8 @@ void yyerror(const char* msg){
 start: expr {printf("%d\n",$1);}
 ;
 
-expr: expr OP_ADD term { $$ = $1 + $3; }
-    | expr OP_SUB term { $$ = $1 - $3; }
+expr: expr OP_ADD term {$$ = $1 + $3;}
+    | expr OP_SUB term { $$ = $1 - $3;}
     | term {$$ = $1;}
 ;
 
