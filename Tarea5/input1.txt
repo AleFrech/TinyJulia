@@ -1,0 +1,9 @@
+
+/*
+    testing ergergerg
+    ergergergerg
+    ergergerger
+    g
+    regregregergregreger e greter gerger gergerg er
+*/
+#include"input2.txt"

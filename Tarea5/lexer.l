@@ -34,15 +34,12 @@
 "/"     {return OP_DIV;}
 "("     {return PAR_LEFT;}
 ")"     {return PAR_RIGHT;}
-[0-9]+  {return LIT_NUM;}
-[_a-zA-z][_a-zA-z0-9]* {return TK_ID;}
+[0-9]+  {yylval = atoi(yytext); return LIT_NUM;}
 "\n"    { }
-";"     {return TK_EOS;}
-"="     {return OP_ASG;}
 <INITIAL><<EOF>> {
                     int result = popInclude();
                     if(result != 0) {
-                        return TK_EOF;
+                        yyterminate();
                     }
                     
                  }
@@ -50,7 +47,7 @@
 
 <commentState>"*/" {BEGIN(INITIAL);}
 <commentState>.|\n {}
-<commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return TK_ERROR;}
+<commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return 0;}
 
 <includeState>[^\"\n]+ {
                             int counter;
@@ -98,7 +95,6 @@ int popInclude(){
     yy_delete_buffer(st->bs);
     yylineno=st->lineno;
     yyfilename=st->filename;
-    free(st);
 
     if(prev_st == NULL) 
         return 1;
@@ -106,5 +102,4 @@ int popInclude(){
     yy_switch_to_buffer(prev_st->bs);
     st = prev_st;
     return 0;
-
 }
