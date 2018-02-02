@@ -126,14 +126,25 @@ class NumberExpr : public Expr {
 
 class StringExpr : public Expr {
     public:
-        StringExpr(string value) { this->value = value; }
+        StringExpr(string value) { 
+            this->value = value;
+        }
         string value;
         int evaluate(){
             return 0;
         }
+        string getValue();
         Kind getKind(){return Kind::STRING;}
 };
 
+class InputExpr : public Expr{
+    public:
+        InputExpr(string value) {this->value=value;}
+        string value;
+        int evaluate();
+        Kind getKind(){return Kind::INTEGER;}
+        string getvalue();
+};
 
 class VarExpr : public Expr {
     public:

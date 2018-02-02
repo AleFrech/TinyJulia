@@ -2,4 +2,8 @@
 
 x = 12 /2
 
-print("Hello\nMierda")
+print("Hello\nWorld\n \"Testing\" ",x)
+
+y = input("Ingrese numero de edad:\n")
+
+print("Tu Edad es :",y)

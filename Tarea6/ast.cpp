@@ -98,6 +98,45 @@ int VarExpr::evaluate(){
     return variables[this->Id];
 }
 
+string StringExpr::getValue(){
+    value = value.substr(1, value.size() - 2);
+    auto charIndex = value.find("\\n");
+    string newline = "\n";
+    while(charIndex!=string::npos){
+        value.replace(charIndex,2,newline);
+        charIndex = value.find("\\n");
+    }
+    charIndex = value.find("\\\"");
+    while(charIndex!=string::npos){
+        value.replace(charIndex,2,"\"");
+        charIndex = value.find("\\\"");
+    }
+    return value;
+}
+
+string InputExpr::getvalue(){
+    value = value.substr(1, value.size() - 2);
+    auto charIndex = value.find("\\n");
+    string newline = "\n";
+    while(charIndex!=string::npos){
+        value.replace(charIndex,2,newline);
+        charIndex = value.find("\\n");
+    }
+    charIndex = value.find("\\\"");
+    while(charIndex!=string::npos){
+        value.replace(charIndex,2,"\"");
+        charIndex = value.find("\\\"");
+    }
+    return value;
+}
+
+int InputExpr::evaluate(){
+    cout<<this->getvalue()<<endl;
+    int x=0;
+    cin>>x;
+    return x;
+}
+
 void AssignStatement::execute(){
     variables[var]=this->expr->evaluate();
 }
@@ -123,9 +162,8 @@ void PrintStatement::execute(){
         if(expr->getKind() == Kind::INTEGER){
             cout<<expr->evaluate()<<endl;
         }else{  
-            auto str =((StringExpr*)expr)->value;
-            str = str.substr(1, str.size() - 2);    
-            cout<<str<<endl;
+            auto str =((StringExpr*)expr)->getValue();
+            cout<<str;
         }
     }
  }

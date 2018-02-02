@@ -16,7 +16,7 @@ parser.cpp: parser.y
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) input1.txt
+	./$(TARGET) samples/RelOperators.py
 
 clean:
 	rm -f lexer.cpp parser.cpp tokens.h

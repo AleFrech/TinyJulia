@@ -107,6 +107,7 @@ pow: pow OP_EXP factor {$$ = new PowExpr($1,$3);}
 ;
 
 factor: LIT_NUM {$$ = new NumberExpr($1);}
+    | TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT {$$ = new InputExpr(*$3);} 
     | TK_ID {$$ = new VarExpr(*$1);}
     | PAR_LEFT expr PAR_RIGHT {$$ = $2;}
 ;
