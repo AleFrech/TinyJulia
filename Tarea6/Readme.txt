@@ -1,0 +1,6 @@
+----- print con varios parametros --------
+----- input con varios parametros --------exp y mod -------
+---- expresiones con 
+------ if con else ----------------
+------ for i in range (0,10) --------
+------ while ----------------
