@@ -7,3 +7,8 @@ print("Hello\nWorld\n \"Testing\" ",x)
 y = input("Ingrese numero de edad:\n")
 
 print("Tu Edad es :",y)
+
+
+z = (12 < 3) < 5
+
+print(z)

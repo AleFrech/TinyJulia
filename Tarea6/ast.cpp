@@ -131,7 +131,7 @@ string InputExpr::getvalue(){
 }
 
 int InputExpr::evaluate(){
-    cout<<this->getvalue()<<endl;
+    cout<<this->getvalue();
     int x=0;
     cin>>x;
     return x;
