@@ -200,6 +200,35 @@ public:
     void execute();
 };
 
+class IfStatement : public Statement{
+public:
+    Expr* condition;
+    Statement * trueList;
+    Statement * falseList;
+    IfStatement(Expr* con, Statement* tList, Statement *fList){
+        this->condition = con;
+        this->trueList = tList;
+        this->falseList =fList;
+    }
+    void execute();
+};
+
+class ForStatement : public Statement {
+public:
+    ForStatement(string id,Expr* begin, Expr* end,Statement * statementList){
+        this->id=id;
+        this->statementList=statementList;
+        this->begin=begin;
+        this->end=end;
+    }
+    string id;
+    Statement * statementList;
+    Expr * begin;
+    Expr * end;
+    void execute();
+
+};
+
 class BlockStatement : public Statement{
 public:
     BlockStatement()=default;

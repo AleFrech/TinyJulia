@@ -29,13 +29,16 @@ void yyerror(const char* msg){
     list<Expr*> *exprList_t;
 }
 
-%type <expr_t> expr term factor rightValue arithmetic relationals equalities pow
+%type <expr_t> expr term factor rightValue arithmetic relationals equalities pow 
 %type <exprList_t> rightValueList
-%type <Statement_t> statementList statement print pass assign while block
+%type <Statement_t> statementList statement print pass assign while block if for
 %token OP_ADD OP_SUB OP_MULT OP_DIV OP_EXP OP_MOD OP_LT OP_LTE OP_GT OP_GTE OP_NEQ OP_EQ OP_ASSGN
-%token PAR_LEFT PAR_RIGHT TK_SEMICOLON TK_PRINT TK_WHILE TK_IF TK_ELSE TK_FOR TK_RANGE TK_SPACE TK_PASS TK_EOL TK_ERROR TK_INPUT TK_COMMA OPEN_INDENT CLOSE_INDENT
+%token PAR_LEFT PAR_RIGHT TK_SEMICOLON TK_PRINT TK_WHILE TK_IF TK_ELSE TK_FOR TK_IN TK_RANGE TK_SPACE TK_PASS TK_EOL TK_ERROR TK_INPUT TK_COMMA OPEN_INDENT CLOSE_INDENT
 %token <int_t> LIT_NUM
 %token <string_t> LIT_STRING TK_ID
+
+%nonassoc "no_else"
+%nonassoc TK_ELSE
 
 %%
 
@@ -58,12 +61,22 @@ statement: print
     | pass
     | assign
     | while
+    | if
+    | for
 ;
 
 while: TK_WHILE expr TK_SEMICOLON block {$$ = new WhileStatement($2,$4);}
 ;
 
-block: eols OPEN_INDENT statementList  CLOSE_INDENT {$$ = $3;}
+if: TK_IF expr TK_SEMICOLON block eols TK_ELSE TK_SEMICOLON block {$$ = new IfStatement($2,$4,$8);}
+    | TK_IF expr TK_SEMICOLON block  %prec "no_else"  {$$=NULL;}
+;
+
+
+for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block {$$ = new ForStatement(*$2, $6, $8, $11);}
+;
+
+block: OPEN_INDENT statementList CLOSE_INDENT {$$ = $2;}
 ;
 
 pass: TK_PASS {$$ = new PassStatement();}

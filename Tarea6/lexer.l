@@ -55,6 +55,7 @@
 "if"    {return TK_IF;}
 "else"  {return TK_ELSE;}
 "for"   {return TK_FOR;}
+"in"    {return TK_IN;}
 "range" {return TK_RANGE;}
 "pass"  {return TK_PASS;}
 "input" {return TK_INPUT;}

@@ -170,11 +170,24 @@ void PrintStatement::execute(){
 
 
 void WhileStatement::execute(){
-    while(1){
-        int con = this->condtion->evaluate();
-        if(con)
-            this->blockstatement->execute();
-        else
-            break;
-    } 
+    while(this->condtion->evaluate())
+    {
+        this->blockstatement->execute();
+    }
+}
+
+void IfStatement::execute(){
+    if(this->condition->evaluate() == 1){
+        this->trueList->execute();
+    }else if(this->falseList!=NULL){
+        this->falseList->execute();
+    }
+}
+
+void ForStatement::execute(){
+    variables[this->id] = this->begin->evaluate();
+    while(variables[this->id] < this->end->evaluate()){
+        statementList->execute();
+        variables[this->id]++;
+    }    
 }

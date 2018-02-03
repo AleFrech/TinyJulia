@@ -16,7 +16,7 @@ parser.cpp: parser.y
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) /home/alejandrofrech/Desktop/compiladores2/Tarea6/samples/HelloWorld.py
+	./$(TARGET) /home/alejandrofrech/Desktop/compiladores2/Tarea6/samples/ArithOperators.py
 
 clean:
 	rm -f lexer.cpp parser.cpp tokens.h
