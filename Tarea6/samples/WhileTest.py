@@ -8,5 +8,8 @@ while count < 3:
     number=input("Enter a number: ")
     count = count + 1
     total = total + number
-    pass
+    while  5-2:
+        x = 10   
+    y = 11
+
 print ("The total is ", total)

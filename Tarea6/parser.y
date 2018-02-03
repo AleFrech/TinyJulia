@@ -31,9 +31,9 @@ void yyerror(const char* msg){
 
 %type <expr_t> expr term factor rightValue arithmetic relationals equalities pow
 %type <exprList_t> rightValueList
-%type <Statement_t> statementList statement print pass assign
+%type <Statement_t> statementList statement print pass assign while block
 %token OP_ADD OP_SUB OP_MULT OP_DIV OP_EXP OP_MOD OP_LT OP_LTE OP_GT OP_GTE OP_NEQ OP_EQ OP_ASSGN
-%token PAR_LEFT PAR_RIGHT TK_SEMICOLON TK_PRINT TK_WHILE TK_IF TK_ELSE TK_FOR TK_RANGE TK_SPACE TK_PASS TK_EOL TK_ERROR TK_INPUT TK_COMMA
+%token PAR_LEFT PAR_RIGHT TK_SEMICOLON TK_PRINT TK_WHILE TK_IF TK_ELSE TK_FOR TK_RANGE TK_SPACE TK_PASS TK_EOL TK_ERROR TK_INPUT TK_COMMA OPEN_INDENT CLOSE_INDENT
 %token <int_t> LIT_NUM
 %token <string_t> LIT_STRING TK_ID
 
@@ -57,6 +57,13 @@ statementList: statementList eols statement {$$ =$1; ((BlockStatement*)$$)->stat
 statement: print 
     | pass
     | assign
+    | while
+;
+
+while: TK_WHILE expr TK_SEMICOLON block {$$ = new WhileStatement($2,$4);}
+;
+
+block: eols OPEN_INDENT statementList  CLOSE_INDENT {$$ = $3;}
 ;
 
 pass: TK_PASS {$$ = new PassStatement();}

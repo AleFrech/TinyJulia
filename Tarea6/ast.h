@@ -189,6 +189,17 @@ public:
     void execute();
 };
 
+class WhileStatement : public Statement{
+public:
+    Expr* condtion;
+    Statement * blockstatement;
+    WhileStatement(Expr* con , Statement* block){
+        this->condtion = con;
+        this->blockstatement = block;
+    }
+    void execute();
+};
+
 class BlockStatement : public Statement{
 public:
     BlockStatement()=default;

@@ -167,3 +167,14 @@ void PrintStatement::execute(){
         }
     }
  }
+
+
+void WhileStatement::execute(){
+    while(1){
+        int con = this->condtion->evaluate();
+        if(con)
+            this->blockstatement->execute();
+        else
+            break;
+    } 
+}

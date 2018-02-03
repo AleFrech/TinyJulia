@@ -4,9 +4,13 @@
 %{
     #include <stdio.h>
     #include "tokens.h"
+    #include <list>
+    using namespace std;
 
     int pushInclude(char * fileName);
     int popInclude();
+    int popSpaces();
+    int getIndent();
     char *yyfilename;
 
     typedef struct inlcudeStack{
@@ -18,12 +22,18 @@
     } includeStack_t ;
 
     includeStack_t * st = NULL;
+
+    list<int> spaces;
+
+
 %}
 
 %%
+\t      {}
+^" "+   { int token=getIndent();printf("%d\n",token); if(token!=-1) return token;}
 " "     {}
 "+"     {return OP_ADD;}
-"#".*  {}
+"#".*   {}
 "-"     {return OP_SUB;}
 "%"     {return OP_MOD;}
 "**"    {return OP_EXP;}
@@ -51,7 +61,7 @@
 L?\"(\\.|[^\\"])*\"  {yylval.string_t= new string(yytext); return LIT_STRING;}
 [0-9]+  {yylval.int_t=atoi(yytext); return LIT_NUM;}
 [_a-zA-z][_a-zA-z0-9]* {yylval.string_t= new string(yytext); return TK_ID;}
-"\n"    {return TK_EOL;}
+\n    {return TK_EOL;}
 <INITIAL><<EOF>> {
                     int result = popInclude();
                     if(result != 0) {
@@ -103,4 +113,31 @@ int popInclude(){
     yy_switch_to_buffer(prev_st->bs);
     st = prev_st;
     return 0;
+}
+
+int popSpaces(){
+    if(spaces.empty())
+        spaces.push_back(0);
+    int x = spaces.back();
+    spaces.pop_back();
+    return x;
+}
+
+int getIndent(){
+    string text = string(yytext);
+    if(text.length() > spaces.back()){
+        spaces.push_back(text.length());
+        return OPEN_INDENT;
+    }
+    if(text.length() == spaces.back())
+        return -1;
+    if(text.length() < spaces.back()){
+        int x = popSpaces();
+        if(x>0 && text.length()>spaces.back()){
+            printf("Error invlaid indentation\n");
+            yyterminate();
+        }else{
+            return CLOSE_INDENT;
+        }
+    }
 }
