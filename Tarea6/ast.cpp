@@ -5,6 +5,15 @@
 using namespace std;
 map<string , int> variables;
 
+
+void myReplace(string &str, string toReplace,string replaced,int size ){
+    auto charIndex = str.find(toReplace);
+    while(charIndex!=string::npos){
+        str.replace(charIndex,size,replaced);
+        charIndex = str.find(toReplace);
+    }
+}
+
 BinaryExpr::~BinaryExpr(){
     delete expr1;
     delete expr2;
@@ -99,34 +108,16 @@ int VarExpr::evaluate(){
 }
 
 string StringExpr::getValue(){
-    value = value.substr(1, value.size() - 2);
-    auto charIndex = value.find("\\n");
-    string newline = "\n";
-    while(charIndex!=string::npos){
-        value.replace(charIndex,2,newline);
-        charIndex = value.find("\\n");
-    }
-    charIndex = value.find("\\\"");
-    while(charIndex!=string::npos){
-        value.replace(charIndex,2,"\"");
-        charIndex = value.find("\\\"");
-    }
+    myReplace(value,"\"","",1);
+    myReplace(value,"\\n","\n",2);
+    myReplace(value,"\\\"","\"",2);
     return value;
 }
 
 string InputExpr::getvalue(){
-    value = value.substr(1, value.size() - 2);
-    auto charIndex = value.find("\\n");
-    string newline = "\n";
-    while(charIndex!=string::npos){
-        value.replace(charIndex,2,newline);
-        charIndex = value.find("\\n");
-    }
-    charIndex = value.find("\\\"");
-    while(charIndex!=string::npos){
-        value.replace(charIndex,2,"\"");
-        charIndex = value.find("\\\"");
-    }
+    myReplace(value,"\"","",1);
+    myReplace(value,"\\n","\n",2);
+    myReplace(value,"\\\"","\"",2);
     return value;
 }
 
@@ -170,7 +161,7 @@ void PrintStatement::execute(){
 
 
 void WhileStatement::execute(){
-    while(this->condtion->evaluate())
+    while(this->condition->evaluate())
     {
         this->blockstatement->execute();
     }

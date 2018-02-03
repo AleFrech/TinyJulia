@@ -1,0 +1,1564 @@
+Terminals unused in grammar
+
+   TK_SPACE
+   TK_ERROR
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: opEols statementList opEols
+
+    2 opEols: TK_EOL
+    3       | %empty
+
+    4 statementList: statementList TK_EOL statement
+    5              | statement
+
+    6 statement: print
+    7          | pass
+    8          | assign
+    9          | while
+   10          | if
+   11          | for
+
+   12 while: TK_WHILE expr TK_SEMICOLON block
+
+   13 if: TK_IF expr TK_SEMICOLON block TK_EOL else
+
+   14 else: TK_ELSE TK_SEMICOLON block
+   15     | %empty
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+   17 block: OPEN_INDENT statementList CLOSE_INDENT
+
+   18 pass: TK_PASS
+
+   19 assign: TK_ID OP_ASSGN expr
+
+   20 print: TK_PRINT PAR_LEFT argumentList PAR_RIGHT
+
+   21 argumentList: argumentList TK_COMMA argument
+   22             | argument
+
+   23 argument: expr
+   24         | LIT_STRING
+
+   25 expr: equalities
+
+   26 equalities: equalities OP_EQ relationals
+   27           | equalities OP_NEQ relationals
+   28           | relationals
+
+   29 relationals: relationals OP_GT arithmetic
+   30            | relationals OP_LT arithmetic
+   31            | relationals OP_GTE arithmetic
+   32            | relationals OP_LTE arithmetic
+   33            | arithmetic
+
+   34 arithmetic: arithmetic OP_ADD term
+   35           | arithmetic OP_SUB term
+   36           | term
+
+   37 term: term OP_MULT pow
+   38     | term OP_DIV pow
+   39     | term OP_MOD pow
+   40     | pow
+
+   41 pow: pow OP_EXP factor
+   42    | factor
+
+   43 factor: LIT_NUM
+   44       | TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | TK_ID
+   46       | PAR_LEFT expr PAR_RIGHT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+OP_ADD (258) 34
+OP_SUB (259) 35
+OP_MULT (260) 37
+OP_DIV (261) 38
+OP_EXP (262) 41
+OP_MOD (263) 39
+OP_LT (264) 30
+OP_LTE (265) 32
+OP_GT (266) 29
+OP_GTE (267) 31
+OP_NEQ (268) 27
+OP_EQ (269) 26
+OP_ASSGN (270) 19
+PAR_LEFT (271) 16 20 44 46
+PAR_RIGHT (272) 16 20 44 46
+TK_SEMICOLON (273) 12 13 14 16
+TK_PRINT (274) 20
+TK_WHILE (275) 12
+TK_IF (276) 13
+TK_ELSE (277) 14
+TK_FOR (278) 16
+TK_IN (279) 16
+TK_RANGE (280) 16
+TK_SPACE (281)
+TK_PASS (282) 18
+TK_EOL (283) 2 4 13
+TK_ERROR (284)
+TK_INPUT (285) 44
+TK_COMMA (286) 16 21
+OPEN_INDENT (287) 17
+CLOSE_INDENT (288) 17
+LIT_NUM (289) 43
+LIT_STRING (290) 24 44
+TK_ID (291) 16 19 45
+
+
+Nonterminals, with rules where they appear
+
+$accept (37)
+    on left: 0
+start (38)
+    on left: 1, on right: 0
+opEols (39)
+    on left: 2 3, on right: 1
+statementList (40)
+    on left: 4 5, on right: 1 4 17
+statement (41)
+    on left: 6 7 8 9 10 11, on right: 4 5
+while (42)
+    on left: 12, on right: 9
+if (43)
+    on left: 13, on right: 10
+else (44)
+    on left: 14 15, on right: 13
+for (45)
+    on left: 16, on right: 11
+block (46)
+    on left: 17, on right: 12 13 14 16
+pass (47)
+    on left: 18, on right: 7
+assign (48)
+    on left: 19, on right: 8
+print (49)
+    on left: 20, on right: 6
+argumentList (50)
+    on left: 21 22, on right: 20 21
+argument (51)
+    on left: 23 24, on right: 21 22
+expr (52)
+    on left: 25, on right: 12 13 16 19 23 46
+equalities (53)
+    on left: 26 27 28, on right: 25 26 27
+relationals (54)
+    on left: 29 30 31 32 33, on right: 26 27 28 29 30 31 32
+arithmetic (55)
+    on left: 34 35 36, on right: 29 30 31 32 33 34 35
+term (56)
+    on left: 37 38 39 40, on right: 34 35 36 37 38 39
+pow (57)
+    on left: 41 42, on right: 37 38 39 40 41
+factor (58)
+    on left: 43 44 45 46, on right: 41 42
+
+
+State 0
+
+    0 $accept: . start $end
+    1 start: . opEols statementList opEols
+    2 opEols: . TK_EOL
+    3       | . %empty  [TK_PRINT, TK_WHILE, TK_IF, TK_FOR, TK_PASS, TK_ID]
+
+    TK_EOL  shift, and go to state 1
+
+    $default  reduce using rule 3 (opEols)
+
+    start   go to state 2
+    opEols  go to state 3
+
+
+State 1
+
+    2 opEols: TK_EOL .
+
+    $default  reduce using rule 2 (opEols)
+
+
+State 2
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 start: opEols . statementList opEols
+    4 statementList: . statementList TK_EOL statement
+    5              | . statement
+    6 statement: . print
+    7          | . pass
+    8          | . assign
+    9          | . while
+   10          | . if
+   11          | . for
+   12 while: . TK_WHILE expr TK_SEMICOLON block
+   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+   18 pass: . TK_PASS
+   19 assign: . TK_ID OP_ASSGN expr
+   20 print: . TK_PRINT PAR_LEFT argumentList PAR_RIGHT
+
+    TK_PRINT  shift, and go to state 5
+    TK_WHILE  shift, and go to state 6
+    TK_IF     shift, and go to state 7
+    TK_FOR    shift, and go to state 8
+    TK_PASS   shift, and go to state 9
+    TK_ID     shift, and go to state 10
+
+    statementList  go to state 11
+    statement      go to state 12
+    while          go to state 13
+    if             go to state 14
+    for            go to state 15
+    pass           go to state 16
+    assign         go to state 17
+    print          go to state 18
+
+
+State 4
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+State 5
+
+   20 print: TK_PRINT . PAR_LEFT argumentList PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 19
+
+
+State 6
+
+   12 while: TK_WHILE . expr TK_SEMICOLON block
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 24
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 7
+
+   13 if: TK_IF . expr TK_SEMICOLON block TK_EOL else
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 31
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 8
+
+   16 for: TK_FOR . TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+    TK_ID  shift, and go to state 32
+
+
+State 9
+
+   18 pass: TK_PASS .
+
+    $default  reduce using rule 18 (pass)
+
+
+State 10
+
+   19 assign: TK_ID . OP_ASSGN expr
+
+    OP_ASSGN  shift, and go to state 33
+
+
+State 11
+
+    1 start: opEols statementList . opEols
+    2 opEols: . TK_EOL
+    3       | . %empty  [$end]
+    4 statementList: statementList . TK_EOL statement
+
+    TK_EOL  shift, and go to state 34
+
+    $default  reduce using rule 3 (opEols)
+
+    opEols  go to state 35
+
+
+State 12
+
+    5 statementList: statement .
+
+    $default  reduce using rule 5 (statementList)
+
+
+State 13
+
+    9 statement: while .
+
+    $default  reduce using rule 9 (statement)
+
+
+State 14
+
+   10 statement: if .
+
+    $default  reduce using rule 10 (statement)
+
+
+State 15
+
+   11 statement: for .
+
+    $default  reduce using rule 11 (statement)
+
+
+State 16
+
+    7 statement: pass .
+
+    $default  reduce using rule 7 (statement)
+
+
+State 17
+
+    8 statement: assign .
+
+    $default  reduce using rule 8 (statement)
+
+
+State 18
+
+    6 statement: print .
+
+    $default  reduce using rule 6 (statement)
+
+
+State 19
+
+   20 print: TK_PRINT PAR_LEFT . argumentList PAR_RIGHT
+   21 argumentList: . argumentList TK_COMMA argument
+   22             | . argument
+   23 argument: . expr
+   24         | . LIT_STRING
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT    shift, and go to state 20
+    TK_INPUT    shift, and go to state 21
+    LIT_NUM     shift, and go to state 22
+    LIT_STRING  shift, and go to state 36
+    TK_ID       shift, and go to state 23
+
+    argumentList  go to state 37
+    argument      go to state 38
+    expr          go to state 39
+    equalities    go to state 25
+    relationals   go to state 26
+    arithmetic    go to state 27
+    term          go to state 28
+    pow           go to state 29
+    factor        go to state 30
+
+
+State 20
+
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+   46       | PAR_LEFT . expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 40
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 21
+
+   44 factor: TK_INPUT . PAR_LEFT LIT_STRING PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 41
+
+
+State 22
+
+   43 factor: LIT_NUM .
+
+    $default  reduce using rule 43 (factor)
+
+
+State 23
+
+   45 factor: TK_ID .
+
+    $default  reduce using rule 45 (factor)
+
+
+State 24
+
+   12 while: TK_WHILE expr . TK_SEMICOLON block
+
+    TK_SEMICOLON  shift, and go to state 42
+
+
+State 25
+
+   25 expr: equalities .  [$end, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   26 equalities: equalities . OP_EQ relationals
+   27           | equalities . OP_NEQ relationals
+
+    OP_NEQ  shift, and go to state 43
+    OP_EQ   shift, and go to state 44
+
+    $default  reduce using rule 25 (expr)
+
+
+State 26
+
+   28 equalities: relationals .  [$end, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   29 relationals: relationals . OP_GT arithmetic
+   30            | relationals . OP_LT arithmetic
+   31            | relationals . OP_GTE arithmetic
+   32            | relationals . OP_LTE arithmetic
+
+    OP_LT   shift, and go to state 45
+    OP_LTE  shift, and go to state 46
+    OP_GT   shift, and go to state 47
+    OP_GTE  shift, and go to state 48
+
+    $default  reduce using rule 28 (equalities)
+
+
+State 27
+
+   33 relationals: arithmetic .  [$end, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   34 arithmetic: arithmetic . OP_ADD term
+   35           | arithmetic . OP_SUB term
+
+    OP_ADD  shift, and go to state 49
+    OP_SUB  shift, and go to state 50
+
+    $default  reduce using rule 33 (relationals)
+
+
+State 28
+
+   36 arithmetic: term .  [$end, OP_ADD, OP_SUB, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   37 term: term . OP_MULT pow
+   38     | term . OP_DIV pow
+   39     | term . OP_MOD pow
+
+    OP_MULT  shift, and go to state 51
+    OP_DIV   shift, and go to state 52
+    OP_MOD   shift, and go to state 53
+
+    $default  reduce using rule 36 (arithmetic)
+
+
+State 29
+
+   40 term: pow .  [$end, OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   41 pow: pow . OP_EXP factor
+
+    OP_EXP  shift, and go to state 54
+
+    $default  reduce using rule 40 (term)
+
+
+State 30
+
+   42 pow: factor .
+
+    $default  reduce using rule 42 (pow)
+
+
+State 31
+
+   13 if: TK_IF expr . TK_SEMICOLON block TK_EOL else
+
+    TK_SEMICOLON  shift, and go to state 55
+
+
+State 32
+
+   16 for: TK_FOR TK_ID . TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+    TK_IN  shift, and go to state 56
+
+
+State 33
+
+   19 assign: TK_ID OP_ASSGN . expr
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 57
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 34
+
+    2 opEols: TK_EOL .  [$end]
+    4 statementList: statementList TK_EOL . statement
+    6 statement: . print
+    7          | . pass
+    8          | . assign
+    9          | . while
+   10          | . if
+   11          | . for
+   12 while: . TK_WHILE expr TK_SEMICOLON block
+   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+   18 pass: . TK_PASS
+   19 assign: . TK_ID OP_ASSGN expr
+   20 print: . TK_PRINT PAR_LEFT argumentList PAR_RIGHT
+
+    TK_PRINT  shift, and go to state 5
+    TK_WHILE  shift, and go to state 6
+    TK_IF     shift, and go to state 7
+    TK_FOR    shift, and go to state 8
+    TK_PASS   shift, and go to state 9
+    TK_ID     shift, and go to state 10
+
+    $default  reduce using rule 2 (opEols)
+
+    statement  go to state 58
+    while      go to state 13
+    if         go to state 14
+    for        go to state 15
+    pass       go to state 16
+    assign     go to state 17
+    print      go to state 18
+
+
+State 35
+
+    1 start: opEols statementList opEols .
+
+    $default  reduce using rule 1 (start)
+
+
+State 36
+
+   24 argument: LIT_STRING .
+
+    $default  reduce using rule 24 (argument)
+
+
+State 37
+
+   20 print: TK_PRINT PAR_LEFT argumentList . PAR_RIGHT
+   21 argumentList: argumentList . TK_COMMA argument
+
+    PAR_RIGHT  shift, and go to state 59
+    TK_COMMA   shift, and go to state 60
+
+
+State 38
+
+   22 argumentList: argument .
+
+    $default  reduce using rule 22 (argumentList)
+
+
+State 39
+
+   23 argument: expr .
+
+    $default  reduce using rule 23 (argument)
+
+
+State 40
+
+   46 factor: PAR_LEFT expr . PAR_RIGHT
+
+    PAR_RIGHT  shift, and go to state 61
+
+
+State 41
+
+   44 factor: TK_INPUT PAR_LEFT . LIT_STRING PAR_RIGHT
+
+    LIT_STRING  shift, and go to state 62
+
+
+State 42
+
+   12 while: TK_WHILE expr TK_SEMICOLON . block
+   17 block: . OPEN_INDENT statementList CLOSE_INDENT
+
+    OPEN_INDENT  shift, and go to state 63
+
+    block  go to state 64
+
+
+State 43
+
+   27 equalities: equalities OP_NEQ . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    relationals  go to state 65
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 44
+
+   26 equalities: equalities OP_EQ . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    relationals  go to state 66
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 45
+
+   30 relationals: relationals OP_LT . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    arithmetic  go to state 67
+    term        go to state 28
+    pow         go to state 29
+    factor      go to state 30
+
+
+State 46
+
+   32 relationals: relationals OP_LTE . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    arithmetic  go to state 68
+    term        go to state 28
+    pow         go to state 29
+    factor      go to state 30
+
+
+State 47
+
+   29 relationals: relationals OP_GT . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    arithmetic  go to state 69
+    term        go to state 28
+    pow         go to state 29
+    factor      go to state 30
+
+
+State 48
+
+   31 relationals: relationals OP_GTE . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    arithmetic  go to state 70
+    term        go to state 28
+    pow         go to state 29
+    factor      go to state 30
+
+
+State 49
+
+   34 arithmetic: arithmetic OP_ADD . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    term    go to state 71
+    pow     go to state 29
+    factor  go to state 30
+
+
+State 50
+
+   35 arithmetic: arithmetic OP_SUB . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    term    go to state 72
+    pow     go to state 29
+    factor  go to state 30
+
+
+State 51
+
+   37 term: term OP_MULT . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    pow     go to state 73
+    factor  go to state 30
+
+
+State 52
+
+   38 term: term OP_DIV . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    pow     go to state 74
+    factor  go to state 30
+
+
+State 53
+
+   39 term: term OP_MOD . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    pow     go to state 75
+    factor  go to state 30
+
+
+State 54
+
+   41 pow: pow OP_EXP . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    factor  go to state 76
+
+
+State 55
+
+   13 if: TK_IF expr TK_SEMICOLON . block TK_EOL else
+   17 block: . OPEN_INDENT statementList CLOSE_INDENT
+
+    OPEN_INDENT  shift, and go to state 63
+
+    block  go to state 77
+
+
+State 56
+
+   16 for: TK_FOR TK_ID TK_IN . TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+    TK_RANGE  shift, and go to state 78
+
+
+State 57
+
+   19 assign: TK_ID OP_ASSGN expr .
+
+    $default  reduce using rule 19 (assign)
+
+
+State 58
+
+    4 statementList: statementList TK_EOL statement .
+
+    $default  reduce using rule 4 (statementList)
+
+
+State 59
+
+   20 print: TK_PRINT PAR_LEFT argumentList PAR_RIGHT .
+
+    $default  reduce using rule 20 (print)
+
+
+State 60
+
+   21 argumentList: argumentList TK_COMMA . argument
+   23 argument: . expr
+   24         | . LIT_STRING
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT    shift, and go to state 20
+    TK_INPUT    shift, and go to state 21
+    LIT_NUM     shift, and go to state 22
+    LIT_STRING  shift, and go to state 36
+    TK_ID       shift, and go to state 23
+
+    argument     go to state 79
+    expr         go to state 39
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 61
+
+   46 factor: PAR_LEFT expr PAR_RIGHT .
+
+    $default  reduce using rule 46 (factor)
+
+
+State 62
+
+   44 factor: TK_INPUT PAR_LEFT LIT_STRING . PAR_RIGHT
+
+    PAR_RIGHT  shift, and go to state 80
+
+
+State 63
+
+    4 statementList: . statementList TK_EOL statement
+    5              | . statement
+    6 statement: . print
+    7          | . pass
+    8          | . assign
+    9          | . while
+   10          | . if
+   11          | . for
+   12 while: . TK_WHILE expr TK_SEMICOLON block
+   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+   17 block: OPEN_INDENT . statementList CLOSE_INDENT
+   18 pass: . TK_PASS
+   19 assign: . TK_ID OP_ASSGN expr
+   20 print: . TK_PRINT PAR_LEFT argumentList PAR_RIGHT
+
+    TK_PRINT  shift, and go to state 5
+    TK_WHILE  shift, and go to state 6
+    TK_IF     shift, and go to state 7
+    TK_FOR    shift, and go to state 8
+    TK_PASS   shift, and go to state 9
+    TK_ID     shift, and go to state 10
+
+    statementList  go to state 81
+    statement      go to state 12
+    while          go to state 13
+    if             go to state 14
+    for            go to state 15
+    pass           go to state 16
+    assign         go to state 17
+    print          go to state 18
+
+
+State 64
+
+   12 while: TK_WHILE expr TK_SEMICOLON block .
+
+    $default  reduce using rule 12 (while)
+
+
+State 65
+
+   27 equalities: equalities OP_NEQ relationals .  [$end, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   29 relationals: relationals . OP_GT arithmetic
+   30            | relationals . OP_LT arithmetic
+   31            | relationals . OP_GTE arithmetic
+   32            | relationals . OP_LTE arithmetic
+
+    OP_LT   shift, and go to state 45
+    OP_LTE  shift, and go to state 46
+    OP_GT   shift, and go to state 47
+    OP_GTE  shift, and go to state 48
+
+    $default  reduce using rule 27 (equalities)
+
+
+State 66
+
+   26 equalities: equalities OP_EQ relationals .  [$end, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   29 relationals: relationals . OP_GT arithmetic
+   30            | relationals . OP_LT arithmetic
+   31            | relationals . OP_GTE arithmetic
+   32            | relationals . OP_LTE arithmetic
+
+    OP_LT   shift, and go to state 45
+    OP_LTE  shift, and go to state 46
+    OP_GT   shift, and go to state 47
+    OP_GTE  shift, and go to state 48
+
+    $default  reduce using rule 26 (equalities)
+
+
+State 67
+
+   30 relationals: relationals OP_LT arithmetic .  [$end, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   34 arithmetic: arithmetic . OP_ADD term
+   35           | arithmetic . OP_SUB term
+
+    OP_ADD  shift, and go to state 49
+    OP_SUB  shift, and go to state 50
+
+    $default  reduce using rule 30 (relationals)
+
+
+State 68
+
+   32 relationals: relationals OP_LTE arithmetic .  [$end, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   34 arithmetic: arithmetic . OP_ADD term
+   35           | arithmetic . OP_SUB term
+
+    OP_ADD  shift, and go to state 49
+    OP_SUB  shift, and go to state 50
+
+    $default  reduce using rule 32 (relationals)
+
+
+State 69
+
+   29 relationals: relationals OP_GT arithmetic .  [$end, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   34 arithmetic: arithmetic . OP_ADD term
+   35           | arithmetic . OP_SUB term
+
+    OP_ADD  shift, and go to state 49
+    OP_SUB  shift, and go to state 50
+
+    $default  reduce using rule 29 (relationals)
+
+
+State 70
+
+   31 relationals: relationals OP_GTE arithmetic .  [$end, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   34 arithmetic: arithmetic . OP_ADD term
+   35           | arithmetic . OP_SUB term
+
+    OP_ADD  shift, and go to state 49
+    OP_SUB  shift, and go to state 50
+
+    $default  reduce using rule 31 (relationals)
+
+
+State 71
+
+   34 arithmetic: arithmetic OP_ADD term .  [$end, OP_ADD, OP_SUB, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   37 term: term . OP_MULT pow
+   38     | term . OP_DIV pow
+   39     | term . OP_MOD pow
+
+    OP_MULT  shift, and go to state 51
+    OP_DIV   shift, and go to state 52
+    OP_MOD   shift, and go to state 53
+
+    $default  reduce using rule 34 (arithmetic)
+
+
+State 72
+
+   35 arithmetic: arithmetic OP_SUB term .  [$end, OP_ADD, OP_SUB, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   37 term: term . OP_MULT pow
+   38     | term . OP_DIV pow
+   39     | term . OP_MOD pow
+
+    OP_MULT  shift, and go to state 51
+    OP_DIV   shift, and go to state 52
+    OP_MOD   shift, and go to state 53
+
+    $default  reduce using rule 35 (arithmetic)
+
+
+State 73
+
+   37 term: term OP_MULT pow .  [$end, OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   41 pow: pow . OP_EXP factor
+
+    OP_EXP  shift, and go to state 54
+
+    $default  reduce using rule 37 (term)
+
+
+State 74
+
+   38 term: term OP_DIV pow .  [$end, OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   41 pow: pow . OP_EXP factor
+
+    OP_EXP  shift, and go to state 54
+
+    $default  reduce using rule 38 (term)
+
+
+State 75
+
+   39 term: term OP_MOD pow .  [$end, OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, OP_LT, OP_LTE, OP_GT, OP_GTE, OP_NEQ, OP_EQ, PAR_RIGHT, TK_SEMICOLON, TK_EOL, TK_COMMA, CLOSE_INDENT]
+   41 pow: pow . OP_EXP factor
+
+    OP_EXP  shift, and go to state 54
+
+    $default  reduce using rule 39 (term)
+
+
+State 76
+
+   41 pow: pow OP_EXP factor .
+
+    $default  reduce using rule 41 (pow)
+
+
+State 77
+
+   13 if: TK_IF expr TK_SEMICOLON block . TK_EOL else
+
+    TK_EOL  shift, and go to state 82
+
+
+State 78
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE . PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+    PAR_LEFT  shift, and go to state 83
+
+
+State 79
+
+   21 argumentList: argumentList TK_COMMA argument .
+
+    $default  reduce using rule 21 (argumentList)
+
+
+State 80
+
+   44 factor: TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT .
+
+    $default  reduce using rule 44 (factor)
+
+
+State 81
+
+    4 statementList: statementList . TK_EOL statement
+   17 block: OPEN_INDENT statementList . CLOSE_INDENT
+
+    TK_EOL        shift, and go to state 84
+    CLOSE_INDENT  shift, and go to state 85
+
+
+State 82
+
+   13 if: TK_IF expr TK_SEMICOLON block TK_EOL . else
+   14 else: . TK_ELSE TK_SEMICOLON block
+   15     | . %empty  [$end, TK_EOL, CLOSE_INDENT]
+
+    TK_ELSE  shift, and go to state 86
+
+    $default  reduce using rule 15 (else)
+
+    else  go to state 87
+
+
+State 83
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT . expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 88
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 84
+
+    4 statementList: statementList TK_EOL . statement
+    6 statement: . print
+    7          | . pass
+    8          | . assign
+    9          | . while
+   10          | . if
+   11          | . for
+   12 while: . TK_WHILE expr TK_SEMICOLON block
+   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+   18 pass: . TK_PASS
+   19 assign: . TK_ID OP_ASSGN expr
+   20 print: . TK_PRINT PAR_LEFT argumentList PAR_RIGHT
+
+    TK_PRINT  shift, and go to state 5
+    TK_WHILE  shift, and go to state 6
+    TK_IF     shift, and go to state 7
+    TK_FOR    shift, and go to state 8
+    TK_PASS   shift, and go to state 9
+    TK_ID     shift, and go to state 10
+
+    statement  go to state 58
+    while      go to state 13
+    if         go to state 14
+    for        go to state 15
+    pass       go to state 16
+    assign     go to state 17
+    print      go to state 18
+
+
+State 85
+
+   17 block: OPEN_INDENT statementList CLOSE_INDENT .
+
+    $default  reduce using rule 17 (block)
+
+
+State 86
+
+   14 else: TK_ELSE . TK_SEMICOLON block
+
+    TK_SEMICOLON  shift, and go to state 89
+
+
+State 87
+
+   13 if: TK_IF expr TK_SEMICOLON block TK_EOL else .
+
+    $default  reduce using rule 13 (if)
+
+
+State 88
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr . TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
+
+    TK_COMMA  shift, and go to state 90
+
+
+State 89
+
+   14 else: TK_ELSE TK_SEMICOLON . block
+   17 block: . OPEN_INDENT statementList CLOSE_INDENT
+
+    OPEN_INDENT  shift, and go to state 63
+
+    block  go to state 91
+
+
+State 90
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA . expr PAR_RIGHT TK_SEMICOLON block
+   25 expr: . equalities
+   26 equalities: . equalities OP_EQ relationals
+   27           | . equalities OP_NEQ relationals
+   28           | . relationals
+   29 relationals: . relationals OP_GT arithmetic
+   30            | . relationals OP_LT arithmetic
+   31            | . relationals OP_GTE arithmetic
+   32            | . relationals OP_LTE arithmetic
+   33            | . arithmetic
+   34 arithmetic: . arithmetic OP_ADD term
+   35           | . arithmetic OP_SUB term
+   36           | . term
+   37 term: . term OP_MULT pow
+   38     | . term OP_DIV pow
+   39     | . term OP_MOD pow
+   40     | . pow
+   41 pow: . pow OP_EXP factor
+   42    | . factor
+   43 factor: . LIT_NUM
+   44       | . TK_INPUT PAR_LEFT LIT_STRING PAR_RIGHT
+   45       | . TK_ID
+   46       | . PAR_LEFT expr PAR_RIGHT
+
+    PAR_LEFT  shift, and go to state 20
+    TK_INPUT  shift, and go to state 21
+    LIT_NUM   shift, and go to state 22
+    TK_ID     shift, and go to state 23
+
+    expr         go to state 92
+    equalities   go to state 25
+    relationals  go to state 26
+    arithmetic   go to state 27
+    term         go to state 28
+    pow          go to state 29
+    factor       go to state 30
+
+
+State 91
+
+   14 else: TK_ELSE TK_SEMICOLON block .
+
+    $default  reduce using rule 14 (else)
+
+
+State 92
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr . PAR_RIGHT TK_SEMICOLON block
+
+    PAR_RIGHT  shift, and go to state 93
+
+
+State 93
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT . TK_SEMICOLON block
+
+    TK_SEMICOLON  shift, and go to state 94
+
+
+State 94
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON . block
+   17 block: . OPEN_INDENT statementList CLOSE_INDENT
+
+    OPEN_INDENT  shift, and go to state 63
+
+    block  go to state 95
+
+
+State 95
+
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block .
+
+    $default  reduce using rule 16 (for)

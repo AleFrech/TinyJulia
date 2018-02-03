@@ -29,31 +29,26 @@ void yyerror(const char* msg){
     list<Expr*> *exprList_t;
 }
 
-%type <expr_t> expr term factor rightValue arithmetic relationals equalities pow 
-%type <exprList_t> rightValueList
-%type <Statement_t> statementList statement print pass assign while block if for
+%type <expr_t> expr term factor argument arithmetic relationals equalities pow 
+%type <exprList_t> argumentList
+%type <Statement_t> statementList statement print pass assign while block if else for
 %token OP_ADD OP_SUB OP_MULT OP_DIV OP_EXP OP_MOD OP_LT OP_LTE OP_GT OP_GTE OP_NEQ OP_EQ OP_ASSGN
 %token PAR_LEFT PAR_RIGHT TK_SEMICOLON TK_PRINT TK_WHILE TK_IF TK_ELSE TK_FOR TK_IN TK_RANGE TK_SPACE TK_PASS TK_EOL TK_ERROR TK_INPUT TK_COMMA OPEN_INDENT CLOSE_INDENT
 %token <int_t> LIT_NUM
 %token <string_t> LIT_STRING TK_ID
 
-%nonassoc "no_else"
-%nonassoc TK_ELSE
+
 
 %%
 
 start: opEols statementList opEols {$2->execute();}
 ;
 
-eols: eols TK_EOL
-    | TK_EOL
-;
-
-opEols: eols
+opEols: TK_EOL
     | %empty
 ;
 
-statementList: statementList eols statement {$$ =$1; ((BlockStatement*)$$)->statementList.push_back($3);}
+statementList: statementList TK_EOL statement {$$ =$1; ((BlockStatement*)$$)->statementList.push_back($3);}
     | statement {$$ = new BlockStatement();((BlockStatement*)$$)->statementList.push_back($1);}
 ;
 
@@ -68,10 +63,12 @@ statement: print
 while: TK_WHILE expr TK_SEMICOLON block {$$ = new WhileStatement($2,$4);}
 ;
 
-if: TK_IF expr TK_SEMICOLON block eols TK_ELSE TK_SEMICOLON block {$$ = new IfStatement($2,$4,$8);}
-    | TK_IF expr TK_SEMICOLON block  %prec "no_else"  {$$=NULL;}
+if: TK_IF expr TK_SEMICOLON block TK_EOL else {$$ = new IfStatement($2,$4,$6);}
 ;
 
+else: TK_ELSE TK_SEMICOLON block {$$=$3;}
+    | %empty {$$=NULL;}
+;
 
 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block {$$ = new ForStatement(*$2, $6, $8, $11);}
 ;
@@ -85,14 +82,14 @@ pass: TK_PASS {$$ = new PassStatement();}
 assign: TK_ID OP_ASSGN expr {$$ = new AssignStatement(*$1,$3);}
 ;
 
-print: TK_PRINT PAR_LEFT rightValueList PAR_RIGHT {$$= new PrintStatement($3);}
+print: TK_PRINT PAR_LEFT argumentList PAR_RIGHT {$$= new PrintStatement($3);}
 ;
 
-rightValueList: rightValueList TK_COMMA rightValue {auto l =$1; l->push_back($3); $$=l;}
-    | rightValue {auto l = new list<Expr*>(); l->push_back($1); $$=l;}
+argumentList: argumentList TK_COMMA argument {auto l =$1; l->push_back($3); $$=l;}
+    | argument {auto l = new list<Expr*>(); l->push_back($1); $$=l;}
 ;
 
-rightValue: expr {$$ = $1;}
+argument: expr {$$ = $1;}
     | LIT_STRING {$$ = new StringExpr(*$1);}
 ;
 

@@ -10,13 +10,13 @@ lexer.cpp: lexer.l
 	flex -o $@ $^
 
 parser.cpp: parser.y
-	bison --defines=tokens.h -o $@ $<
+	bison -Werror --report=all --defines=tokens.h -o $@ $<
 
 %.o: %.cpp
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) /home/alejandrofrech/Desktop/compiladores2/Tarea6/samples/ArithOperators.py
+	./$(TARGET) /home/alejandrofrech/Desktop/compiladores2/Tarea6/samples/ForTest.py
 
 clean:
 	rm -f lexer.cpp parser.cpp tokens.h

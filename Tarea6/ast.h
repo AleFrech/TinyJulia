@@ -191,10 +191,10 @@ public:
 
 class WhileStatement : public Statement{
 public:
-    Expr* condtion;
+    Expr* condition;
     Statement * blockstatement;
     WhileStatement(Expr* con , Statement* block){
-        this->condtion = con;
+        this->condition = con;
         this->blockstatement = block;
     }
     void execute();
