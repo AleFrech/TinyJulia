@@ -20,11 +20,8 @@
     } includeStack_t ;
 
     includeStack_t * st = NULL;
-
     list<int> spaces;
-    bool expectedIndent = false;
-
-
+    bool exprectsIndent = false;
 %}
 
 %x newlineState
@@ -61,7 +58,7 @@
 \"(\\.|[^"\\])*\"  {yylval.string_t= new string(yytext); return LIT_STRING;}
 [0-9]+  {yylval.int_t=atoi(yytext); return LIT_NUM;}
 [_a-zA-z][_a-zA-z0-9]* {yylval.string_t= new string(yytext); return TK_ID;}
-\n      { expectedIndent = true; BEGIN(newlineState);}
+\n      { exprectsIndent = true; BEGIN(newlineState);}
 <INITIAL><<EOF>> {
                     int result = popInclude();
                     if(result != 0) {
@@ -74,41 +71,39 @@
 <newlineState>"#".*   {}
 <newlineState>\n      {}
 <newlineState>^" "+   {
-                            int currentIndent = spaces.back();
-                            if (yyleng > currentIndent) {
-                                spaces.push_back(yyleng);
+                            int indentSize = spaces.back();
+                            int size =string(yytext).length();
+                            if (size > indentSize) {
+                                spaces.push_back(size);
                                 BEGIN(INITIAL);
                                 return OPEN_INDENT;
-                            } else if (yyleng < currentIndent) {
+                            } else if (size < indentSize) {
                                 spaces.pop_back();
                                 unput('\n');
                                 return CLOSE_INDENT;
-                            } else {
-                                expectedIndent = false;
-                            }
+                            } else
+                                exprectsIndent = false;
 
                       }
 <newlineState>.       {
                             unput(yytext[0]);
-                            int currentIndent = spaces.back();
+                            int indentSize = spaces.back();
                             BEGIN(INITIAL);
-                            if (expectedIndent && currentIndent > 0) {
+                            if (exprectsIndent && indentSize > 0) {
                                 spaces.pop_back();
                                 unput('\n');
                                 return CLOSE_INDENT;
-                            } else {
+                            } else
                                 return TK_EOL;
-                            }
                       }
 <newlineState><<EOF>> {
-                            int currentIndent = spaces.back();
+                            int indentSize = spaces.back();
                             BEGIN(INITIAL);
-                            if (expectedIndent && currentIndent > 0) {
+                            if (exprectsIndent && indentSize > 0) {
                                 spaces.pop_back();
                                 return CLOSE_INDENT;
-                            } else {
+                            } else
                                 return TK_EOL;
-                            }
                       } 
 %%
 
