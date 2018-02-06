@@ -108,14 +108,13 @@ int VarExpr::evaluate(){
 }
 
 string StringExpr::getValue(){
-    myReplace(value,"\"","",1);
     myReplace(value,"\\n","\n",2);
     myReplace(value,"\\\"","\"",2);
     return value;
 }
 
+
 string InputExpr::getvalue(){
-    myReplace(value,"\"","",1);
     myReplace(value,"\\n","\n",2);
     myReplace(value,"\\\"","\"",2);
     return value;

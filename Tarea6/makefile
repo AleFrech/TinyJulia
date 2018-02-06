@@ -16,7 +16,7 @@ parser.cpp: parser.y
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) samples/ForTest.py
+	./$(TARGET) samples/HelloWorld.py
 
 clean:
 	rm -f lexer.cpp parser.cpp tokens.h

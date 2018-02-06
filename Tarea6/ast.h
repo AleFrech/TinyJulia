@@ -127,7 +127,7 @@ class NumberExpr : public Expr {
 class StringExpr : public Expr {
     public:
         StringExpr(string value) { 
-            this->value = value;
+            this->value = value.substr(1,value.size()-2) ;
         }
         string value;
         int evaluate(){
@@ -139,7 +139,7 @@ class StringExpr : public Expr {
 
 class InputExpr : public Expr{
     public:
-        InputExpr(string value) {this->value=value;}
+        InputExpr(string value) { value.substr(1,value.length()-2);}
         string value;
         int evaluate();
         Kind getKind(){return Kind::INTEGER;}
