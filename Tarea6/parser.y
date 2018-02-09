@@ -63,7 +63,7 @@ statement: print
 while: TK_WHILE expr TK_SEMICOLON block {$$ = new WhileStatement($2,$4);}
 ;
 
-if: TK_IF expr TK_SEMICOLON block TK_EOL else {$$ = new IfStatement($2,$4,$6);}
+if: TK_IF expr TK_SEMICOLON block  else {$$ = new IfStatement($2,$4,$5);}
 ;
 
 else: TK_ELSE TK_SEMICOLON block {$$=$3;}

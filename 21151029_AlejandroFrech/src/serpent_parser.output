@@ -1,0 +1,1610 @@
+Terminals unused in grammar
+
+   KW_INPUT
+   TK_EOF
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: opt_eols statement_list opt_eols
+
+    2 eols: eols TK_EOL
+    3     | TK_EOL
+
+    4 opt_eols: eols
+    5         | %empty
+
+    6 statement_list: statement_list eols statement
+    7               | statement
+
+    8 statement: print_statement
+    9          | assign_statement
+   10          | for_statement
+   11          | while_statement
+   12          | if_statement
+
+   13 print_statement: KW_PRINT '(' arg_list ')'
+
+   14 arg_list: arg_list ',' argument
+   15         | argument
+
+   16 argument: expr
+   17         | STRING_LITERAL
+
+   18 assign_statement: TK_ID '=' expr
+
+   19 if_statement: KW_IF expr ':' eols statement_block opt_else
+
+   20 opt_else: KW_ELSE ':' eols statement_block
+   21         | %empty
+
+   22 while_statement: KW_WHILE expr ':' eols statement_block
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+   24 statement_block: '{' eols statement_list eols '}'
+
+   25 expr: expr OP_LT expra
+   26     | expr OP_GT expra
+   27     | expr OP_LTE expra
+   28     | expr OP_GTE expra
+   29     | expr OP_NE expra
+   30     | expr OP_EQ expra
+   31     | expra
+
+   32 expra: expra '+' term
+   33      | expra '-' term
+   34      | term
+
+   35 term: term '*' exponent
+   36     | term '/' exponent
+   37     | term '%' exponent
+   38     | exponent
+
+   39 exponent: factor OP_EXP exponent
+   40         | factor
+
+   41 factor: '(' expr ')'
+   42       | '-' factor
+   43       | TK_NUM
+   44       | TK_ID
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'%' (37) 37
+'(' (40) 13 23 41
+')' (41) 13 23 41
+'*' (42) 35
+'+' (43) 32
+',' (44) 14 23
+'-' (45) 33 42
+'/' (47) 36
+':' (58) 19 20 22 23
+'=' (61) 18
+'{' (123) 24
+'}' (125) 24
+error (256)
+TK_NUM (258) 43
+TK_ID (259) 18 23 44
+STRING_LITERAL (260) 17
+KW_IF (261) 19
+KW_ELSE (262) 20
+KW_WHILE (263) 22
+KW_FOR (264) 23
+KW_IN (265) 23
+KW_RANGE (266) 23
+KW_PRINT (267) 13
+KW_INPUT (268)
+TK_EOL (269) 2 3
+TK_EOF (270)
+OP_EXP (271) 39
+OP_LT (272) 25
+OP_GT (273) 26
+OP_LTE (274) 27
+OP_GTE (275) 28
+OP_NE (276) 29
+OP_EQ (277) 30
+
+
+Nonterminals, with rules where they appear
+
+$accept (35)
+    on left: 0
+input (36)
+    on left: 1, on right: 0
+eols (37)
+    on left: 2 3, on right: 2 4 6 19 20 22 23 24
+opt_eols (38)
+    on left: 4 5, on right: 1
+statement_list (39)
+    on left: 6 7, on right: 1 6 24
+statement (40)
+    on left: 8 9 10 11 12, on right: 6 7
+print_statement (41)
+    on left: 13, on right: 8
+arg_list (42)
+    on left: 14 15, on right: 13 14
+argument (43)
+    on left: 16 17, on right: 14 15
+assign_statement (44)
+    on left: 18, on right: 9
+if_statement (45)
+    on left: 19, on right: 12
+opt_else (46)
+    on left: 20 21, on right: 19
+while_statement (47)
+    on left: 22, on right: 11
+for_statement (48)
+    on left: 23, on right: 10
+statement_block (49)
+    on left: 24, on right: 19 20 22 23
+expr (50)
+    on left: 25 26 27 28 29 30 31, on right: 16 18 19 22 23 25 26 27
+    28 29 30 41
+expra (51)
+    on left: 32 33 34, on right: 25 26 27 28 29 30 31 32 33
+term (52)
+    on left: 35 36 37 38, on right: 32 33 34 35 36 37
+exponent (53)
+    on left: 39 40, on right: 35 36 37 38 39
+factor (54)
+    on left: 41 42 43 44, on right: 39 40 42
+
+
+State 0
+
+    0 $accept: . input $end
+    1 input: . opt_eols statement_list opt_eols
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+    4 opt_eols: . eols
+    5         | . %empty  [TK_ID, KW_IF, KW_WHILE, KW_FOR, KW_PRINT]
+
+    TK_EOL  shift, and go to state 1
+
+    $default  reduce using rule 5 (opt_eols)
+
+    input     go to state 2
+    eols      go to state 3
+    opt_eols  go to state 4
+
+
+State 1
+
+    3 eols: TK_EOL .
+
+    $default  reduce using rule 3 (eols)
+
+
+State 2
+
+    0 $accept: input . $end
+
+    $end  shift, and go to state 5
+
+
+State 3
+
+    2 eols: eols . TK_EOL
+    4 opt_eols: eols .  [TK_ID, KW_IF, KW_WHILE, KW_FOR, KW_PRINT]
+
+    TK_EOL  shift, and go to state 6
+
+    $default  reduce using rule 4 (opt_eols)
+
+
+State 4
+
+    1 input: opt_eols . statement_list opt_eols
+    6 statement_list: . statement_list eols statement
+    7               | . statement
+    8 statement: . print_statement
+    9          | . assign_statement
+   10          | . for_statement
+   11          | . while_statement
+   12          | . if_statement
+   13 print_statement: . KW_PRINT '(' arg_list ')'
+   18 assign_statement: . TK_ID '=' expr
+   19 if_statement: . KW_IF expr ':' eols statement_block opt_else
+   22 while_statement: . KW_WHILE expr ':' eols statement_block
+   23 for_statement: . KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+    TK_ID     shift, and go to state 7
+    KW_IF     shift, and go to state 8
+    KW_WHILE  shift, and go to state 9
+    KW_FOR    shift, and go to state 10
+    KW_PRINT  shift, and go to state 11
+
+    statement_list    go to state 12
+    statement         go to state 13
+    print_statement   go to state 14
+    assign_statement  go to state 15
+    if_statement      go to state 16
+    while_statement   go to state 17
+    for_statement     go to state 18
+
+
+State 5
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+State 6
+
+    2 eols: eols TK_EOL .
+
+    $default  reduce using rule 2 (eols)
+
+
+State 7
+
+   18 assign_statement: TK_ID . '=' expr
+
+    '='  shift, and go to state 19
+
+
+State 8
+
+   19 if_statement: KW_IF . expr ':' eols statement_block opt_else
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 24
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 9
+
+   22 while_statement: KW_WHILE . expr ':' eols statement_block
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 29
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 10
+
+   23 for_statement: KW_FOR . TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+    TK_ID  shift, and go to state 30
+
+
+State 11
+
+   13 print_statement: KW_PRINT . '(' arg_list ')'
+
+    '('  shift, and go to state 31
+
+
+State 12
+
+    1 input: opt_eols statement_list . opt_eols
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+    4 opt_eols: . eols
+    5         | . %empty  [$end]
+    6 statement_list: statement_list . eols statement
+
+    TK_EOL  shift, and go to state 1
+
+    $default  reduce using rule 5 (opt_eols)
+
+    eols      go to state 32
+    opt_eols  go to state 33
+
+
+State 13
+
+    7 statement_list: statement .
+
+    $default  reduce using rule 7 (statement_list)
+
+
+State 14
+
+    8 statement: print_statement .
+
+    $default  reduce using rule 8 (statement)
+
+
+State 15
+
+    9 statement: assign_statement .
+
+    $default  reduce using rule 9 (statement)
+
+
+State 16
+
+   12 statement: if_statement .
+
+    $default  reduce using rule 12 (statement)
+
+
+State 17
+
+   11 statement: while_statement .
+
+    $default  reduce using rule 11 (statement)
+
+
+State 18
+
+   10 statement: for_statement .
+
+    $default  reduce using rule 10 (statement)
+
+
+State 19
+
+   18 assign_statement: TK_ID '=' . expr
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 34
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 20
+
+   43 factor: TK_NUM .
+
+    $default  reduce using rule 43 (factor)
+
+
+State 21
+
+   44 factor: TK_ID .
+
+    $default  reduce using rule 44 (factor)
+
+
+State 22
+
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   41       | '(' . expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 35
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 23
+
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   42       | '-' . factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    factor  go to state 36
+
+
+State 24
+
+   19 if_statement: KW_IF expr . ':' eols statement_block opt_else
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+    ':'     shift, and go to state 43
+
+
+State 25
+
+   31 expr: expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 31 (expr)
+
+
+State 26
+
+   34 expra: term .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':', '+', '-']
+   35 term: term . '*' exponent
+   36     | term . '/' exponent
+   37     | term . '%' exponent
+
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
+    '%'  shift, and go to state 48
+
+    $default  reduce using rule 34 (expra)
+
+
+State 27
+
+   38 term: exponent .
+
+    $default  reduce using rule 38 (term)
+
+
+State 28
+
+   39 exponent: factor . OP_EXP exponent
+   40         | factor .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':', '+', '-', '*', '/', '%']
+
+    OP_EXP  shift, and go to state 49
+
+    $default  reduce using rule 40 (exponent)
+
+
+State 29
+
+   22 while_statement: KW_WHILE expr . ':' eols statement_block
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+    ':'     shift, and go to state 50
+
+
+State 30
+
+   23 for_statement: KW_FOR TK_ID . KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+    KW_IN  shift, and go to state 51
+
+
+State 31
+
+   13 print_statement: KW_PRINT '(' . arg_list ')'
+   14 arg_list: . arg_list ',' argument
+   15         | . argument
+   16 argument: . expr
+   17         | . STRING_LITERAL
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM          shift, and go to state 20
+    TK_ID           shift, and go to state 21
+    STRING_LITERAL  shift, and go to state 52
+    '('             shift, and go to state 22
+    '-'             shift, and go to state 23
+
+    arg_list  go to state 53
+    argument  go to state 54
+    expr      go to state 55
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 32
+
+    2 eols: eols . TK_EOL
+    4 opt_eols: eols .  [$end]
+    6 statement_list: statement_list eols . statement
+    8 statement: . print_statement
+    9          | . assign_statement
+   10          | . for_statement
+   11          | . while_statement
+   12          | . if_statement
+   13 print_statement: . KW_PRINT '(' arg_list ')'
+   18 assign_statement: . TK_ID '=' expr
+   19 if_statement: . KW_IF expr ':' eols statement_block opt_else
+   22 while_statement: . KW_WHILE expr ':' eols statement_block
+   23 for_statement: . KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+    TK_ID     shift, and go to state 7
+    KW_IF     shift, and go to state 8
+    KW_WHILE  shift, and go to state 9
+    KW_FOR    shift, and go to state 10
+    KW_PRINT  shift, and go to state 11
+    TK_EOL    shift, and go to state 6
+
+    $default  reduce using rule 4 (opt_eols)
+
+    statement         go to state 56
+    print_statement   go to state 14
+    assign_statement  go to state 15
+    if_statement      go to state 16
+    while_statement   go to state 17
+    for_statement     go to state 18
+
+
+State 33
+
+    1 input: opt_eols statement_list opt_eols .
+
+    $default  reduce using rule 1 (input)
+
+
+State 34
+
+   18 assign_statement: TK_ID '=' expr .  [$end, TK_EOL]
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+
+    $default  reduce using rule 18 (assign_statement)
+
+
+State 35
+
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+   41 factor: '(' expr . ')'
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+    ')'     shift, and go to state 57
+
+
+State 36
+
+   42 factor: '-' factor .
+
+    $default  reduce using rule 42 (factor)
+
+
+State 37
+
+   25 expr: expr OP_LT . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 58
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 38
+
+   26 expr: expr OP_GT . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 59
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 39
+
+   27 expr: expr OP_LTE . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 60
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 40
+
+   28 expr: expr OP_GTE . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 61
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 41
+
+   29 expr: expr OP_NE . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 62
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 42
+
+   30 expr: expr OP_EQ . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expra     go to state 63
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 43
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+   19 if_statement: KW_IF expr ':' . eols statement_block opt_else
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 64
+
+
+State 44
+
+   32 expra: expra '+' . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    term      go to state 65
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 45
+
+   33 expra: expra '-' . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    term      go to state 66
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 46
+
+   35 term: term '*' . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    exponent  go to state 67
+    factor    go to state 28
+
+
+State 47
+
+   36 term: term '/' . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    exponent  go to state 68
+    factor    go to state 28
+
+
+State 48
+
+   37 term: term '%' . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    exponent  go to state 69
+    factor    go to state 28
+
+
+State 49
+
+   39 exponent: . factor OP_EXP exponent
+   39         | factor OP_EXP . exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    exponent  go to state 70
+    factor    go to state 28
+
+
+State 50
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+   22 while_statement: KW_WHILE expr ':' . eols statement_block
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 71
+
+
+State 51
+
+   23 for_statement: KW_FOR TK_ID KW_IN . KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+
+    KW_RANGE  shift, and go to state 72
+
+
+State 52
+
+   17 argument: STRING_LITERAL .
+
+    $default  reduce using rule 17 (argument)
+
+
+State 53
+
+   13 print_statement: KW_PRINT '(' arg_list . ')'
+   14 arg_list: arg_list . ',' argument
+
+    ')'  shift, and go to state 73
+    ','  shift, and go to state 74
+
+
+State 54
+
+   15 arg_list: argument .
+
+    $default  reduce using rule 15 (arg_list)
+
+
+State 55
+
+   16 argument: expr .  [')', ',']
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+
+    $default  reduce using rule 16 (argument)
+
+
+State 56
+
+    6 statement_list: statement_list eols statement .
+
+    $default  reduce using rule 6 (statement_list)
+
+
+State 57
+
+   41 factor: '(' expr ')' .
+
+    $default  reduce using rule 41 (factor)
+
+
+State 58
+
+   25 expr: expr OP_LT expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 25 (expr)
+
+
+State 59
+
+   26 expr: expr OP_GT expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 26 (expr)
+
+
+State 60
+
+   27 expr: expr OP_LTE expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 27 (expr)
+
+
+State 61
+
+   28 expr: expr OP_GTE expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 28 (expr)
+
+
+State 62
+
+   29 expr: expr OP_NE expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 29 (expr)
+
+
+State 63
+
+   30 expr: expr OP_EQ expra .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':']
+   32 expra: expra . '+' term
+   33      | expra . '-' term
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+
+    $default  reduce using rule 30 (expr)
+
+
+State 64
+
+    2 eols: eols . TK_EOL
+   19 if_statement: KW_IF expr ':' eols . statement_block opt_else
+   24 statement_block: . '{' eols statement_list eols '}'
+
+    TK_EOL  shift, and go to state 6
+    '{'     shift, and go to state 75
+
+    statement_block  go to state 76
+
+
+State 65
+
+   32 expra: expra '+' term .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':', '+', '-']
+   35 term: term . '*' exponent
+   36     | term . '/' exponent
+   37     | term . '%' exponent
+
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
+    '%'  shift, and go to state 48
+
+    $default  reduce using rule 32 (expra)
+
+
+State 66
+
+   33 expra: expra '-' term .  [$end, TK_EOL, OP_LT, OP_GT, OP_LTE, OP_GTE, OP_NE, OP_EQ, ')', ',', ':', '+', '-']
+   35 term: term . '*' exponent
+   36     | term . '/' exponent
+   37     | term . '%' exponent
+
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
+    '%'  shift, and go to state 48
+
+    $default  reduce using rule 33 (expra)
+
+
+State 67
+
+   35 term: term '*' exponent .
+
+    $default  reduce using rule 35 (term)
+
+
+State 68
+
+   36 term: term '/' exponent .
+
+    $default  reduce using rule 36 (term)
+
+
+State 69
+
+   37 term: term '%' exponent .
+
+    $default  reduce using rule 37 (term)
+
+
+State 70
+
+   39 exponent: factor OP_EXP exponent .
+
+    $default  reduce using rule 39 (exponent)
+
+
+State 71
+
+    2 eols: eols . TK_EOL
+   22 while_statement: KW_WHILE expr ':' eols . statement_block
+   24 statement_block: . '{' eols statement_list eols '}'
+
+    TK_EOL  shift, and go to state 6
+    '{'     shift, and go to state 75
+
+    statement_block  go to state 77
+
+
+State 72
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE . '(' expr ',' expr ')' ':' eols statement_block
+
+    '('  shift, and go to state 78
+
+
+State 73
+
+   13 print_statement: KW_PRINT '(' arg_list ')' .
+
+    $default  reduce using rule 13 (print_statement)
+
+
+State 74
+
+   14 arg_list: arg_list ',' . argument
+   16 argument: . expr
+   17         | . STRING_LITERAL
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM          shift, and go to state 20
+    TK_ID           shift, and go to state 21
+    STRING_LITERAL  shift, and go to state 52
+    '('             shift, and go to state 22
+    '-'             shift, and go to state 23
+
+    argument  go to state 79
+    expr      go to state 55
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 75
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+   24 statement_block: '{' . eols statement_list eols '}'
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 80
+
+
+State 76
+
+   19 if_statement: KW_IF expr ':' eols statement_block . opt_else
+   20 opt_else: . KW_ELSE ':' eols statement_block
+   21         | . %empty  [$end, TK_EOL]
+
+    KW_ELSE  shift, and go to state 81
+
+    $default  reduce using rule 21 (opt_else)
+
+    opt_else  go to state 82
+
+
+State 77
+
+   22 while_statement: KW_WHILE expr ':' eols statement_block .
+
+    $default  reduce using rule 22 (while_statement)
+
+
+State 78
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' . expr ',' expr ')' ':' eols statement_block
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 83
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 79
+
+   14 arg_list: arg_list ',' argument .
+
+    $default  reduce using rule 14 (arg_list)
+
+
+State 80
+
+    2 eols: eols . TK_EOL
+    6 statement_list: . statement_list eols statement
+    7               | . statement
+    8 statement: . print_statement
+    9          | . assign_statement
+   10          | . for_statement
+   11          | . while_statement
+   12          | . if_statement
+   13 print_statement: . KW_PRINT '(' arg_list ')'
+   18 assign_statement: . TK_ID '=' expr
+   19 if_statement: . KW_IF expr ':' eols statement_block opt_else
+   22 while_statement: . KW_WHILE expr ':' eols statement_block
+   23 for_statement: . KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+   24 statement_block: '{' eols . statement_list eols '}'
+
+    TK_ID     shift, and go to state 7
+    KW_IF     shift, and go to state 8
+    KW_WHILE  shift, and go to state 9
+    KW_FOR    shift, and go to state 10
+    KW_PRINT  shift, and go to state 11
+    TK_EOL    shift, and go to state 6
+
+    statement_list    go to state 84
+    statement         go to state 13
+    print_statement   go to state 14
+    assign_statement  go to state 15
+    if_statement      go to state 16
+    while_statement   go to state 17
+    for_statement     go to state 18
+
+
+State 81
+
+   20 opt_else: KW_ELSE . ':' eols statement_block
+
+    ':'  shift, and go to state 85
+
+
+State 82
+
+   19 if_statement: KW_IF expr ':' eols statement_block opt_else .
+
+    $default  reduce using rule 19 (if_statement)
+
+
+State 83
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr . ',' expr ')' ':' eols statement_block
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+    ','     shift, and go to state 86
+
+
+State 84
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+    6 statement_list: statement_list . eols statement
+   24 statement_block: '{' eols statement_list . eols '}'
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 87
+
+
+State 85
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+   20 opt_else: KW_ELSE ':' . eols statement_block
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 88
+
+
+State 86
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' . expr ')' ':' eols statement_block
+   25 expr: . expr OP_LT expra
+   26     | . expr OP_GT expra
+   27     | . expr OP_LTE expra
+   28     | . expr OP_GTE expra
+   29     | . expr OP_NE expra
+   30     | . expr OP_EQ expra
+   31     | . expra
+   32 expra: . expra '+' term
+   33      | . expra '-' term
+   34      | . term
+   35 term: . term '*' exponent
+   36     | . term '/' exponent
+   37     | . term '%' exponent
+   38     | . exponent
+   39 exponent: . factor OP_EXP exponent
+   40         | . factor
+   41 factor: . '(' expr ')'
+   42       | . '-' factor
+   43       | . TK_NUM
+   44       | . TK_ID
+
+    TK_NUM  shift, and go to state 20
+    TK_ID   shift, and go to state 21
+    '('     shift, and go to state 22
+    '-'     shift, and go to state 23
+
+    expr      go to state 89
+    expra     go to state 25
+    term      go to state 26
+    exponent  go to state 27
+    factor    go to state 28
+
+
+State 87
+
+    2 eols: eols . TK_EOL
+    6 statement_list: statement_list eols . statement
+    8 statement: . print_statement
+    9          | . assign_statement
+   10          | . for_statement
+   11          | . while_statement
+   12          | . if_statement
+   13 print_statement: . KW_PRINT '(' arg_list ')'
+   18 assign_statement: . TK_ID '=' expr
+   19 if_statement: . KW_IF expr ':' eols statement_block opt_else
+   22 while_statement: . KW_WHILE expr ':' eols statement_block
+   23 for_statement: . KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block
+   24 statement_block: '{' eols statement_list eols . '}'
+
+    TK_ID     shift, and go to state 7
+    KW_IF     shift, and go to state 8
+    KW_WHILE  shift, and go to state 9
+    KW_FOR    shift, and go to state 10
+    KW_PRINT  shift, and go to state 11
+    TK_EOL    shift, and go to state 6
+    '}'       shift, and go to state 90
+
+    statement         go to state 56
+    print_statement   go to state 14
+    assign_statement  go to state 15
+    if_statement      go to state 16
+    while_statement   go to state 17
+    for_statement     go to state 18
+
+
+State 88
+
+    2 eols: eols . TK_EOL
+   20 opt_else: KW_ELSE ':' eols . statement_block
+   24 statement_block: . '{' eols statement_list eols '}'
+
+    TK_EOL  shift, and go to state 6
+    '{'     shift, and go to state 75
+
+    statement_block  go to state 91
+
+
+State 89
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr . ')' ':' eols statement_block
+   25 expr: expr . OP_LT expra
+   26     | expr . OP_GT expra
+   27     | expr . OP_LTE expra
+   28     | expr . OP_GTE expra
+   29     | expr . OP_NE expra
+   30     | expr . OP_EQ expra
+
+    OP_LT   shift, and go to state 37
+    OP_GT   shift, and go to state 38
+    OP_LTE  shift, and go to state 39
+    OP_GTE  shift, and go to state 40
+    OP_NE   shift, and go to state 41
+    OP_EQ   shift, and go to state 42
+    ')'     shift, and go to state 92
+
+
+State 90
+
+   24 statement_block: '{' eols statement_list eols '}' .
+
+    $default  reduce using rule 24 (statement_block)
+
+
+State 91
+
+   20 opt_else: KW_ELSE ':' eols statement_block .
+
+    $default  reduce using rule 20 (opt_else)
+
+
+State 92
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' . ':' eols statement_block
+
+    ':'  shift, and go to state 93
+
+
+State 93
+
+    2 eols: . eols TK_EOL
+    3     | . TK_EOL
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' . eols statement_block
+
+    TK_EOL  shift, and go to state 1
+
+    eols  go to state 94
+
+
+State 94
+
+    2 eols: eols . TK_EOL
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols . statement_block
+   24 statement_block: . '{' eols statement_list eols '}'
+
+    TK_EOL  shift, and go to state 6
+    '{'     shift, and go to state 75
+
+    statement_block  go to state 95
+
+
+State 95
+
+   23 for_statement: KW_FOR TK_ID KW_IN KW_RANGE '(' expr ',' expr ')' ':' eols statement_block .
+
+    $default  reduce using rule 23 (for_statement)

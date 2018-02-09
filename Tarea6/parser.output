@@ -25,7 +25,7 @@ Grammar
 
    12 while: TK_WHILE expr TK_SEMICOLON block
 
-   13 if: TK_IF expr TK_SEMICOLON block TK_EOL else
+   13 if: TK_IF expr TK_SEMICOLON block else
 
    14 else: TK_ELSE TK_SEMICOLON block
    15     | %empty
@@ -105,7 +105,7 @@ TK_IN (279) 16
 TK_RANGE (280) 16
 TK_SPACE (281)
 TK_PASS (282) 18
-TK_EOL (283) 2 4 13
+TK_EOL (283) 2 4
 TK_ERROR (284)
 TK_INPUT (285) 44
 TK_COMMA (286) 16 21
@@ -205,7 +205,7 @@ State 3
    10          | . if
    11          | . for
    12 while: . TK_WHILE expr TK_SEMICOLON block
-   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   13 if: . TK_IF expr TK_SEMICOLON block else
    16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
    18 pass: . TK_PASS
    19 assign: . TK_ID OP_ASSGN expr
@@ -284,7 +284,7 @@ State 6
 
 State 7
 
-   13 if: TK_IF . expr TK_SEMICOLON block TK_EOL else
+   13 if: TK_IF . expr TK_SEMICOLON block else
    25 expr: . equalities
    26 equalities: . equalities OP_EQ relationals
    27           | . equalities OP_NEQ relationals
@@ -594,7 +594,7 @@ State 30
 
 State 31
 
-   13 if: TK_IF expr . TK_SEMICOLON block TK_EOL else
+   13 if: TK_IF expr . TK_SEMICOLON block else
 
     TK_SEMICOLON  shift, and go to state 55
 
@@ -657,7 +657,7 @@ State 34
    10          | . if
    11          | . for
    12 while: . TK_WHILE expr TK_SEMICOLON block
-   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   13 if: . TK_IF expr TK_SEMICOLON block else
    16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
    18 pass: . TK_PASS
    19 assign: . TK_ID OP_ASSGN expr
@@ -1045,7 +1045,7 @@ State 54
 
 State 55
 
-   13 if: TK_IF expr TK_SEMICOLON . block TK_EOL else
+   13 if: TK_IF expr TK_SEMICOLON . block else
    17 block: . OPEN_INDENT statementList CLOSE_INDENT
 
     OPEN_INDENT  shift, and go to state 63
@@ -1150,7 +1150,7 @@ State 63
    10          | . if
    11          | . for
    12 while: . TK_WHILE expr TK_SEMICOLON block
-   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   13 if: . TK_IF expr TK_SEMICOLON block else
    16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
    17 block: OPEN_INDENT . statementList CLOSE_INDENT
    18 pass: . TK_PASS
@@ -1328,16 +1328,22 @@ State 76
 
 State 77
 
-   13 if: TK_IF expr TK_SEMICOLON block . TK_EOL else
+   13 if: TK_IF expr TK_SEMICOLON block . else
+   14 else: . TK_ELSE TK_SEMICOLON block
+   15     | . %empty  [$end, TK_EOL, CLOSE_INDENT]
 
-    TK_EOL  shift, and go to state 82
+    TK_ELSE  shift, and go to state 82
+
+    $default  reduce using rule 15 (else)
+
+    else  go to state 83
 
 
 State 78
 
    16 for: TK_FOR TK_ID TK_IN TK_RANGE . PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
 
-    PAR_LEFT  shift, and go to state 83
+    PAR_LEFT  shift, and go to state 84
 
 
 State 79
@@ -1359,24 +1365,25 @@ State 81
     4 statementList: statementList . TK_EOL statement
    17 block: OPEN_INDENT statementList . CLOSE_INDENT
 
-    TK_EOL        shift, and go to state 84
-    CLOSE_INDENT  shift, and go to state 85
+    TK_EOL        shift, and go to state 85
+    CLOSE_INDENT  shift, and go to state 86
 
 
 State 82
 
-   13 if: TK_IF expr TK_SEMICOLON block TK_EOL . else
-   14 else: . TK_ELSE TK_SEMICOLON block
-   15     | . %empty  [$end, TK_EOL, CLOSE_INDENT]
+   14 else: TK_ELSE . TK_SEMICOLON block
 
-    TK_ELSE  shift, and go to state 86
-
-    $default  reduce using rule 15 (else)
-
-    else  go to state 87
+    TK_SEMICOLON  shift, and go to state 87
 
 
 State 83
+
+   13 if: TK_IF expr TK_SEMICOLON block else .
+
+    $default  reduce using rule 13 (if)
+
+
+State 84
 
    16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT . expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
    25 expr: . equalities
@@ -1416,7 +1423,7 @@ State 83
     factor       go to state 30
 
 
-State 84
+State 85
 
     4 statementList: statementList TK_EOL . statement
     6 statement: . print
@@ -1426,7 +1433,7 @@ State 84
    10          | . if
    11          | . for
    12 while: . TK_WHILE expr TK_SEMICOLON block
-   13 if: . TK_IF expr TK_SEMICOLON block TK_EOL else
+   13 if: . TK_IF expr TK_SEMICOLON block else
    16 for: . TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block
    18 pass: . TK_PASS
    19 assign: . TK_ID OP_ASSGN expr
@@ -1448,25 +1455,21 @@ State 84
     print      go to state 18
 
 
-State 85
+State 86
 
    17 block: OPEN_INDENT statementList CLOSE_INDENT .
 
     $default  reduce using rule 17 (block)
 
 
-State 86
-
-   14 else: TK_ELSE . TK_SEMICOLON block
-
-    TK_SEMICOLON  shift, and go to state 89
-
-
 State 87
 
-   13 if: TK_IF expr TK_SEMICOLON block TK_EOL else .
+   14 else: TK_ELSE TK_SEMICOLON . block
+   17 block: . OPEN_INDENT statementList CLOSE_INDENT
 
-    $default  reduce using rule 13 (if)
+    OPEN_INDENT  shift, and go to state 63
+
+    block  go to state 89
 
 
 State 88
@@ -1478,12 +1481,9 @@ State 88
 
 State 89
 
-   14 else: TK_ELSE TK_SEMICOLON . block
-   17 block: . OPEN_INDENT statementList CLOSE_INDENT
+   14 else: TK_ELSE TK_SEMICOLON block .
 
-    OPEN_INDENT  shift, and go to state 63
-
-    block  go to state 91
+    $default  reduce using rule 14 (else)
 
 
 State 90
@@ -1517,7 +1517,7 @@ State 90
     LIT_NUM   shift, and go to state 22
     TK_ID     shift, and go to state 23
 
-    expr         go to state 92
+    expr         go to state 91
     equalities   go to state 25
     relationals  go to state 26
     arithmetic   go to state 27
@@ -1528,36 +1528,29 @@ State 90
 
 State 91
 
-   14 else: TK_ELSE TK_SEMICOLON block .
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr . PAR_RIGHT TK_SEMICOLON block
 
-    $default  reduce using rule 14 (else)
+    PAR_RIGHT  shift, and go to state 92
 
 
 State 92
 
-   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr . PAR_RIGHT TK_SEMICOLON block
+   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT . TK_SEMICOLON block
 
-    PAR_RIGHT  shift, and go to state 93
+    TK_SEMICOLON  shift, and go to state 93
 
 
 State 93
-
-   16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT . TK_SEMICOLON block
-
-    TK_SEMICOLON  shift, and go to state 94
-
-
-State 94
 
    16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON . block
    17 block: . OPEN_INDENT statementList CLOSE_INDENT
 
     OPEN_INDENT  shift, and go to state 63
 
-    block  go to state 95
+    block  go to state 94
 
 
-State 95
+State 94
 
    16 for: TK_FOR TK_ID TK_IN TK_RANGE PAR_LEFT expr TK_COMMA expr PAR_RIGHT TK_SEMICOLON block .
 
