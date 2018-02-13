@@ -33,11 +33,12 @@ Statement *input;
 %token<num_t> TK_NUM
 %token<id_t> TK_ID
 %token<id_t> STRING_LITERAL
+%token<id_t> TK_LITERALBLOCK
 %token KW_IF KW_ELSE KW_WHILE KW_FOR KW_IN KW_RANGE KW_PRINT KW_INPUT
 %token TK_EOL TK_EOF
 %token OP_EXP OP_LT OP_GT OP_LTE OP_GTE OP_NE OP_EQ
-%type<expr_t> argument expra expr term exponent factor
-%type<statement_t> print_statement assign_statement if_statement while_statement for_statement
+%type<expr_t> argument expra expr term exponent factor 
+%type<statement_t> print_statement assign_statement if_statement while_statement for_statement literal
 %type<statement_t> statement opt_else statement_block
 %type<blkstatement_t> statement_list
 %type<exprlist_t> arg_list
@@ -66,6 +67,10 @@ statement: print_statement
 		  | for_statement
 		  | while_statement
 		  | if_statement
+          | literal
+;
+
+literal: TK_LITERALBLOCK {string lit = $1;  auto exp = new StringExpr(lit);  auto l = new ExprList; l->push_back(exp);  $$ = new PrintStatement(*l); }
 ;
 
 print_statement: KW_PRINT '(' arg_list ')' { $$ = new PrintStatement(*$3); delete $3; }

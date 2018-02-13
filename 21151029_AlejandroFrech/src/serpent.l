@@ -12,7 +12,7 @@
 using namespace std;
 
 list<int> tabs;
-
+string accumulate;
 extern int errors;
 %}
 
@@ -25,7 +25,10 @@ LETTER [a-zA-Z]
 %%
 
 "<?" {BEGIN(switchState);}
-.|\n* {printf("%s",yytext);}
+. { accumulate += to_string(accumulate);}
+INITIAL<<EOF>> {
+    
+}
 <switchState>"=" { return '='; }
 <switchState>"+" { return '+'; }
 <switchState>"-" { return '-'; }
@@ -35,7 +38,7 @@ LETTER [a-zA-Z]
 <switchState>"**" { return OP_EXP; }
 <switchState>"<" { return OP_LT; }
 <switchState>">" { return OP_GT; }
-<switchState>"?>" {BEGIN(INITIAL);}
+<switchState>"?>" {BEGIN(INITIAL); return TK_EOL;}
 <switchState>"<=" { return OP_LTE; }
 <switchState>">=" { return OP_GTE; }
 <switchState>"!=" { return OP_NE; }
