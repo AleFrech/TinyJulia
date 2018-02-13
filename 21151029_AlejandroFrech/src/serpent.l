@@ -23,12 +23,8 @@ LETTER [a-zA-Z]
 %x switchState
 
 %%
-
-"<?" {BEGIN(switchState);}
-. { accumulate += to_string(accumulate);}
-INITIAL<<EOF>> {
-    
-}
+"<?" {BEGIN(switchState); if(accumulate.empty()) {accumulate += ""; } yylval.id_t = strdup(accumulate.c_str()); return TK_LITERALBLOCK;}
+. { accumulate += to_string(yytext[0]);}
 <switchState>"=" { return '='; }
 <switchState>"+" { return '+'; }
 <switchState>"-" { return '-'; }

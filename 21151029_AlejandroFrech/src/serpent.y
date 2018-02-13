@@ -70,7 +70,7 @@ statement: print_statement
           | literal
 ;
 
-literal: TK_LITERALBLOCK {string lit = $1;  auto exp = new StringExpr(lit);  auto l = new ExprList; l->push_back(exp);  $$ = new PrintStatement(*l); }
+literal: TK_LITERALBLOCK {string lit = $1;  Expr * exp = new StringExpr(lit);  ExprList * l = new ExprList; l->push_back(exp);  $$ = new PrintStatement(*l); }
 ;
 
 print_statement: KW_PRINT '(' arg_list ')' { $$ = new PrintStatement(*$3); delete $3; }
