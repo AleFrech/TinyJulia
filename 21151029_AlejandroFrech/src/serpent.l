@@ -23,7 +23,13 @@ LETTER [a-zA-Z]
 %x switchState
 
 %%
-"<?" {BEGIN(switchState); if(accumulate.empty()) {accumulate += ""; } yylval.id_t = strdup(accumulate.c_str()); return TK_LITERALBLOCK;}
+"<?" {  BEGIN(switchState); 
+        if(accumulate.empty()) {
+            accumulate += ""; 
+        }
+        yylval.id_t = strdup(accumulate.c_str()); 
+        return TK_LITERALBLOCK;
+     }
 . { accumulate += to_string(yytext[0]);}
 <switchState>"=" { return '='; }
 <switchState>"+" { return '+'; }
