@@ -5,5 +5,6 @@
 #define PAR_LEFT 5
 #define PAR_RIGHT 6
 #define TK_NUM 7
+#define TK_ID 8
 #define TK_EOF 998
 #define TK_ERROR 999

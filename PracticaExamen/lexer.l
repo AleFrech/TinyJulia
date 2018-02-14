@@ -12,6 +12,7 @@
 "[ \t]" {}
 "\n"    {}
 [0-9]+ {return TK_NUM;}
+[_a-zA-Z][a-zA-Z0-9]* {return TK_ID;}
 <<EOF>> {return TK_EOF;}
 %%
 
