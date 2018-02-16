@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "tokens.h"
-int yylex();
+int yyparse();
 void initLexer(char *);
 
 int main (int argc , char * args[]){
@@ -9,10 +8,5 @@ int main (int argc , char * args[]){
         return 1;
     }
     initLexer(args[1]);
-    int token = yylex();
-    while(token != TK_EOF){
-        printf("Token : %d\n",token);
-        token = yylex();
-    }
-    printf("The EOF Token : %d\n",token);
+    yyparse();
 }

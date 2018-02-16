@@ -1,7 +1,6 @@
 %option noyywrap
 %option yylineno
 
-
 %{
     #include <stdio.h>
     #include "tokens.h"
@@ -9,8 +8,8 @@
 %}
 
 %%
-"[ \t]" {}
-"\n"    {}
+[ \t] {}
+"\n"    {yylineno++;}
 "+"     {return TK_ADD;}
 "-"     {return TK_SUB;}  
 "*"     {return TK_MULT;}  
@@ -19,12 +18,14 @@
 "^"     {return TK_EXP;}
 "("     {return TK_PAR_LEFT;}
 ")"     {return TK_PAR_RIGHT;}
+";"     {return TK_COMMA;}
 "print" {return TK_PRINT;}           
 [0-9]+  {return TK_NUM;}
 [_a-zA-Z][a-zA-Z0-9]*   {return TK_ID;}
-\"(\\.|[^"\\])*\"   {return TK_STRING;}
-\'(\\.|[^'\\])\'    {return TK_CHAR;}
-<<EOF>> {return TK_EOF;}
+\"((\\[\"n\\])|[^"\\])*\"   {return TK_STRING;}
+\'((\\[\"n\\])|[^'\\])\'    {return TK_CHAR;}
+.       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
+<<EOF>> {return 0;}
 %%
 
 

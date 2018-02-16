@@ -1,9 +1,3 @@
-67
-_56tgfd
-id
-testing_23
-"testing \n Esa mierda "
-'r'
-'\"'
-print
-^
+print(5 * 10);
+print("test \n \\ ");
+print('\\');
