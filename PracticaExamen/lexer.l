@@ -18,7 +18,8 @@
 "^"     {return TK_EXP;}
 "("     {return TK_PAR_LEFT;}
 ")"     {return TK_PAR_RIGHT;}
-";"     {return TK_COMMA;}
+";"     {return TK_EOS;}
+","     {return TK_COMMA;}
 "="     {return TK_EQ;}
 "print" {return TK_PRINT;}           
 [0-9]+  {yylval=new NumExpr(atoi(yytext)); return TK_NUM;}

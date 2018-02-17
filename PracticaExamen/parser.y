@@ -18,7 +18,7 @@ void yyerror(const char* msg){
 #define YYERROR_VERBOSE 1  
 %}
 
-%token TK_ADD TK_SUB TK_MULT TK_DIV TK_MOD TK_EXP TK_NUM TK_ID TK_STRING TK_CHAR TK_PRINT TK_PAR_LEFT TK_PAR_RIGHT TK_ERROR TK_COMMA TK_EQ
+%token TK_ADD TK_SUB TK_MULT TK_DIV TK_MOD TK_EXP TK_NUM TK_ID TK_STRING TK_CHAR TK_PRINT TK_PAR_LEFT TK_PAR_RIGHT TK_ERROR TK_COMMA TK_EQ TK_EOS
 
 %%
 
@@ -29,8 +29,8 @@ statementList: statementList statement {((BlockStatement*)$1)->statementList.pus
     | statement {BlockStatement* bs = new BlockStatement(); bs->statementList.push_back((Statement*)$1); $$=bs;}
 ;
 
-statement: print_statement TK_COMMA {$$=$1;}
-    | assign_statement TK_COMMA {$$= $1;}
+statement: print_statement TK_EOS {$$=$1;}
+    | assign_statement TK_EOS {$$= $1;}
 ;
 
 assign_statement: TK_ID TK_EQ expression {$$ = new AssignStatement((VarExpr*)$1,((Expr*)$3));}

@@ -115,7 +115,9 @@ class StringExpr : public Expr {
     public:
         string value;
         StringExpr(string value){
-            this->value = value.substr(1,value.size()-2) ;
+            this->value = value.substr(1,value.size()-2);
+            myReplace(this->value ,"\\n","\n",2);
+            myReplace(this->value ,"\\\"","\"",2);
         }
         string getValue(){
             return value;
@@ -123,6 +125,15 @@ class StringExpr : public Expr {
         int evaluate(){
             return -1;
         }
+
+        void myReplace(string &str, string toReplace,string newStr,int size ){
+            auto charIndex = str.find(toReplace);
+            while(charIndex!=string::npos){
+                str.replace(charIndex,size,newStr);
+                charIndex = str.find(toReplace);
+            }
+        }
+
         type getType(){
             return type::STRING;
         }

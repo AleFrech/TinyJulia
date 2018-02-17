@@ -12,8 +12,8 @@ Grammar
     2 statementList: statementList statement
     3              | statement
 
-    4 statement: print_statement TK_COMMA
-    5          | assign_statement TK_COMMA
+    4 statement: print_statement TK_EOS
+    5          | assign_statement TK_EOS
 
     6 assign_statement: TK_ID TK_EQ expression
 
@@ -63,37 +63,38 @@ TK_PRINT (268) 7
 TK_PAR_LEFT (269) 7 25
 TK_PAR_RIGHT (270) 7 25
 TK_ERROR (271)
-TK_COMMA (272) 4 5 8
+TK_COMMA (272) 8
 TK_EQ (273) 6
+TK_EOS (274) 4 5
 
 
 Nonterminals, with rules where they appear
 
-$accept (19)
+$accept (20)
     on left: 0
-start (20)
+start (21)
     on left: 1, on right: 0
-statementList (21)
+statementList (22)
     on left: 2 3, on right: 1 2
-statement (22)
+statement (23)
     on left: 4 5, on right: 2 3
-assign_statement (23)
+assign_statement (24)
     on left: 6, on right: 5
-print_statement (24)
+print_statement (25)
     on left: 7, on right: 4
-argumentList (25)
+argumentList (26)
     on left: 8 9, on right: 7 8
-argument (26)
+argument (27)
     on left: 10 11 12, on right: 8 9
-expression (27)
+expression (28)
     on left: 13, on right: 6 10 25
-aritmethic (28)
+aritmethic (29)
     on left: 14 15 16, on right: 13 14 15
-term (29)
+term (30)
     on left: 17 18 19 20, on right: 14 15 16 17 18 19
-exponent (30)
+exponent (31)
     on left: 21 22, on right: 17 18 19 20 21
-factor (31)
+factor (32)
     on left: 23 24 25, on right: 21 22
 
 
@@ -103,8 +104,8 @@ State 0
     1 start: . statementList
     2 statementList: . statementList statement
     3              | . statement
-    4 statement: . print_statement TK_COMMA
-    5          | . assign_statement TK_COMMA
+    4 statement: . print_statement TK_EOS
+    5          | . assign_statement TK_EOS
     6 assign_statement: . TK_ID TK_EQ expression
     7 print_statement: . TK_PRINT TK_PAR_LEFT argumentList TK_PAR_RIGHT
 
@@ -143,8 +144,8 @@ State 4
 
     1 start: statementList .  [$end]
     2 statementList: statementList . statement
-    4 statement: . print_statement TK_COMMA
-    5          | . assign_statement TK_COMMA
+    4 statement: . print_statement TK_EOS
+    5          | . assign_statement TK_EOS
     6 assign_statement: . TK_ID TK_EQ expression
     7 print_statement: . TK_PRINT TK_PAR_LEFT argumentList TK_PAR_RIGHT
 
@@ -167,16 +168,16 @@ State 5
 
 State 6
 
-    5 statement: assign_statement . TK_COMMA
+    5 statement: assign_statement . TK_EOS
 
-    TK_COMMA  shift, and go to state 12
+    TK_EOS  shift, and go to state 12
 
 
 State 7
 
-    4 statement: print_statement . TK_COMMA
+    4 statement: print_statement . TK_EOS
 
-    TK_COMMA  shift, and go to state 13
+    TK_EOS  shift, and go to state 13
 
 
 State 8
@@ -260,14 +261,14 @@ State 11
 
 State 12
 
-    5 statement: assign_statement TK_COMMA .
+    5 statement: assign_statement TK_EOS .
 
     $default  reduce using rule 5 (statement)
 
 
 State 13
 
-    4 statement: print_statement TK_COMMA .
+    4 statement: print_statement TK_EOS .
 
     $default  reduce using rule 4 (statement)
 
@@ -323,7 +324,7 @@ State 17
 
 State 18
 
-   13 expression: aritmethic .  [TK_PAR_RIGHT, TK_COMMA]
+   13 expression: aritmethic .  [TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    14 aritmethic: aritmethic . TK_ADD term
    15           | aritmethic . TK_SUB term
 
@@ -335,7 +336,7 @@ State 18
 
 State 19
 
-   16 aritmethic: term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA]
+   16 aritmethic: term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    17 term: term . TK_MULT exponent
    18     | term . TK_DIV exponent
    19     | term . TK_MOD exponent
@@ -349,7 +350,7 @@ State 19
 
 State 20
 
-   20 term: exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA]
+   20 term: exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    21 exponent: exponent . TK_EXP factor
 
     TK_EXP  shift, and go to state 33
@@ -567,7 +568,7 @@ State 36
 
 State 37
 
-   14 aritmethic: aritmethic TK_ADD term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA]
+   14 aritmethic: aritmethic TK_ADD term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    17 term: term . TK_MULT exponent
    18     | term . TK_DIV exponent
    19     | term . TK_MOD exponent
@@ -581,7 +582,7 @@ State 37
 
 State 38
 
-   15 aritmethic: aritmethic TK_SUB term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA]
+   15 aritmethic: aritmethic TK_SUB term .  [TK_ADD, TK_SUB, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    17 term: term . TK_MULT exponent
    18     | term . TK_DIV exponent
    19     | term . TK_MOD exponent
@@ -595,7 +596,7 @@ State 38
 
 State 39
 
-   17 term: term TK_MULT exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA]
+   17 term: term TK_MULT exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    21 exponent: exponent . TK_EXP factor
 
     TK_EXP  shift, and go to state 33
@@ -605,7 +606,7 @@ State 39
 
 State 40
 
-   18 term: term TK_DIV exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA]
+   18 term: term TK_DIV exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    21 exponent: exponent . TK_EXP factor
 
     TK_EXP  shift, and go to state 33
@@ -615,7 +616,7 @@ State 40
 
 State 41
 
-   19 term: term TK_MOD exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA]
+   19 term: term TK_MOD exponent .  [TK_ADD, TK_SUB, TK_MULT, TK_DIV, TK_MOD, TK_PAR_RIGHT, TK_COMMA, TK_EOS]
    21 exponent: exponent . TK_EXP factor
 
     TK_EXP  shift, and go to state 33
