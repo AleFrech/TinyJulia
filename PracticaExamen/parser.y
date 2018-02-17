@@ -1,5 +1,5 @@
 %code requires {
-    #include <string>
+    #include "ast.h"
 }
 
 %{
@@ -18,48 +18,56 @@ void yyerror(const char* msg){
 #define YYERROR_VERBOSE 1  
 %}
 
-%token TK_ADD TK_SUB TK_MULT TK_DIV TK_MOD TK_EXP TK_NUM TK_ID TK_STRING TK_CHAR TK_PRINT TK_PAR_LEFT TK_PAR_RIGHT TK_ERROR TK_COMMA
+%token TK_ADD TK_SUB TK_MULT TK_DIV TK_MOD TK_EXP TK_NUM TK_ID TK_STRING TK_CHAR TK_PRINT TK_PAR_LEFT TK_PAR_RIGHT TK_ERROR TK_COMMA TK_EQ
 
 %%
 
-start: statementList
+start: statementList {((Statement *)$1)->execute();}
 ;
 
-statementList: statementList statement
-    | statement
+statementList: statementList statement {((BlockStatement*)$1)->statementList.push_back((Statement*)$2); $$=$1;}
+    | statement {BlockStatement* bs = new BlockStatement(); bs->statementList.push_back((Statement*)$1); $$=bs;}
 ;
 
-statement: print_statement TK_COMMA
+statement: print_statement TK_COMMA {$$=$1;}
+    | assign_statement TK_COMMA {$$= $1;}
 ;
 
-print_statement: TK_PRINT TK_PAR_LEFT argument TK_PAR_RIGHT
+assign_statement: TK_ID TK_EQ expression {$$ = new AssignStatement((VarExpr*)$1,((Expr*)$3));}
 ;
 
-argument: expression
-    | TK_STRING
-    | TK_CHAR
+print_statement: TK_PRINT TK_PAR_LEFT argumentList TK_PAR_RIGHT {$$ = new PrintStatement((ExprList*)$3);}
 ;
 
-expression: aritmethic 
+argumentList: argumentList TK_COMMA argument {((ExprList*)$1)->expressionList.push_back((Expr*)$3); $$=$1;}
+    | argument { auto l = new ExprList(); l->expressionList.push_back((Expr*)$1); $$ =l;}
 ;
 
-aritmethic: aritmethic TK_ADD term
-    | aritmethic TK_SUB term
-    | term
+argument: expression {$$=$1;}
+    | TK_STRING {$$=$1;}
+    | TK_CHAR   {$$=$1;}
 ;
 
-term: term TK_MULT exponent
-    | term TK_DIV exponent
-    | term TK_MOD exponent
-    | exponent
+expression: aritmethic {$$=$1;}
 ;
 
-exponent: exponent TK_EXP factor
-    | factor
+aritmethic: aritmethic TK_ADD term {$$ =new AddExpr((Expr*)$1,(Expr*)$3);}
+    | aritmethic TK_SUB term {$$ =new SubExpr((Expr*)$1,(Expr*)$3);}
+    | term {$$=$1;}
 ;
 
-factor: TK_NUM
-    | TK_ID
-    | TK_PAR_LEFT expression TK_PAR_RIGHT
+term: term TK_MULT exponent {$$ =new MultExpr((Expr*)$1,(Expr*)$3);}
+    | term TK_DIV exponent {$$ =new DivExpr((Expr*)$1,(Expr*)$3);}
+    | term TK_MOD exponent {$$ =new ModExpr((Expr*)$1,(Expr*)$3);}
+    | exponent {$$ =$1;}
+;
+
+exponent: exponent TK_EXP factor {$$ = new ExpExpr((Expr*)$1,(Expr*)$3);}
+    | factor    {$$ = $1;}    
+;
+
+factor: TK_NUM  {$$ =$1;}
+    | TK_ID {$$=$1;}
+    | TK_PAR_LEFT expression TK_PAR_RIGHT {$$ = $1;}
 ;
 %%

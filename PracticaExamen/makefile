@@ -1,5 +1,5 @@
 TARGET=exec
-C_SRCFILES=main.cpp parser.cpp lexer.cpp
+C_SRCFILES=main.cpp parser.cpp lexer.cpp ast.cpp
 OBJ_FILES=${C_SRCFILES:.cpp=.o}
 .PHONY: clean run
 

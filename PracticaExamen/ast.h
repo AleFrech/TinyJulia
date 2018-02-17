@@ -3,17 +3,20 @@
 #include <list>
 #include <string>
 #include <map>
+#include <math.h>
 using namespace std;
 
 class AstNode {
 
 };
 
+enum type {CHAR,STRING,INT};
+
 class Expr : public AstNode {
     public:
         virtual int evaluate()=0;
         virtual ~Expr(){};
-        virtual kind getKind()=0;
+        virtual type getType()=0;
 };
 
 class BinaryExpr : public Expr {
@@ -28,4 +31,178 @@ class BinaryExpr : public Expr {
 
 };
 
+class AddExpr : public BinaryExpr {
+    public:
+        AddExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {
+
+        }
+        int evaluate();
+        type getType() {
+            return type::INT;
+        }
+};
+
+class SubExpr : public BinaryExpr{
+    public:
+        SubExpr(Expr * expr1, Expr * expr2) : BinaryExpr(expr1,expr2){
+
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+class MultExpr : public BinaryExpr{
+    public:
+        MultExpr(Expr * expr1, Expr * expr2) : BinaryExpr(expr1,expr2){
+
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+class DivExpr : public BinaryExpr{
+    public:
+        DivExpr(Expr* expr1, Expr* expr2) : BinaryExpr(expr1,expr2){
+
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+class ModExpr : public BinaryExpr{
+    public:
+        ModExpr(Expr * expr1, Expr * expr2) : BinaryExpr(expr1,expr2){
+
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+class ExpExpr : public BinaryExpr{
+    public:
+        ExpExpr(Expr * expr1, Expr * expr2) : BinaryExpr(expr1,expr2){
+
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+class NumExpr : public Expr {
+    public:
+        int value;
+        NumExpr(int value){
+            this->value=value;
+        }
+        int evaluate(){
+            return value;
+        }
+        type getType(){
+            return type::INT;
+        }
+};
+
+class StringExpr : public Expr {
+    public:
+        string value;
+        StringExpr(string value){
+            this->value = value.substr(1,value.size()-2) ;
+        }
+        string getValue(){
+            return value;
+        }
+        int evaluate(){
+            return -1;
+        }
+        type getType(){
+            return type::STRING;
+        }
+};
+
+class CharExpr : public Expr{
+    public:
+        string value;
+        CharExpr(string value){
+            this->value = value.substr(1,value.size()-2) ;
+        }
+        int evaluate(){
+            return -1;
+        }
+        type getType(){
+            return type::CHAR;
+        }
+};
+
+class VarExpr : public Expr{
+    public:
+        string id;
+        VarExpr(string id){
+            this->id = id;
+        }
+        int evaluate();
+        type getType(){
+            return type::INT;
+        }
+};
+
+
+class Statement : public AstNode{
+    public:
+        virtual void execute()=0;
+        virtual ~Statement(){}; 
+    
+};
+
+class AssignStatement : public Statement{
+    public:
+        string id;
+        int value;
+        AssignStatement(VarExpr* exp,Expr* value){
+            this->id =exp->id;
+            this->value = value->evaluate();
+        }
+        void execute();
+};
+
+class ExprList : public Expr{
+    public:
+        list<Expr*> expressionList;
+        int evaluate(){
+            return -1;
+        }
+        type getType(){
+            return type::INT;
+        }
+};
+
+class PrintStatement : public Statement{
+    public:
+        list<Expr*> exprLsit;
+        PrintStatement(ExprList* el){
+            this->exprLsit = el->expressionList;
+        }
+        void execute();
+};
+
+
+class BlockStatement : public Statement{
+    public:
+        list<Statement*> statementList;
+        void execute();
+};
+
+typedef AstNode* YYSTYPE;
+#define YYSTYPE_IS_DECLARED 1
+
+
 #endif
+

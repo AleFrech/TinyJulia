@@ -19,11 +19,12 @@
 "("     {return TK_PAR_LEFT;}
 ")"     {return TK_PAR_RIGHT;}
 ";"     {return TK_COMMA;}
+"="     {return TK_EQ;}
 "print" {return TK_PRINT;}           
-[0-9]+  {return TK_NUM;}
-[_a-zA-Z][a-zA-Z0-9]*   {return TK_ID;}
-\"((\\[\"n\\])|[^"\\])*\"   {return TK_STRING;}
-\'((\\[\"n\\])|[^'\\])\'    {return TK_CHAR;}
+[0-9]+  {yylval=new NumExpr(atoi(yytext)); return TK_NUM;}
+[_a-zA-Z][a-zA-Z0-9]*   {yylval = new VarExpr(string(yytext)); return TK_ID;}
+\"((\\[\"n\\])|[^"\\])*\"   {yylval = new StringExpr(string(yytext)); return TK_STRING;}
+\'((\\[\"n\\])|[^'\\])\'    {yylval = new CharExpr(string(yytext)); return TK_CHAR;}
 .       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
 <<EOF>> {return 0;}
 %%
