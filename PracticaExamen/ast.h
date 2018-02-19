@@ -184,15 +184,9 @@ class AssignStatement : public Statement{
         void execute();
 };
 
-class ExprList : public Expr{
+class ExprList : public AstNode{
     public:
         list<Expr*> expressionList;
-        int evaluate(){
-            return -1;
-        }
-        type getType(){
-            return type::INT;
-        }
 };
 
 class PrintStatement : public Statement{
