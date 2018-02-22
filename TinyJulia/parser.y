@@ -20,7 +20,7 @@ void yyerror(const char* msg){
 
 %union {
     char *charPointer_t;
-    int  num_t;
+    int  int_t;
     Statement *statement_t;
 	BlockStatement *blkstatement_t;
     Expr *expr_t;
@@ -30,55 +30,37 @@ void yyerror(const char* msg){
 %token<num_t> TK_NUM
 %token<charPointer_t> TK_ID
 %token<charPointer_t> STRING_LITERAL
+%token TK_EOL TK_INC TK_DEC TK_SHIFT_RIGHT TK_SHIFT_LEFT TK_EQUALS TK_NOT_EQUALS TK_LESS_THAN_EQUALS TK_GREATER_THAN_EQUALS
+%token TK_LOGICAL_AND TL_LOGICAL_OR TK_DOUBLE_COLON TK_ADD_ASGN TK_SUB_ASGN TK_MULT_ASGN TK_DIV_ASGN TK_MOD_ASGN TK_POW_ASGN
+%token TK_PRINT TK_PRINTLN TK_TRUE TK_FALSE TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN
+%token TK_END TK_ERROR
+
+%type<expr_t> argument
+%type<statement_t> print_statement
+%type<statement_t> statement
+%type<blkstatement_t> statementList
 
 %%
 
-start: statementList {((Statement *)$1)->execute();}
+start: opEols statementList opEols {$2->execute();}
 ;
 
-statementList: statementList statement {((BlockStatement*)$1)->statementList.push_back((Statement*)$2); $$=$1;}
-    | statement {BlockStatement* bs = new BlockStatement(); bs->statementList.push_back((Statement*)$1); $$=bs;}
+opEols: TK_EOL
+    | %empty
 ;
 
-statement: print_statement TK_EOS {$$=$1;}
-    | assign_statement TK_EOS {$$= $1;}
+
+statementList: statementList TK_EOL statement { $$ = $1; $$->add($3); }
+    | statement { $$ = new BlockStatement; $$->add($1); }
 ;
 
-assign_statement: TK_ID TK_EQ expression {$$ = new AssignStatement((VarExpr*)$1,((Expr*)$3));}
+statement: print_statement  {$$ = $1;}
 ;
 
-print_statement: TK_PRINT TK_PAR_LEFT argumentList TK_PAR_RIGHT {$$ = new PrintStatement((ExprList*)$3);}
+print_statement: TK_PRINT '(' argument ')' {$$ = new PrintStatement($3,false);}
+    | TK_PRINTLN '(' argument ')' {$$ = new PrintStatement($3,true);}
 ;
 
-argumentList: argumentList TK_COMMA argument {((ExprList*)$1)->expressionList.push_back((Expr*)$3); $$=$1;}
-    | argument { auto l = new ExprList(); l->expressionList.push_back((Expr*)$1); $$ =l;}
-;
-
-argument: expression {$$=$1;}
-    | TK_STRING {$$=$1;}
-    | TK_CHAR   {$$=$1;}
-;
-
-expression: aritmethic {$$=$1;}
-;
-
-aritmethic: aritmethic TK_ADD term {$$ =new AddExpr((Expr*)$1,(Expr*)$3);}
-    | aritmethic TK_SUB term {$$ =new SubExpr((Expr*)$1,(Expr*)$3);}
-    | term {$$=$1;}
-;
-
-term: term TK_MULT exponent {$$ =new MultExpr((Expr*)$1,(Expr*)$3);}
-    | term TK_DIV exponent {$$ =new DivExpr((Expr*)$1,(Expr*)$3);}
-    | term TK_MOD exponent {$$ =new ModExpr((Expr*)$1,(Expr*)$3);}
-    | exponent {$$ =$1;}
-;
-
-exponent: exponent TK_EXP factor {$$ = new ExpExpr((Expr*)$1,(Expr*)$3);}
-    | factor    {$$ = $1;}    
-;
-
-factor: TK_NUM  {$$ =$1;}
-    | TK_ID {$$=$1;}
-    | TK_PAR_LEFT expression TK_PAR_RIGHT {$$ = $1;}
+argument: STRING_LITERAL {$$ = new StringExpr(string($1));}
 ;
 %%

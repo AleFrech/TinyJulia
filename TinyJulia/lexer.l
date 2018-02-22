@@ -9,7 +9,7 @@
 
 %%
 [ \t] {}
-"\n"    {yylineno++; return TK_EOL;}
+\n    {yylineno++; return TK_EOL;}
 "+"     {return '+';}
 "++"    {return TK_INC;}
 "--"    {return TK_DEC;}
@@ -36,6 +36,7 @@
 "("     {return '(';}
 ")"     {return ')';}
 ";"     {return ';';}
+"::"    {return TK_DOUBLE_COLON;}
 ":"     {return ':';}
 ","     {return ',';}
 "="     {return '=';}
@@ -48,7 +49,7 @@
 "print" {return TK_PRINT;}
 "println" {return TK_PRINTLN;}
 "true"  {return TK_TRUE;} 
-"false" {return TK_false;}
+"false" {return TK_FALSE;}
 "Bool"  {return TK_BOOL;}
 "Int"   {return TK_INT;}
 "if"    {return TK_IF;}
@@ -58,10 +59,10 @@
 "for"   {return TK_FOR;}
 "function" {return TK_FUNCTION;}
 "return"    {return TK_RETURN;}
-"end"   {RETURN TK_END;}          
+"end"   {return TK_END;}          
 [0-9]+  {yylval.int_t = atoi(yytext); return TK_NUM;}
-[_a-zA-Z][a-zA-Z0-9]*   {yylval.charPointer_t = strdup(yytext); return TK_ID;}
-"\""[^"]*"\"" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return TK_STRING;}
+[_a-zA-Z][a-zA-Z0-9]* {yylval.charPointer_t = strdup(yytext); return TK_ID;}
+\"([^"])*\" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return STRING_LITERAL;}
 .       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
 <<EOF>> {return 0;}
 %%

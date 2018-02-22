@@ -1,0 +1,297 @@
+Terminals unused in grammar
+
+   TK_NUM
+   TK_ID
+   TK_INC
+   TK_DEC
+   TK_SHIFT_RIGHT
+   TK_SHIFT_LEFT
+   TK_EQUALS
+   TK_NOT_EQUALS
+   TK_LESS_THAN_EQUALS
+   TK_GREATER_THAN_EQUALS
+   TK_LOGICAL_AND
+   TL_LOGICAL_OR
+   TK_DOUBLE_COLON
+   TK_ADD_ASGN
+   TK_SUB_ASGN
+   TK_MULT_ASGN
+   TK_DIV_ASGN
+   TK_MOD_ASGN
+   TK_POW_ASGN
+   TK_TRUE
+   TK_FALSE
+   TK_BOOL
+   TK_INT
+   TK_IF
+   TK_ELSE
+   TK_ELSEIF
+   TK_WHILE
+   TK_FOR
+   TK_FUNCTION
+   TK_RETURN
+   TK_END
+   TK_ERROR
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: opEols statementList opEols
+
+    2 opEols: TK_EOL
+    3       | %empty
+
+    4 statementList: statementList TK_EOL statement
+    5              | statement
+
+    6 statement: print_statement
+
+    7 print_statement: TK_PRINT '(' argument ')'
+    8                | TK_PRINTLN '(' argument ')'
+
+    9 argument: STRING_LITERAL
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 7 8
+')' (41) 7 8
+error (256)
+TK_NUM (258)
+TK_ID (259)
+STRING_LITERAL (260) 9
+TK_EOL (261) 2 4
+TK_INC (262)
+TK_DEC (263)
+TK_SHIFT_RIGHT (264)
+TK_SHIFT_LEFT (265)
+TK_EQUALS (266)
+TK_NOT_EQUALS (267)
+TK_LESS_THAN_EQUALS (268)
+TK_GREATER_THAN_EQUALS (269)
+TK_LOGICAL_AND (270)
+TL_LOGICAL_OR (271)
+TK_DOUBLE_COLON (272)
+TK_ADD_ASGN (273)
+TK_SUB_ASGN (274)
+TK_MULT_ASGN (275)
+TK_DIV_ASGN (276)
+TK_MOD_ASGN (277)
+TK_POW_ASGN (278)
+TK_PRINT (279) 7
+TK_PRINTLN (280) 8
+TK_TRUE (281)
+TK_FALSE (282)
+TK_BOOL (283)
+TK_INT (284)
+TK_IF (285)
+TK_ELSE (286)
+TK_ELSEIF (287)
+TK_WHILE (288)
+TK_FOR (289)
+TK_FUNCTION (290)
+TK_RETURN (291)
+TK_END (292)
+TK_ERROR (293)
+
+
+Nonterminals, with rules where they appear
+
+$accept (41)
+    on left: 0
+start (42)
+    on left: 1, on right: 0
+opEols (43)
+    on left: 2 3, on right: 1
+statementList (44)
+    on left: 4 5, on right: 1 4
+statement (45)
+    on left: 6, on right: 4 5
+print_statement (46)
+    on left: 7 8, on right: 6
+argument (47)
+    on left: 9, on right: 7 8
+
+
+State 0
+
+    0 $accept: . start $end
+    1 start: . opEols statementList opEols
+    2 opEols: . TK_EOL
+    3       | . %empty  [TK_PRINT, TK_PRINTLN]
+
+    TK_EOL  shift, and go to state 1
+
+    $default  reduce using rule 3 (opEols)
+
+    start   go to state 2
+    opEols  go to state 3
+
+
+State 1
+
+    2 opEols: TK_EOL .
+
+    $default  reduce using rule 2 (opEols)
+
+
+State 2
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 start: opEols . statementList opEols
+    4 statementList: . statementList TK_EOL statement
+    5              | . statement
+    6 statement: . print_statement
+    7 print_statement: . TK_PRINT '(' argument ')'
+    8                | . TK_PRINTLN '(' argument ')'
+
+    TK_PRINT    shift, and go to state 5
+    TK_PRINTLN  shift, and go to state 6
+
+    statementList    go to state 7
+    statement        go to state 8
+    print_statement  go to state 9
+
+
+State 4
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+State 5
+
+    7 print_statement: TK_PRINT . '(' argument ')'
+
+    '('  shift, and go to state 10
+
+
+State 6
+
+    8 print_statement: TK_PRINTLN . '(' argument ')'
+
+    '('  shift, and go to state 11
+
+
+State 7
+
+    1 start: opEols statementList . opEols
+    2 opEols: . TK_EOL
+    3       | . %empty  [$end]
+    4 statementList: statementList . TK_EOL statement
+
+    TK_EOL  shift, and go to state 12
+
+    $default  reduce using rule 3 (opEols)
+
+    opEols  go to state 13
+
+
+State 8
+
+    5 statementList: statement .
+
+    $default  reduce using rule 5 (statementList)
+
+
+State 9
+
+    6 statement: print_statement .
+
+    $default  reduce using rule 6 (statement)
+
+
+State 10
+
+    7 print_statement: TK_PRINT '(' . argument ')'
+    9 argument: . STRING_LITERAL
+
+    STRING_LITERAL  shift, and go to state 14
+
+    argument  go to state 15
+
+
+State 11
+
+    8 print_statement: TK_PRINTLN '(' . argument ')'
+    9 argument: . STRING_LITERAL
+
+    STRING_LITERAL  shift, and go to state 14
+
+    argument  go to state 16
+
+
+State 12
+
+    2 opEols: TK_EOL .  [$end]
+    4 statementList: statementList TK_EOL . statement
+    6 statement: . print_statement
+    7 print_statement: . TK_PRINT '(' argument ')'
+    8                | . TK_PRINTLN '(' argument ')'
+
+    TK_PRINT    shift, and go to state 5
+    TK_PRINTLN  shift, and go to state 6
+
+    $default  reduce using rule 2 (opEols)
+
+    statement        go to state 17
+    print_statement  go to state 9
+
+
+State 13
+
+    1 start: opEols statementList opEols .
+
+    $default  reduce using rule 1 (start)
+
+
+State 14
+
+    9 argument: STRING_LITERAL .
+
+    $default  reduce using rule 9 (argument)
+
+
+State 15
+
+    7 print_statement: TK_PRINT '(' argument . ')'
+
+    ')'  shift, and go to state 18
+
+
+State 16
+
+    8 print_statement: TK_PRINTLN '(' argument . ')'
+
+    ')'  shift, and go to state 19
+
+
+State 17
+
+    4 statementList: statementList TK_EOL statement .
+
+    $default  reduce using rule 4 (statementList)
+
+
+State 18
+
+    7 print_statement: TK_PRINT '(' argument ')' .
+
+    $default  reduce using rule 7 (print_statement)
+
+
+State 19
+
+    8 print_statement: TK_PRINTLN '(' argument ')' .
+
+    $default  reduce using rule 8 (print_statement)
