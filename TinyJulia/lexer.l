@@ -1,0 +1,78 @@
+%option noyywrap
+%option yylineno
+
+%{
+    #include <stdio.h>
+    #include "tokens.h"
+    void initLexer(char * fileName);
+%}
+
+%%
+[ \t] {}
+"\n"    {yylineno++; return TK_EOL;}
+"+"     {return '+';}
+"++"    {return TK_INC;}
+"--"    {return TK_DEC;}
+"-"     {return '-';}
+"!"     {return '!';}  
+"*"     {return '*';}  
+"/"     {return '/';}  
+"%"     {return '%';}  
+"^"     {return '^';}
+"~"     {return '~';}
+"&"     {return '&';}
+"|"     {return '|';}
+"$"     {return '$';}
+">>"    {return TK_SHIFT_RIGHT;}
+"<<"    {return TK_SHIFT_LEFT;}
+"=="    {return TK_EQUALS;}
+"!="    {return TK_NOT_EQUALS;}
+"<"     {return '<';}
+"<="    {return TK_LESS_THAN_EQUALS;}
+">="    {return TK_GREATER_THAN_EQUALS;}
+"&&"    {return TK_LOGICAL_AND;}
+"||"    {return TL_LOGICAL_OR;}
+">"     {return '>';}
+"("     {return '(';}
+")"     {return ')';}
+";"     {return ';';}
+":"     {return ':';}
+","     {return ',';}
+"="     {return '=';}
+"+="    {return TK_ADD_ASGN;}
+"-="    {return TK_SUB_ASGN;}
+"*="    {return TK_MULT_ASGN;}
+"/="    {return TK_DIV_ASGN;}
+"%="    {return TK_MOD_ASGN;}
+"^="    {return TK_POW_ASGN;}
+"print" {return TK_PRINT;}
+"println" {return TK_PRINTLN;}
+"true"  {return TK_TRUE;} 
+"false" {return TK_false;}
+"Bool"  {return TK_BOOL;}
+"Int"   {return TK_INT;}
+"if"    {return TK_IF;}
+"else"  {return TK_ELSE;}
+"elseif" {return TK_ELSEIF;}
+"while" {return TK_WHILE;}
+"for"   {return TK_FOR;}
+"function" {return TK_FUNCTION;}
+"return"    {return TK_RETURN;}
+"end"   {RETURN TK_END;}          
+[0-9]+  {yylval.int_t = atoi(yytext); return TK_NUM;}
+[_a-zA-Z][a-zA-Z0-9]*   {yylval.charPointer_t = strdup(yytext); return TK_ID;}
+"\""[^"]*"\"" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return TK_STRING;}
+.       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
+<<EOF>> {return 0;}
+%%
+
+void initLexer(char * fileName){
+    FILE *file =fopen(fileName,"r");
+
+    if(file == NULL){
+        fprintf(stderr,"File %s not found.\n",fileName);
+        exit(-1);
+    }
+    YY_BUFFER_STATE currentBuffer = yy_create_buffer(file,YY_BUF_SIZE);
+    yy_switch_to_buffer(currentBuffer);
+}
