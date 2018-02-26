@@ -25,7 +25,8 @@ for:
     idiv ebx
     cmp edx, 0
     je trueCondition
-    inc [ebp-4]
+    inc DWORD [ebp-4]
+    jmp for
 
 trueCondition:
     mov DWORD[ebp-8], 1
