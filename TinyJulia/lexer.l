@@ -1,6 +1,8 @@
 %option noyywrap
 %option yylineno
 
+%x commentState
+
 %{
     #include <stdio.h>
     #include "tokens.h"
@@ -10,9 +12,9 @@
 %%
 [ \t] {}
 \n    {yylineno++; return TK_EOL;}
+"#="  {BEGIN(commentState);}
+"#".*  {}
 "+"     {return '+';}
-"++"    {return TK_INC;}
-"--"    {return TK_DEC;}
 "-"     {return '-';}
 "!"     {return '!';}  
 "*"     {return '*';}  
@@ -35,6 +37,8 @@
 ">"     {return '>';}
 "("     {return '(';}
 ")"     {return ')';}
+"["     {return '[';}
+"]"     {return ']';}
 ";"     {return ';';}
 "::"    {return TK_DOUBLE_COLON;}
 ":"     {return ':';}
@@ -59,12 +63,16 @@
 "for"   {return TK_FOR;}
 "function" {return TK_FUNCTION;}
 "return"    {return TK_RETURN;}
-"end"   {return TK_END;}          
+"end"   {return TK_END;}
+"Array" {return TK_ARRAY;}          
 [0-9]+  {yylval.int_t = atoi(yytext); return TK_NUM;}
 [_a-zA-Z][a-zA-Z0-9]* {yylval.charPointer_t = strdup(yytext); return TK_ID;}
 \"([^"])*\" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return STRING_LITERAL;}
 .       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
-<<EOF>> {return 0;}
+<INITIAL><<EOF>> {return 0;}
+<commentState>"=#" {BEGIN(INITIAL);}
+<commentState>.|\n {}
+<commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return TK_ERROR;}
 %%
 
 void initLexer(char * fileName){

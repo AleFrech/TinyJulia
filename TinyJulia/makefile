@@ -21,4 +21,4 @@ run: $(TARGET)
 clean: 
 	rm -f $(OBJ_FILES) tokens.h 
 	rm -f $(TARGET)
-	rm -f lexer.cpp parser.cpp
+	rm -f lexer.cpp parser.cpp parser.output

@@ -1,4 +1,7 @@
 #include "ast.h"
+#include "Types/BaseType.h"
+
+map<string ,BaseType> variables;
 
 void BlockStatement::execute()
 {
@@ -11,10 +14,7 @@ void PrintStatement::execute()
 {
     if (expr->getKind() == ExprKind::LIT_STRING) {
         printf("%s", ((StringExpr*)expr)->str.c_str());
-    } else {
-      int result = expr->evaluate();
-      printf("%d", result);
-    }
+    } 
     if(hasNewLine)
         printf("\n");
 }

@@ -13,8 +13,8 @@ int factors (int number, int count,int f[]){
 }
 
 int main (){
-    int f[10];
-    int fcount  = factors(10,2,f);
+    int f[5];
+    int fcount  = factors(10,5,f);
     for(int i=0;i<fcount;i++){
         printf("%d\n",f[i]);
     }
