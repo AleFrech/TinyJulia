@@ -38,7 +38,7 @@ void yyerror(const char* msg){
 %token TK_ARRAY TK_END TK_ERROR
 
 %type<exprlist_t> argument_expression_list
-%type<expr_t> print_argument factor post_id  unary_exp expression term exponent shift_exp
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr bit_and_exp bit_xor_exp bit_or_exp
 %type<statement_t> print_statement
 %type<statement_t> statement
 %type<blkstatement_t> statementList
@@ -75,7 +75,33 @@ argument_expression_list: argument_expression_list ',' expression {$1->push_back
     | expression {$$ = new ExprList;}
 ;
 
-expression: shift_exp {$$ = $1;}
+expression: bit_or_exp {$$ = $1;}
+;
+
+bit_or_exp: bit_or_exp '|' bit_xor_exp {$$ = new BitOrExpr($1,$3);}
+    | bit_xor_exp {$$ =$1;}
+;
+
+bit_xor_exp: bit_xor_exp '$' bit_and_exp {$$ = new BitXorExpr($1,$3);}
+    | bit_and_exp {$$ =$1;}
+;
+
+bit_and_exp: bit_and_exp '&' relational_expr {$$ = new BitAndExpr($1,$3);}
+    | relational_expr {$$ = $1;}
+;
+
+relational_expr: relational_expr TK_EQUALS aritmethic {$$ = new EqualExpr($1,$3);} 
+    | relational_expr TK_NOT_EQUALS aritmethic {$$ = new NotEqualExpr($1,$3);} 
+    | relational_expr '>' aritmethic {$$ = new GreaterThanExpr($1,$3);}
+    | relational_expr '<' aritmethic {$$ = new LessThanExpr($1,$3);}
+    | relational_expr TK_GREATER_THAN_EQUALS aritmethic {$$ = new GreaterThanEqualsExpr($1,$3);}
+    | relational_expr TK_LESS_THAN_EQUALS aritmethic {$$ = new LessThanEqualsExpr($1,$3);}
+    | aritmethic {$$ =$1;}
+;
+
+aritmethic: aritmethic '-' shift_exp {$$ = new SubExpr($1,$3);}
+    | aritmethic '+' shift_exp {$$ = new AddExpr($1,$3);}
+    | shift_exp {$$ = $1;}
 ;
 
 shift_exp: shift_exp TK_SHIFT_LEFT term {$$ = new LeftShiftExpr($1,$3);}

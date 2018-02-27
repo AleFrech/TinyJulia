@@ -29,6 +29,73 @@ class BinaryExpr : public Expr {
         Expr *expr1, *expr2;
 };
 
+class BitOrExpr : public BinaryExpr {
+public:
+    BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class BitXorExpr : public BinaryExpr {
+public:
+    BitXorExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class BitAndExpr : public BinaryExpr {
+public:
+    BitAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class EqualExpr : public BinaryExpr {
+public:
+    EqualExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class NotEqualExpr : public BinaryExpr {
+public:
+    NotEqualExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class GreaterThanExpr : public BinaryExpr {
+public:
+    GreaterThanExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class LessThanExpr : public BinaryExpr {
+public:
+    LessThanExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+
+class LessThanEqualsExpr : public BinaryExpr {
+public:
+    LessThanEqualsExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class GreaterThanEqualsExpr : public BinaryExpr {
+public:
+    GreaterThanEqualsExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class SubExpr : public BinaryExpr {
+public:
+    SubExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class AddExpr : public BinaryExpr {
+public:
+    AddExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
 class LeftShiftExpr : public BinaryExpr {
 public:
     LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
