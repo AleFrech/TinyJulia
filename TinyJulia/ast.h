@@ -19,6 +19,52 @@ public:
     virtual int getKind() = 0;
 };
 
+class BinaryExpr : public Expr {
+    protected:
+        BinaryExpr(Expr *expr1, Expr *expr2) {
+            this->expr1 = expr1;
+            this->expr2 = expr2;
+    }
+    public:
+        Expr *expr1, *expr2;
+};
+
+class LeftShiftExpr : public BinaryExpr {
+public:
+    LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class RightShiftExpr : public BinaryExpr {
+public:
+    RightShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class MulExpr : public BinaryExpr {
+public:
+    MulExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class DivExpr : public BinaryExpr {
+public:
+    DivExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class ModExpr : public BinaryExpr {
+public:
+    ModExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class ExponentExpr : public BinaryExpr{
+public:
+    ExponentExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
 class UnaryAddExpr : public Expr{
 public:
     Expr* expr;
@@ -82,6 +128,15 @@ public:
     }
     int getKind(){return TYPE;}
 
+};
+
+class BoolExpr : public Expr{
+public:
+    bool value;
+    BoolExpr(bool value){
+        this->value = value;
+    }
+    int getKind(){return TYPE;}
 };
 
 class NumberExpr : public Expr {

@@ -52,8 +52,8 @@
 "^="    {return TK_POW_ASGN;}
 "print" {return TK_PRINT;}
 "println" {return TK_PRINTLN;}
-"true"  {return TK_TRUE;} 
-"false" {return TK_FALSE;}
+"true"  {yylval.bool_t = true; return TK_TRUE;} 
+"false" {yylval.bool_t = false; return TK_FALSE;}
 "Bool"  {return TK_BOOL;}
 "Int"   {return TK_INT;}
 "if"    {return TK_IF;}

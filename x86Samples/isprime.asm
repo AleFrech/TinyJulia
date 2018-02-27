@@ -1,4 +1,4 @@
-mov eax, 7
+mov eax, 8
 push eax
 call isPrime
 add esp, 4
@@ -36,4 +36,5 @@ forEnd:
     xor eax, eax
     cmp DWORD [ebp-8], 0
     sete al
-    leave ret
+    leave 
+    ret
