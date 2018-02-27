@@ -38,7 +38,7 @@ void yyerror(const char* msg){
 %token TK_ARRAY TK_END TK_ERROR
 
 %type<exprlist_t> argument_expression_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr bit_and_exp bit_xor_exp bit_or_exp
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp
 %type<statement_t> print_statement
 %type<statement_t> statement
 %type<blkstatement_t> statementList
@@ -75,7 +75,19 @@ argument_expression_list: argument_expression_list ',' expression {$1->push_back
     | expression {$$ = new ExprList;}
 ;
 
-expression: bit_or_exp {$$ = $1;}
+expression: conditional_exp {$$ = $1;}
+;
+
+conditional_exp: conditional_or_exp '?' expression ':' conditional_exp {$$ = new TernaryExpr($1,$3,$5);}
+    | conditional_or_exp {$$ = $1;}
+;
+
+conditional_or_exp: conditional_or_exp TL_LOGICAL_OR conditional_and_exp {$$ = new LogicalOrExpr($1,$3);}
+    | conditional_and_exp {$$ =$1;}
+;
+
+conditional_and_exp: conditional_and_exp TK_LOGICAL_AND bit_or_exp {$$ = new LogicalAndExpr($1,$3);}
+    | bit_or_exp {$$ = $1;}
 ;
 
 bit_or_exp: bit_or_exp '|' bit_xor_exp {$$ = new BitOrExpr($1,$3);}

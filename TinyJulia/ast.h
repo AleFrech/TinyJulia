@@ -29,6 +29,31 @@ class BinaryExpr : public Expr {
         Expr *expr1, *expr2;
 };
 
+class TernaryExpr : public Expr {
+public:
+    Expr* exp;
+    Expr* trueExp;
+    Expr* falseExp;
+    TernaryExpr(Expr* exp ,Expr* trueExp, Expr* falseExp){
+        this->exp = exp;
+        this->trueExp = trueExp;
+        this->falseExp = falseExp;
+    }
+    int getKind(){return TYPE;}
+};
+
+class LogicalOrExpr : public BinaryExpr {
+public:
+    LogicalOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
+class LogicalAndExpr : public BinaryExpr {
+public:
+    LogicalAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+};
+
 class BitOrExpr : public BinaryExpr {
 public:
     BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
