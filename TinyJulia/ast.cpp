@@ -10,6 +10,10 @@ void BlockStatement::execute()
     }
 }
 
+void ExprStatement::execute(){
+    
+}
+
 void PrintStatement::execute()
 {
     if (expr->getKind() == ExprKind::LIT_STRING) {

@@ -280,6 +280,15 @@ public:
 	void add(Statement *st) { stList.push_back(st); }
 };
 
+class ExprStatement: public Statement {
+public:
+    Expr * expr;
+    ExprStatement(Expr * expr){
+        this->expr=expr;
+    }
+    void execute();
+};
+
 class PrintStatement: public Statement {
 public:
     Expr* expr;

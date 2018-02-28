@@ -40,7 +40,7 @@ void yyerror(const char* msg){
 %type<exprlist_t> argument_expression_list
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
-%type<statement_t> print_statement
+%type<statement_t> print_statement expression_statement
 %type<statement_t> statement
 %type<blkstatement_t> statementList
 
@@ -62,7 +62,10 @@ statementList: statementList TK_EOL statement { $$ = $1; $$->add($3); }
 ;
 
 statement: print_statement  {$$ = $1;}
+    | expression_statement  {$$ = $1;}
 ;
+
+
 
 print_statement: TK_PRINT '(' print_argument ')' {$$ = new PrintStatement($3,false);}
     | TK_PRINTLN '(' print_argument ')' {$$ = new PrintStatement($3,true);}
@@ -74,6 +77,9 @@ print_argument: STRING_LITERAL {$$ = new StringExpr(string($1)); delete $1;}
 
 argument_expression_list: argument_expression_list ',' expression {$1->push_back($3); $$=$1; }
     | expression {$$ = new ExprList;}
+;
+
+expression_statement: expression {$$ = new ExprStatement($1);}
 ;
 
 expression: assign_exp {$$ = $1;}
