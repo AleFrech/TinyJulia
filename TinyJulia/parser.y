@@ -33,12 +33,13 @@ void yyerror(const char* msg){
 %token<charPointer_t> TK_ID
 %token<charPointer_t> STRING_LITERAL
 %token TK_EOL TK_INC TK_DEC TK_SHIFT_RIGHT TK_SHIFT_LEFT TK_EQUALS TK_NOT_EQUALS TK_LESS_THAN_EQUALS TK_GREATER_THAN_EQUALS
-%token TK_LOGICAL_AND TL_LOGICAL_OR TK_DOUBLE_COLON TK_ADD_ASGN TK_SUB_ASGN TK_MULT_ASGN TK_DIV_ASGN TK_MOD_ASGN TK_POW_ASGN
-%token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN
+%token TK_LOGICAL_AND TL_LOGICAL_OR TK_DOUBLE_COLON TK_ADD_ASGN TK_SUB_ASGN TK_MULT_ASGN TK_DIV_ASGN TK_MOD_ASGN TK_POW_ASGN TK_BIT_AND_ASGN
+%token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
 %token TK_ARRAY TK_END TK_ERROR
 
 %type<exprlist_t> argument_expression_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
+%type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement
 %type<statement_t> statement
 %type<blkstatement_t> statementList
@@ -75,10 +76,23 @@ argument_expression_list: argument_expression_list ',' expression {$1->push_back
     | expression {$$ = new ExprList;}
 ;
 
-expression: conditional_exp {$$ = $1;}
+expression: assign_exp {$$ = $1;}
 ;
 
-conditional_exp: conditional_or_exp '?' expression ':' conditional_exp {$$ = new TernaryExpr($1,$3,$5);}
+assign_exp: post_id '=' assign_exp {$$ = new AssignExpr($1,$3);}
+    |post_id TK_ADD_ASGN assign_exp {$$ = new AssignExpr($1,new AddExpr($1,$3));}
+    |post_id TK_SUB_ASGN assign_exp {$$ = new AssignExpr($1,new SubExpr($1,$3));}
+    |post_id TK_MULT_ASGN assign_exp {$$ = new AssignExpr($1,new MulExpr($1,$3));}
+    |post_id TK_DIV_ASGN assign_exp {$$ = new AssignExpr($1,new DivExpr($1,$3));}
+    |post_id TK_MOD_ASGN assign_exp {$$ = new AssignExpr($1,new ModExpr($1,$3));}
+    |post_id TK_POW_ASGN assign_exp {$$ = new AssignExpr($1,new ExponentExpr($1,$3));}
+    |post_id TK_BIT_OR_ASGN assign_exp {$$ = new AssignExpr($1,new BitOrExpr($1,$3));}
+    |post_id TK_BIT_XOR_ASGN assign_exp {$$ = new AssignExpr($1,new BitXorExpr($1,$3));}
+    |post_id TK_BIT_AND_ASGN assign_exp {$$ = new AssignExpr($1,new BitAndExpr($1,$3));}
+    | conditional_exp {$$ = $1;}
+;
+
+conditional_exp: conditional_or_exp '?' expression ':' expression {$$ = new TernaryExpr($1,$3,$5);}
     | conditional_or_exp {$$ = $1;}
 ;
 
@@ -141,7 +155,7 @@ unary_exp: '-' unary_exp {$$ = new UnarySubExpr($2);}
 post_id: factor {$$ = $1;}
     | TK_ID '(' argument_expression_list ')' {$$ = new ParenthesisPosIdExpr(string($1),$3); delete $1;}
     | TK_ID '(' ')' {$$ = new ParenthesisPosIdExpr(string($1)); delete $1;}
-    | TK_ID '[' TK_NUM ']' {$$ = new BracketPostIdExpr(string($1),$3); delete $1;}
+    | TK_ID '[' expression ']' {$$ = new BracketPostIdExpr(string($1),$3); delete $1;}
 ;
 
 factor: TK_NUM  {$$ = new NumberExpr($1);}

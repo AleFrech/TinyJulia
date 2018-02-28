@@ -29,6 +29,18 @@ class BinaryExpr : public Expr {
         Expr *expr1, *expr2;
 };
 
+class AssignExpr : public Expr {
+public:
+    Expr* left;
+    Expr* right;
+    AssignExpr(Expr* exp1, Expr* exp2){
+        this->left = exp1;
+        this->right = exp2;
+    }
+    int getKind(){return TYPE;}
+    
+};
+
 class TernaryExpr : public Expr {
 public:
     Expr* exp;
@@ -213,8 +225,8 @@ public:
 class BracketPostIdExpr : public Expr{
 public:
     string Id;
-    int Index;
-    BracketPostIdExpr(string id,int index){
+    Expr* Index;
+    BracketPostIdExpr(string id,Expr* index){
         this->Id =id;
         this->Index =index;
     }

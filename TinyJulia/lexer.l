@@ -51,6 +51,9 @@
 "/="    {return TK_DIV_ASGN;}
 "%="    {return TK_MOD_ASGN;}
 "^="    {return TK_POW_ASGN;}
+"&="    {return TK_BIT_AND_ASGN;}
+"|="    {return TK_BIT_OR_ASGN;}
+"$="    {return TK_BIT_XOR_ASGN;}
 "print" {return TK_PRINT;}
 "println" {return TK_PRINTLN;}
 "true"  {yylval.bool_t = true; return TK_TRUE;} 
