@@ -3,6 +3,7 @@
 ; ebp+16 = f[]
 ; ebp-4 = index
 ; ebp-8 = i
+
 factors:
     push ebp
     mov ebp, esp
@@ -11,25 +12,28 @@ factors:
     mov DWORD [ebp-4], 0
     mov DWORD [ebp-8], 1
 for:
-    cmp DWORD [ebp-8], DWORD [ebp+8]
-    jg for_end
     mov eax, [ebp+8]
+    cmp DWORD [ebp-8], eax
+    jg for_end
     cdq
     mov ebx, [ebp-8]
     idiv ebx
     cmp edx, 0
-    je if_body
+    jne if_end
+
+    mov ebx, DWORD [ebp-4] ;ebx =index
+    mov ecx, DWORD [ebp+16] ; ecx = f[]
+    mov edx, DWORD [ebp-8] ; edx = i
+    mov DWORD [ecx+4*ebx] = edx ; f[index] =i
+    inc DWORD [ebp-4] ; index ++
+    mov ebx, DWORD [ebp-4]
+    cmp ebx, DWORD [ebp+12]
+    je for_end
+
+if_end:
     inc DWORD [ebp-8]
     jmp for
-
-if_body:
-    ;f[index] = i
-    inc DWORD [ebp-4]
-    cmp DWORD [ebp-4], DWORD [ebp+12]
-    je for_end
-    jmp for
-   
-
 for_end:
     mov eax, [ebp-4]
-    leave ret
+    leave 
+    ret
