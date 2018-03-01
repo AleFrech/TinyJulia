@@ -37,7 +37,7 @@ void yyerror(const char* msg){
 %token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
 %token TK_ARRAY TK_END TK_ERROR
 
-%type<exprlist_t> argument_expression_list
+%type<exprlist_t> argument_expression_list print_arguments
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
@@ -86,16 +86,20 @@ block_statement: TK_EOL opEols statementList opEols {$$ = $3;}
     | TK_EOL opEols { auto bs = new BlockStatement(); bs->stList = list<Statement*>(); $$ = new BlockStatement();}
 ;
 
-print_statement: TK_PRINT '(' print_argument ')' {$$ = new PrintStatement($3,false);}
-    | TK_PRINTLN '(' print_argument ')' {$$ = new PrintStatement($3,true);}
+print_statement: TK_PRINT '(' print_arguments ')' {$$ = new PrintStatement($3,false);}
+    | TK_PRINTLN '(' print_arguments ')' {$$ = new PrintStatement($3,true);}
+;
+
+print_arguments: print_arguments ',' print_argument {$1->push_back($3); $$=$1; }
+    | print_argument {auto exl= new ExprList; exl->push_back($1); $$=exl; delete exl;}
 ;
 
 print_argument: STRING_LITERAL {$$ = new StringExpr(string($1)); delete $1;}
-    | expression
+    | expression {$$ = $1;}
 ;
 
 argument_expression_list: argument_expression_list ',' expression {$1->push_back($3); $$=$1; }
-    | expression {$$ = new ExprList;}
+    | expression {auto exl= new ExprList; exl->push_back($1); $$=exl; delete exl;}
 ;
 
 expression_statement: expression {$$ = new ExprStatement($1);}

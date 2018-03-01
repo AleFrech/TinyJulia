@@ -332,10 +332,10 @@ public:
 
 class PrintStatement: public Statement {
 public:
-    Expr* expr;
+    ExprList * exprList;
     bool hasNewLine;
-    PrintStatement(Expr* expr , bool hasNewLine) { 
-        this->expr = expr;
+    PrintStatement( ExprList * exprList, bool hasNewLine) { 
+        this->exprList = exprList;
         this->hasNewLine = hasNewLine; 
     }
     void execute();
