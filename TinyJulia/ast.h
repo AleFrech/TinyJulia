@@ -283,6 +283,28 @@ public:
     virtual void execute() = 0;
 };
 
+class IntDeclarationStatement: public Statement {
+public:
+    string Id;
+    Expr* expr;
+    IntDeclarationStatement(string id,Expr* exp){
+        this->Id = id;
+        this->expr = exp;
+    }
+    void execute();
+};
+
+class BoolDeclarationStatement: public Statement {
+public:
+    string Id;
+    Expr* expr;
+    BoolDeclarationStatement(string id,Expr* exp){
+        this->Id = id;
+        this->expr = exp;
+    }
+    void execute();
+};
+
 class BlockStatement: public Statement {
 public:
     list<Statement *> stList;

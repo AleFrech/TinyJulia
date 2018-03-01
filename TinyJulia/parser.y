@@ -41,7 +41,7 @@ void yyerror(const char* msg){
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
-%type<statement_t> statement block_statement 
+%type<statement_t> statement block_statement declaration_statement
 %type<blkstatement_t> statementList 
 
 %%
@@ -62,10 +62,15 @@ statementList: statementList new_line statement { $$ = $1; $$->add($3); }
 ;
 
 statement: print_statement  {$$ = $1;}
+    | declaration_statement {$$ = $1;}
     | expression_statement  {$$ = $1;}
     | while_statement {$$ = $1;}
     | for_statement {$$ = $1;}
     | if_statement {$$ = $1;}
+;
+
+declaration_statement: TK_ID TK_DOUBLE_COLON TK_INT '=' expression {$$ = new IntDeclarationStatement(string($1),$5); delete $1;}
+    | TK_ID TK_DOUBLE_COLON TK_BOOL '=' expression {$$ = new BoolDeclarationStatement(string($1),$5); delete $1;}
 ;
 
 if_statement: TK_IF expression block_statement elseif {$$ = new IfStatement($2,$3,$4);}

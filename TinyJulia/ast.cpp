@@ -26,6 +26,14 @@ void IfStatement::execute(){
 
 }
 
+void BoolDeclarationStatement::execute(){
+
+}
+
+void IntDeclarationStatement::execute(){
+    
+}
+
 void PrintStatement::execute()
 {
     for(auto expr : *this->exprList){
