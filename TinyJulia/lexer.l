@@ -11,7 +11,7 @@
 
 %%
 [ \t] {}
-\n    {yylineno++; return TK_EOL;}
+\n    { return TK_EOL;}
 "#="  {BEGIN(commentState);}
 "#".*  {}
 "+"     {return '+';}

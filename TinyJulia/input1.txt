@@ -1,4 +1,30 @@
-#print("This is a ")
+print("This is a ")
+
+while (5 < 3)
+
+
+
+print("fwrf")
+
+
+
+end 
+
+
+for x = 5 : 10
+
+if x < y
+println("x is less than y")
+elseif x > y
+println("x is greater than y")
+else
+println("x is equal to y")
+end
+
+end
+
+
+
+
 
 println("Hello World")
-

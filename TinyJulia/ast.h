@@ -280,6 +280,47 @@ public:
 	void add(Statement *st) { stList.push_back(st); }
 };
 
+class IfStatement: public Statement {
+public:
+    Expr * exp;
+    Statement * ifBody;
+    Statement * elseBody;
+    IfStatement(Expr * exp , Statement * ifBody, Statement * elseBody){
+        this->exp = exp;
+        this->ifBody = ifBody;
+        this->elseBody = elseBody;
+    }
+    void execute();
+};
+
+class ForStatement: public Statement {
+public:
+    string Id;
+    Expr* to;
+    Expr* from;
+    Statement* blockStatement;
+    ForStatement(string id, Expr* to, Expr* from, Statement* blockStatement){
+        this->Id = id;
+        this->to = to;
+        this->from = from;
+        this->blockStatement = blockStatement;
+
+    }
+    void execute();
+};
+
+
+class WhileStatement: public Statement {
+public:
+    Expr* expr;
+    Statement * blockStatement;
+    WhileStatement(Expr* exp, Statement* blockSt){
+        this->expr=exp;
+        this->blockStatement = blockSt;
+    }
+    void execute();
+};
+
 class ExprStatement: public Statement {
 public:
     Expr * expr;

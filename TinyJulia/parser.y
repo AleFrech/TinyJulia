@@ -40,9 +40,9 @@ void yyerror(const char* msg){
 %type<exprlist_t> argument_expression_list
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
-%type<statement_t> print_statement expression_statement
-%type<statement_t> statement
-%type<blkstatement_t> statementList
+%type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
+%type<statement_t> statement block_statement 
+%type<blkstatement_t> statementList 
 
 %%
 
@@ -57,15 +57,34 @@ opEols: new_line
     | %empty
 ;
 
-statementList: statementList TK_EOL statement { $$ = $1; $$->add($3); }
+statementList: statementList new_line statement { $$ = $1; $$->add($3); }
     | statement { $$ = new BlockStatement; $$->add($1); }
 ;
 
 statement: print_statement  {$$ = $1;}
     | expression_statement  {$$ = $1;}
+    | while_statement {$$ = $1;}
+    | for_statement {$$ = $1;}
+    | if_statement {$$ = $1;}
 ;
 
+if_statement: TK_IF expression block_statement elseif {$$ = new IfStatement($2,$3,$4);}
+;
 
+elseif: TK_ELSEIF expression block_statement elseif {$$ = new IfStatement($2,$3,$4);}
+    | TK_ELSE block_statement TK_END {$$ = $2;}
+    | TK_END {$$=NULL;}
+;
+
+for_statement: TK_FOR TK_ID '=' expression  ':' expression block_statement TK_END {$$= new ForStatement(string($2),$4,$6,$7); delete $2;}
+;
+
+while_statement: TK_WHILE expression block_statement TK_END {$$ = new WhileStatement($2,$3);}
+;
+
+block_statement: TK_EOL opEols statementList opEols {$$ = $3;}
+    | TK_EOL opEols { auto bs = new BlockStatement(); bs->stList = list<Statement*>(); $$ = new BlockStatement();}
+;
 
 print_statement: TK_PRINT '(' print_argument ')' {$$ = new PrintStatement($3,false);}
     | TK_PRINTLN '(' print_argument ')' {$$ = new PrintStatement($3,true);}
