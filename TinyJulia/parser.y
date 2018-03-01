@@ -102,26 +102,27 @@ print_argument: STRING_LITERAL {$$ = new StringExpr(string($1)); delete $1;}
     | expression {$$ = $1;}
 ;
 
-argument_expression_list: argument_expression_list ',' expression {$1->push_back($3); $$=$1; }
-    | expression {auto exl= new ExprList; exl->push_back($1); $$=exl;}
+expression_statement: expression {$$ = new ExprStatement($1);}
 ;
 
-expression_statement: expression {$$ = new ExprStatement($1);}
+argument_expression_list: argument_expression_list ',' expression {$1->push_back($3); $$=$1; }
+    | expression {auto exl= new ExprList; exl->push_back($1); $$=exl;}
 ;
 
 expression: assign_exp {$$ = $1;}
 ;
 
 assign_exp: post_id '=' assign_exp {$$ = new AssignExpr($1,$3);}
-    |post_id TK_ADD_ASGN assign_exp {$$ = new AssignExpr($1,new AddExpr($1,$3));}
-    |post_id TK_SUB_ASGN assign_exp {$$ = new AssignExpr($1,new SubExpr($1,$3));}
-    |post_id TK_MULT_ASGN assign_exp {$$ = new AssignExpr($1,new MulExpr($1,$3));}
-    |post_id TK_DIV_ASGN assign_exp {$$ = new AssignExpr($1,new DivExpr($1,$3));}
-    |post_id TK_MOD_ASGN assign_exp {$$ = new AssignExpr($1,new ModExpr($1,$3));}
-    |post_id TK_POW_ASGN assign_exp {$$ = new AssignExpr($1,new ExponentExpr($1,$3));}
-    |post_id TK_BIT_OR_ASGN assign_exp {$$ = new AssignExpr($1,new BitOrExpr($1,$3));}
-    |post_id TK_BIT_XOR_ASGN assign_exp {$$ = new AssignExpr($1,new BitXorExpr($1,$3));}
-    |post_id TK_BIT_AND_ASGN assign_exp {$$ = new AssignExpr($1,new BitAndExpr($1,$3));}
+    | post_id '=' '['argument_expression_list ']'
+    | post_id TK_ADD_ASGN assign_exp {$$ = new AssignExpr($1,new AddExpr($1,$3));}
+    | post_id TK_SUB_ASGN assign_exp {$$ = new AssignExpr($1,new SubExpr($1,$3));}
+    | post_id TK_MULT_ASGN assign_exp {$$ = new AssignExpr($1,new MulExpr($1,$3));}
+    | post_id TK_DIV_ASGN assign_exp {$$ = new AssignExpr($1,new DivExpr($1,$3));}
+    | post_id TK_MOD_ASGN assign_exp {$$ = new AssignExpr($1,new ModExpr($1,$3));}
+    | post_id TK_POW_ASGN assign_exp {$$ = new AssignExpr($1,new ExponentExpr($1,$3));}
+    | post_id TK_BIT_OR_ASGN assign_exp {$$ = new AssignExpr($1,new BitOrExpr($1,$3));}
+    | post_id TK_BIT_XOR_ASGN assign_exp {$$ = new AssignExpr($1,new BitXorExpr($1,$3));}
+    | post_id TK_BIT_AND_ASGN assign_exp {$$ = new AssignExpr($1,new BitAndExpr($1,$3));}
     | conditional_exp {$$ = $1;}
 ;
 
