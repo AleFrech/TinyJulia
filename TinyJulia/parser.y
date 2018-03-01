@@ -32,7 +32,7 @@ void yyerror(const char* msg){
 %token<bool_t> TK_TRUE TK_FALSE
 %token<charPointer_t> TK_ID
 %token<charPointer_t> STRING_LITERAL
-%token TK_EOL TK_INC TK_DEC TK_SHIFT_RIGHT TK_SHIFT_LEFT TK_EQUALS TK_NOT_EQUALS TK_LESS_THAN_EQUALS TK_GREATER_THAN_EQUALS
+%token TK_EOL TK_INC TK_DEC TK_SHIFT_RIGHT TK_SHIFT_LEFT TK_EQUALS TK_NOT_EQUALS TK_LESS_THAN_EQUALS TK_GREATER_THAN_EQUALS TK_IN
 %token TK_LOGICAL_AND TL_LOGICAL_OR TK_DOUBLE_COLON TK_ADD_ASGN TK_SUB_ASGN TK_MULT_ASGN TK_DIV_ASGN TK_MOD_ASGN TK_POW_ASGN TK_BIT_AND_ASGN
 %token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
 %token TK_ARRAY TK_END TK_ERROR
@@ -76,7 +76,11 @@ elseif: TK_ELSEIF expression block_statement elseif {$$ = new IfStatement($2,$3,
     | TK_END {$$=NULL;}
 ;
 
-for_statement: TK_FOR TK_ID '=' expression  ':' expression block_statement TK_END {$$= new ForStatement(string($2),$4,$6,$7); delete $2;}
+for_statement: TK_FOR TK_ID for_tk expression  ':' expression block_statement TK_END {$$= new ForStatement(string($2),$4,$6,$7); delete $2;}
+;
+
+for_tk: '='
+    | TK_IN
 ;
 
 while_statement: TK_WHILE expression block_statement TK_END {$$ = new WhileStatement($2,$3);}
@@ -91,7 +95,7 @@ print_statement: TK_PRINT '(' print_arguments ')' {$$ = new PrintStatement($3,fa
 ;
 
 print_arguments: print_arguments ',' print_argument {$1->push_back($3); $$=$1; }
-    | print_argument {auto exl= new ExprList; exl->push_back($1); $$=exl; delete exl;}
+    | print_argument {auto exl= new ExprList; exl->push_back($1); $$=exl;}
 ;
 
 print_argument: STRING_LITERAL {$$ = new StringExpr(string($1)); delete $1;}
@@ -99,7 +103,7 @@ print_argument: STRING_LITERAL {$$ = new StringExpr(string($1)); delete $1;}
 ;
 
 argument_expression_list: argument_expression_list ',' expression {$1->push_back($3); $$=$1; }
-    | expression {auto exl= new ExprList; exl->push_back($1); $$=exl; delete exl;}
+    | expression {auto exl= new ExprList; exl->push_back($1); $$=exl;}
 ;
 
 expression_statement: expression {$$ = new ExprStatement($1);}

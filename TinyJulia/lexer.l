@@ -65,6 +65,7 @@
 "elseif" {return TK_ELSEIF;}
 "while" {return TK_WHILE;}
 "for"   {return TK_FOR;}
+"in"    {return TK_IN;}
 "function" {return TK_FUNCTION;}
 "return"    {return TK_RETURN;}
 "end"   {return TK_END;}
