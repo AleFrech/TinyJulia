@@ -113,7 +113,7 @@ expression: assign_exp {$$ = $1;}
 ;
 
 assign_exp: post_id '=' assign_exp {$$ = new AssignExpr($1,$3);}
-    | post_id '=' '['argument_expression_list ']'
+    | post_id '=' '['argument_expression_list ']' {$$ = new AssingArrayExpr($1,$4);}
     | post_id TK_ADD_ASGN assign_exp {$$ = new AssignExpr($1,new AddExpr($1,$3));}
     | post_id TK_SUB_ASGN assign_exp {$$ = new AssignExpr($1,new SubExpr($1,$3));}
     | post_id TK_MULT_ASGN assign_exp {$$ = new AssignExpr($1,new MulExpr($1,$3));}
