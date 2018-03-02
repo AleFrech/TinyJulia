@@ -26,12 +26,12 @@ void IfStatement::execute(){
 
 }
 
-void BoolDeclarationStatement::execute(){
+void FunctionStatement::execute(){
 
 }
 
-void IntDeclarationStatement::execute(){
-    
+void DeclarationStatement::execute(){
+
 }
 
 void PrintStatement::execute()

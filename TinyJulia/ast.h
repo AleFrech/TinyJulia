@@ -14,6 +14,13 @@ enum ExprKind {
     LIT_STRING
 };
 
+enum primitiveType {
+    INT_TYPE,
+    BOOL_TYPE,
+    ARRAY_INT_TYPE,
+    ARRAY_BOOL_TYPE,
+};
+
 class Expr {
 public:
     virtual int getKind() = 0;
@@ -278,28 +285,46 @@ public:
 };
 
 
+class ParamExpr: public Expr {
+public:
+    string Id;
+    primitiveType Type;
+    ParamExpr(string id, primitiveType type){
+        this->Id = id;
+        this->Type = type;
+    }
+    int getKind(){return TYPE;}
+};
+
+
 class Statement {
 public:
     virtual void execute() = 0;
 };
 
-class IntDeclarationStatement: public Statement {
+class FunctionStatement: public Statement {
 public:
     string Id;
-    Expr* expr;
-    IntDeclarationStatement(string id,Expr* exp){
+    ExprList * expList;
+    primitiveType Type;
+    Statement * Block;
+    FunctionStatement(string id,ExprList * expList,primitiveType type, Statement * block){
         this->Id = id;
-        this->expr = exp;
+        this->Type = type;
+        this->expList = expList;
+        this->Block = block;
     }
     void execute();
 };
 
-class BoolDeclarationStatement: public Statement {
+class DeclarationStatement: public Statement {
 public:
     string Id;
     Expr* expr;
-    BoolDeclarationStatement(string id,Expr* exp){
+    primitiveType Type;
+    DeclarationStatement(string id,primitiveType type,Expr* exp){
         this->Id = id;
+        this->Type = type;
         this->expr = exp;
     }
     void execute();

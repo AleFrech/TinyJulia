@@ -36,6 +36,8 @@
 "&&"    {return TK_LOGICAL_AND;}
 "||"    {return TL_LOGICAL_OR;}
 ">"     {return '>';}
+"{"     {return '{';}
+"}"     {return '}';}
 "("     {return '(';}
 ")"     {return ')';}
 "["     {return '[';}

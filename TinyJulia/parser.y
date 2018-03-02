@@ -26,6 +26,7 @@ void yyerror(const char* msg){
 	BlockStatement *blkstatement_t;
     Expr *expr_t;
     ExprList *exprlist_t;
+    primitiveType primitiveType_t;
 }
 
 %token<int_t> TK_NUM
@@ -37,12 +38,13 @@ void yyerror(const char* msg){
 %token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
 %token TK_ARRAY TK_END TK_ERROR
 
-%type<exprlist_t> argument_expression_list print_arguments
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr
+%type<exprlist_t> argument_expression_list print_arguments param_list
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr param
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
-%type<statement_t> statement block_statement declaration_statement
+%type<statement_t> statement block_statement declaration_statement function_statement
 %type<blkstatement_t> statementList 
+%type<primitiveType_t> type
 
 %%
 
@@ -63,14 +65,30 @@ statementList: statementList new_line statement { $$ = $1; $$->add($3); }
 
 statement: print_statement  {$$ = $1;}
     | declaration_statement {$$ = $1;}
+    | function_statement {$$ = $1;}
     | expression_statement  {$$ = $1;}
     | while_statement {$$ = $1;}
     | for_statement {$$ = $1;}
     | if_statement {$$ = $1;}
 ;
 
-declaration_statement: TK_ID TK_DOUBLE_COLON TK_INT '=' expression {$$ = new IntDeclarationStatement(string($1),$5); delete $1;}
-    | TK_ID TK_DOUBLE_COLON TK_BOOL '=' expression {$$ = new BoolDeclarationStatement(string($1),$5); delete $1;}
+function_statement: TK_FUNCTION TK_ID '(' param_list ')' type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}
+;
+
+param_list: param_list ',' param {$1->push_back($3); $$=$1;}
+    | param {auto exl= new ExprList; exl->push_back($1); $$=exl;}
+;
+
+param: TK_ID type { $$ = new ParamExpr(string($1),$2); delete $1;}
+;
+
+declaration_statement: TK_ID type '=' expression {$$ = new DeclarationStatement(string($1),$2,$4); delete $1;}
+;
+
+type: TK_DOUBLE_COLON TK_INT {$$ = primitiveType::INT_TYPE;}
+    | TK_DOUBLE_COLON TK_BOOL {$$ = primitiveType::BOOL_TYPE;}
+    | TK_DOUBLE_COLON TK_ARRAY'{' TK_INT '}' {$$ = primitiveType::ARRAY_INT_TYPE;}
+    | TK_DOUBLE_COLON TK_ARRAY'{' TK_BOOL '}' {$$ = primitiveType::ARRAY_BOOL_TYPE;}
 ;
 
 if_statement: TK_IF expression block_statement elseif {$$ = new IfStatement($2,$3,$4);}
