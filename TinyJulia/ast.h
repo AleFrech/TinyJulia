@@ -36,17 +36,6 @@ class BinaryExpr : public Expr {
         Expr *expr1, *expr2;
 };
 
-class AssingArrayExpr : public Expr {
-public:
-    Expr* left;
-    ExprList* arrayElements;
-    AssingArrayExpr(Expr* expr,ExprList* expList){
-        this->left =expr;
-        this->arrayElements = expList;
-    }
-    int getKind(){return TYPE;}
-};
-
 class AssignExpr : public Expr {
 public:
     Expr* left;
@@ -250,6 +239,15 @@ public:
     }
     int getKind(){return TYPE;}
 
+};
+
+class ArrayExpr: public Expr{
+public:
+     ExprList * expressionList;
+     ArrayExpr(ExprList * list){
+         this->expressionList = list;
+     }
+     int getKind(){return TYPE;}
 };
 
 class BoolExpr : public Expr{
