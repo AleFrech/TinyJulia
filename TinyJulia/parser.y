@@ -36,13 +36,13 @@ void yyerror(const char* msg){
 %token TK_EOL TK_INC TK_DEC TK_SHIFT_RIGHT TK_SHIFT_LEFT TK_EQUALS TK_NOT_EQUALS TK_LESS_THAN_EQUALS TK_GREATER_THAN_EQUALS TK_IN
 %token TK_LOGICAL_AND TL_LOGICAL_OR TK_DOUBLE_COLON TK_ADD_ASGN TK_SUB_ASGN TK_MULT_ASGN TK_DIV_ASGN TK_MOD_ASGN TK_POW_ASGN TK_BIT_AND_ASGN
 %token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
-%token TK_ARRAY TK_END TK_ERROR
+%token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
 %type<exprlist_t> argument_expression_list print_arguments param_list
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr param
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
-%type<statement_t> statement block_statement declaration_statement function_statement
+%type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement
 %type<blkstatement_t> statementList 
 %type<primitiveType_t> type
 
@@ -70,6 +70,14 @@ statement: print_statement  {$$ = $1;}
     | while_statement {$$ = $1;}
     | for_statement {$$ = $1;}
     | if_statement {$$ = $1;}
+    | break_statement {$$ = $1;}
+    | continue_statement {$$ = $1;}
+;
+
+break_statement: TK_BREAK {$$ = new BreakStatement();}
+;
+
+continue_statement: TK_CONTINUE {$$ = new ContinueStatement();}
 ;
 
 function_statement: TK_FUNCTION TK_ID '(' param_list ')' type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}

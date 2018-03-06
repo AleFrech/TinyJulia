@@ -3,6 +3,14 @@
 
 map<string ,BaseType> variables;
 
+void BreakStatement::execute(){
+
+}
+
+void ContinueStatement::execute(){
+
+}
+
 void BlockStatement::execute()
 {
     for (auto st : stList){

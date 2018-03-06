@@ -300,6 +300,19 @@ public:
     virtual void execute() = 0;
 };
 
+
+class BreakStatement : public Statement{
+public:
+    BreakStatement(){}
+    void execute();
+};
+
+class ContinueStatement : public Statement{
+public:
+    ContinueStatement(){}
+    void execute();
+};
+
 class FunctionStatement: public Statement {
 public:
     string Id;

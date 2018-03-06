@@ -70,6 +70,8 @@
 "in"    {return TK_IN;}
 "function" {return TK_FUNCTION;}
 "return"    {return TK_RETURN;}
+"break"     {return TK_BREAK;}
+"continue"  {return TK_CONTINUE;}
 "end"   {return TK_END;}
 "Array" {return TK_ARRAY;}          
 [0-9]+  {yylval.int_t = atoi(yytext); return TK_NUM;}
