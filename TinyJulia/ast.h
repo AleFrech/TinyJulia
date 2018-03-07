@@ -6,20 +6,53 @@
 #include <map>
 using namespace std;
 
-class Expr;
-typedef list<Expr*> ExprList;
-
-enum ExprKind {
-    TYPE,
-    LIT_STRING
-};
-
 enum primitiveType {
     INT_TYPE,
     BOOL_TYPE,
     ARRAY_INT_TYPE,
     ARRAY_BOOL_TYPE,
 };
+
+class BaseType {
+public:
+  primitiveType Type;
+  BaseType(primitiveType type){
+      this->Type = type;
+  }
+};
+
+class IntType : public BaseType { 
+public:
+    int value;
+    IntType(int value) : BaseType(INT_TYPE) { this->value = value; }
+};
+
+class BoolType : public BaseType { 
+public:
+    bool value;
+    BoolType(bool value) : BaseType(BOOL_TYPE) { this->value = value; }
+};
+
+class ArrayIntType : public BaseType { 
+public:
+    int value[];
+    ArrayIntType(int value) : BaseType(ARRAY_INT_TYPE) { this->value = value; }
+};
+
+class ArrayBoolType : public BaseType { 
+public:
+    bool value[];
+    ArrayBoolType(bool value) : BaseType(ARRAY_BOOL_TYPE) { this->value = value; }
+};
+
+enum ExprKind {
+    TYPE,
+    LIT_STRING
+};
+
+class Expr;
+typedef list<Expr*> ExprList;
+
 
 class Expr {
 public:
