@@ -209,9 +209,11 @@ string IfStatement::genCode() {
 	string labelEndIf = newLabel();
 
 	ss << ctx.code << endl
-	   << "beqz " << ctx.place << ", " << labelFalse << endl
+	   << "mov eax, "<<ctx.place << endl
+	   << "cmp eax , 0" << endl
+	   << "jz "<<labelFalse << endl
 	   << st1->genCode() << endl
-	   << "j " << labelEndIf << endl
+	   << "jmp " << labelEndIf << endl
 	   << labelFalse << ":" << endl;
 
 	if (st2 != NULL) {
@@ -233,9 +235,11 @@ string WhileStatement::genCode() {
 
 	ss << labelWhile << ":" << endl
 	   << ctx.code << endl
-	   << "beqz " << ctx.place << ", " << labelEndW << endl
+	   << "mov eax, "<<ctx.place << endl
+	   << "cmp eax , 0" << endl
+	   << "jz "<<labelEndW << endl
 	   << st->genCode() << endl
-	   << "j " << labelWhile << endl
+	   << "jmp " << labelWhile << endl
 	   << labelEndW << ":";
 
 	return ss.str();

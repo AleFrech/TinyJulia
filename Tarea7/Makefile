@@ -20,8 +20,10 @@ $(EXPR_PARSER_SRC): expr.y
 
 run: $(TARGET)
 	./$(TARGET) input1.txt > main.S
-	nasm -f elf32 -o asm.o main.S
-	gcc -m32 -o test asm.o
+	nasm -f macho32 -o test.o --prefix _ main.S
+	gcc -m32 test.o -o test -Wl,-no_pie
+	#nasm -f elf32 -o asm.o main.S
+	#gcc -m32 -o test asm.o
 
 clean:
 	rm -f $(EXPR_PARSER_SRC) $(EXPR_LEXER_SRC)
