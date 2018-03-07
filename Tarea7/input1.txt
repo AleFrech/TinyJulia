@@ -1,5 +1,8 @@
-x = 5;
-if( x ){
+x = 0;
+if(x){
     y =10;
     print y;
+}else{
+  z = 20;
+  print(z);
 }

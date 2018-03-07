@@ -130,7 +130,7 @@ void MulExpr::genCode(ExprContext &ctx) {
 		ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
 		ctx.code += "mov ecx,"+ctx2.place+"\ncdq\n";
 	    ctx.code += "imul ecx\n";
-	    ctx.code += "mov " + ctx.place+", eax";
+	    ctx.code += "mov " + ctx.place+", eax+\n";
 		ctx.isConstant = false;
 	}
 }
@@ -152,7 +152,7 @@ void DivExpr::genCode(ExprContext &ctx) {
 	   	ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
 		ctx.code += "mov ecx,"+ctx2.place+"\ncdq\n";
 	    ctx.code += "idiv ecx\n";
-	    ctx.code += "mov " + ctx.place+", eax";
+	    ctx.code += "mov " + ctx.place+", eax+\n";
 		ctx.isConstant = false;
 	}
 }
@@ -160,7 +160,7 @@ void DivExpr::genCode(ExprContext &ctx) {
 void IdExpr::genCode(ExprContext &ctx) {
     ctx.place = newTemp();
     ctx.code = "mov eax, DWORD[" + varName+"]\n"+
-	"mov " + ctx.place + ", eax";
+	"mov " + ctx.place + ", eax\n";
 	ctx.isConstant = false;
 }
 
@@ -180,7 +180,7 @@ string AssignStatement::genCode() {
 	registerVariable(varName);
 	ss << ctx.code << endl
 	<< "mov eax, " << ctx.place << endl
-    << "mov DWORD[" << varName << "], eax";
+    << "mov DWORD[" << varName << "], eax\n";
 	return ss.str();
 }
 
