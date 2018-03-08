@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <map>
 using namespace std;
 
@@ -35,14 +36,14 @@ public:
 
 class ArrayIntType : public BaseType { 
 public:
-    int value[];
-    ArrayIntType(int value) : BaseType(ARRAY_INT_TYPE) { this->value = value; }
+    vector<int> array;
+    ArrayIntType() : BaseType(ARRAY_INT_TYPE) {  }
 };
 
 class ArrayBoolType : public BaseType { 
 public:
-    bool value[];
-    ArrayBoolType(bool value) : BaseType(ARRAY_BOOL_TYPE) { this->value = value; }
+    vector<int> array;
+    ArrayBoolType() : BaseType(ARRAY_BOOL_TYPE) { }
 };
 
 enum ExprKind {
