@@ -10,6 +10,7 @@ using namespace std;
 
 set<string> variables;
 static int tmp_offset =4;
+map<int, bool> tempInUse;
 static int labelCount = 0;
 
 void registerVariable(string varName) {
@@ -37,14 +38,36 @@ void resetOffset(){
 	tmp_offset = 4;
 }
 
+
 static string newTemp() {
-	string temp = "DWORD[ebp - " + to_string(tmp_offset) + "]";
+	map<int, bool>::iterator it = tempInUse.begin();
+	while (it != tempInUse.end()) {
+		pair<int, bool> itm = *it;
+
+		if (!itm.second) {
+			tempInUse[itm.first] = true;
+			return "DWORD[ebp - "+to_string(itm.first)+"]";
+		}
+		it++;
+	}
+	tempInUse[tmp_offset] = true;
+	auto temp = "DWORD[ebp - "+to_string(tmp_offset)+"]";
 	tmp_offset += 4;
 	return temp;
 }
 
 static void releaseTemp(string temp) {
-	
+	map<int, bool>::iterator it = tempInUse.begin();
+	while (it != tempInUse.end()) {
+		pair<int, bool> itm = *it;
+
+		auto str ="DWORD[ebp - "+to_string(itm.first)+"]";
+		if(str == temp){
+			tempInUse[itm.first] = false;
+			return;
+		}
+		it++;
+	}
 }
 
 void AddExpr::genCode(ExprContext &ctx) {
@@ -61,18 +84,22 @@ void AddExpr::genCode(ExprContext &ctx) {
 		ctx.isConstant = true;
 	} else if (ctx2.isConstant) {
 		ctx.code = ctx1.code + "\n";
+		releaseTemp(ctx1.place);
 		ctx.place = newTemp();
 	    ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"add eax," + ctx2.place+"\n"+
 		"mov "+ctx.place+", eax\n";
 	} else if (ctx1.isConstant) {
 		ctx.code = ctx2.code + "\n";
+		releaseTemp(ctx2.place);
 		ctx.place = newTemp();
 		ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"add eax," + ctx2.place+"\n"+
 		"mov "+ctx.place+", eax\n";
 	} else {
 		ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+		releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
 		ctx.place = newTemp();
 	    ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"add eax," + ctx2.place+"\n"+
@@ -94,18 +121,22 @@ void SubExpr::genCode(ExprContext &ctx) {
 		ctx.isConstant = true;
 	} else if (ctx2.isConstant) {
 		ctx.code = ctx1.code + "\n";
+		releaseTemp(ctx1.place);
 		ctx.place = newTemp();
 	    ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"sub eax," + ctx2.place+"\n"+
 		"mov "+ctx.place+", eax\n";
 	} else if (ctx1.isConstant) {
 		ctx.code = ctx2.code + "\n";
+		releaseTemp(ctx2.place);
 		ctx.place = newTemp();
 		ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"sub eax," + ctx2.place+"\n"+
 		"mov "+ctx.place+", eax\n";
 	} else {
 		ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+		releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
 		ctx.place = newTemp();
 	    ctx.code += "mov eax, " + ctx1.place+"\n"+
 		"sub eax," + ctx2.place+"\n"+
@@ -126,13 +157,16 @@ void MulExpr::genCode(ExprContext &ctx) {
 		ctx.isConstant = true;
 	} else {
 		ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-	    ctx.place = newTemp();
+		releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
 		ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
-		ctx.code += "mov ecx,"+ctx2.place+"\ncdq\n";
+		ctx.code += "mov ecx,"+ctx2.place+"\n";
 	    ctx.code += "imul ecx\n";
-	    ctx.code += "mov " + ctx.place+", eax+\n";
+		ctx.place = newTemp();
+	    ctx.code += "mov " + ctx.place+", eax\n";
 		ctx.isConstant = false;
 	}
+
 }
 
 void DivExpr::genCode(ExprContext &ctx) {
@@ -148,11 +182,13 @@ void DivExpr::genCode(ExprContext &ctx) {
 		ctx.isConstant = true;
 	} else {
 		ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-	    ctx.place = newTemp();
+		releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
 	   	ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
-		ctx.code += "mov ecx,"+ctx2.place+"\ncdq\n";
+		ctx.code += "mov ecx,"+ctx2.place+"\n";
 	    ctx.code += "idiv ecx\n";
-	    ctx.code += "mov " + ctx.place+", eax+\n";
+		ctx.place = newTemp();
+	    ctx.code += "mov " + ctx.place+", eax\n";
 		ctx.isConstant = false;
 	}
 }
@@ -178,9 +214,10 @@ string AssignStatement::genCode() {
 
 	expr->genCode(ctx);
 	registerVariable(varName);
-	ss << ctx.code << endl
-	<< "mov eax, " << ctx.place << endl
-    << "mov DWORD[" << varName << "], eax\n";
+	ss << ctx.code << endl;
+	ss << "mov eax, " << ctx.place << endl;
+    ss << "mov DWORD[" << varName << "], eax\n";
+	releaseTemp(ctx.place);
 	return ss.str();
 }
 
@@ -195,6 +232,7 @@ string PrintStatement::genCode() {
 	   << "push format" <<endl
 	   << "call printf"<<endl
 	   << "add esp, 8"<<endl;
+	releaseTemp(ctx.place);
 
 	return ss.str();
 }
@@ -221,6 +259,8 @@ string IfStatement::genCode() {
 	}
 	ss << labelEndIf << ":";
 
+	releaseTemp(ctx.place);
+
 	return ss.str();
 }
 
@@ -241,6 +281,8 @@ string WhileStatement::genCode() {
 	   << st->genCode() << endl
 	   << "jmp " << labelWhile << endl
 	   << labelEndW << ":";
+
+	releaseTemp(ctx.place);
 
 	return ss.str();
 }

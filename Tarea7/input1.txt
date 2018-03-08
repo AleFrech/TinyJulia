@@ -1,8 +1,44 @@
-x = 0;
-if(x){
-    y =10;
-    print y;
+x = 10;
+y = 2;
+
+print x+y;
+print x-y;
+print x*y;
+print x/y;
+
+print x+2;
+print x-2;
+print x*2;
+print x/2;
+
+print 10+y;
+print 10-y;
+print 10*y;
+print 10/y;
+
+print 10+2;
+print 10-2;
+print 10*2;
+print 10/2;
+
+i = 10;
+while (i){
+    print i;
+    i = i - 1;
+}
+
+i = i + 1;
+
+if(i){
+    print 100;
 }else{
-  z = 20;
-  print(z);
+    print 0;
+}
+
+i = i - 1;
+
+if(i){
+    print 100;
+}else{
+    print 0;
 }
