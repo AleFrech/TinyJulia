@@ -1,5 +1,5 @@
 %option noyywrap
-%x commentState
+
 
 %{
 #include <stdio.h>
@@ -9,8 +9,6 @@
 letter [_a-zA-Z]
 %%
 [ \t\n]	{ /* Nada */ }
-"/*"    {BEGIN(commentState);}
-"//".*  {}
 "+"		{ return '+'; }
 "-"		{ return '-'; }
 "*"		{ return '*'; }
@@ -27,10 +25,5 @@ letter [_a-zA-Z]
 "while"	{ return KW_WHILE; }
 [0-9]+	{ yylval.string_t = strdup(yytext); return TK_NUMBER; }
 {letter}({letter}|[0-9])* { yylval.string_t = strdup(yytext); return TK_ID; }
-<INITIAL><<EOF>> {yyterminate();}
 .		{ return TK_ERROR; }
-<commentState>"*/" {BEGIN(INITIAL);}
-<commentState>.|\n {}
-<commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return 0;}
-
 %%
