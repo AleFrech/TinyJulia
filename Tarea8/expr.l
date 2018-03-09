@@ -15,6 +15,13 @@ letter [_a-zA-Z]
 "-"		{ return '-'; }
 "*"		{ return '*'; }
 "/"		{ return '/'; }
+"%"     { return '%'; }
+">"     { return '>'; }
+"<"     { return '<'; }
+">="    { return KW_GTE; }
+"<="    { return KW_LTE;}
+"!="    { return KW_NE;}
+"=="    { return KW_EQ;}
 "("		{ return '('; }
 ")"		{ return ')'; }
 ";"		{ return ';'; }
@@ -24,7 +31,9 @@ letter [_a-zA-Z]
 "if"	{ return KW_IF; }
 "else"	{ return KW_ELSE; }
 "print"	{ return KW_PRINT; }
+"println"   {return KW_PRINTLN;}
 "while"	{ return KW_WHILE; }
+"return" { return KW_RETURN; }
 [0-9]+	{ yylval.string_t = strdup(yytext); return TK_NUMBER; }
 {letter}({letter}|[0-9])* { yylval.string_t = strdup(yytext); return TK_ID; }
 <INITIAL><<EOF>> {yyterminate();}
