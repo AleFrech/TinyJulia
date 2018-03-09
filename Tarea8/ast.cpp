@@ -252,7 +252,7 @@ void NotEqualExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if (ctx1.isConstant && ctx2.isConstant) {
-		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.numberValue = ctx1.numberValue != ctx2.numberValue;
 		ctx.place = to_string(ctx.numberValue);
 		ctx.isConstant = true;
 	} else {
@@ -278,7 +278,7 @@ void LessThanExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if (ctx1.isConstant && ctx2.isConstant) {
-		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.numberValue = ctx1.numberValue < ctx2.numberValue;
 		ctx.place = to_string(ctx.numberValue);
 		ctx.isConstant = true;
 	} else {
@@ -304,7 +304,7 @@ void LessThanEqualExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if (ctx1.isConstant && ctx2.isConstant) {
-		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.numberValue = ctx1.numberValue <= ctx2.numberValue;
 		ctx.place = to_string(ctx.numberValue);
 		ctx.isConstant = true;
 	} else {
@@ -330,7 +330,7 @@ void GreaterThanExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if (ctx1.isConstant && ctx2.isConstant) {
-		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.numberValue = ctx1.numberValue > ctx2.numberValue;
 		ctx.place = to_string(ctx.numberValue);
 		ctx.isConstant = true;
 	} else {
@@ -356,7 +356,7 @@ void GreaterThanEqualExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if (ctx1.isConstant && ctx2.isConstant) {
-		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.numberValue = ctx1.numberValue >= ctx2.numberValue;
 		ctx.place = to_string(ctx.numberValue);
 		ctx.isConstant = true;
 	} else {
