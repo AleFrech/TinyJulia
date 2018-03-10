@@ -42,7 +42,7 @@ void yyerror(const char* msg){
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr param
 %type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
-%type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement
+%type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
 %type<blkstatement_t> statementList 
 %type<primitiveType_t> type
 
@@ -72,6 +72,10 @@ statement: print_statement  {$$ = $1;}
     | if_statement {$$ = $1;}
     | break_statement {$$ = $1;}
     | continue_statement {$$ = $1;}
+    | return_statement {$$ = $1;}
+;
+
+return_statement: TK_RETURN expression  {$$ = new ReturnStatement($2); }
 ;
 
 break_statement: TK_BREAK {$$ = new BreakStatement();}

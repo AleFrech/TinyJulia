@@ -10,6 +10,10 @@ void ContinueStatement::execute(){
 
 }
 
+void ReturnStatement::execute(){
+
+}
+
 void BlockStatement::execute()
 {
     for (auto st : stList){

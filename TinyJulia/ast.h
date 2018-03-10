@@ -347,6 +347,15 @@ public:
     void execute();
 };
 
+class ReturnStatement : public Statement {
+public:
+    Expr* exp;
+    ReturnStatement(Expr* expr){
+	this->exp = expr;
+    }
+    void execute();
+};
+
 class FunctionStatement: public Statement {
 public:
     string Id;
