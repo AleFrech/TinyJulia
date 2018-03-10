@@ -1,4 +1,5 @@
 %option noyywrap
+%option yylineno
 %x commentState
 
 %{
@@ -25,6 +26,7 @@ letter [_a-zA-Z]
 "("		{ return '('; }
 ")"		{ return ')'; }
 ";"		{ return ';'; }
+","     { return ','; }
 "="		{ return '='; }
 "{"		{ return '{'; }
 "}"		{ return '}'; }
@@ -37,7 +39,7 @@ letter [_a-zA-Z]
 [0-9]+	{ yylval.string_t = strdup(yytext); return TK_NUMBER; }
 {letter}({letter}|[0-9])* { yylval.string_t = strdup(yytext); return TK_ID; }
 <INITIAL><<EOF>> {yyterminate();}
-.		{ return TK_ERROR; }
+.		{printf("Invalid Character: %s\n",yytext); return TK_ERROR; }
 <commentState>"*/" {BEGIN(INITIAL);}
 <commentState>.|\n {}
 <commentState><<EOF>> {printf("Line %d : unclosed block comment\n",yylineno); return 0;}

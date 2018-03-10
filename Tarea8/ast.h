@@ -78,7 +78,7 @@ public:
     ExprList * expressionList;
     FunctionCallExpr(string varName){
         this->varName = varName;
-        this->expressionList = NULL;
+        this->expressionList = new ExprList;
     }
     FunctionCallExpr(string varName, ExprList * exprList){
         this->varName = varName;
@@ -146,6 +146,30 @@ public:
 	Statement *st;
 };
 
+class ReturnStatement: public Statement {
+public:
+	ReturnStatement(Expr * expression){
+		this->expression = expression;
+	}
+
+	string genCode();
+
+	Expr* expression;
+};
+
+class FunctionStatement: public Statement {
+public:
+	FunctionStatement(string id, list<string>* params, Statement* st){
+		this->id=id;
+		this->params =params;
+		this->st = st;
+	}
+	string genCode();
+	string id;
+	list<string>*  params;
+	Statement *st;
+};
+
 class BlockStatement: public Statement {
 public:
 	BlockStatement() {}
@@ -161,5 +185,5 @@ public:
 
 void tempInit();
 void genDataSection();
-
+void genFunctionSection();
 #endif

@@ -10,10 +10,11 @@
 
 int yylex();
 int errors;
+extern int yylineno;
 
 void yyerror(const char *msg) {
 	errors++;
-	fprintf(stderr, "%s\n", msg);
+	fprintf(stderr, "%s Line: %d \n", msg,yylineno);
 }
 
 using namespace std;
@@ -29,6 +30,7 @@ BlockStatement *statement;
 	BlockStatement *blk_statement_t;
     char *string_t;
 	ExprList *exprlist_t;
+	list<string> *parameterList_t;
 }
 
 %token OP_ADD OP_SUB OP_MUL OP_DIV TK_LEFT_PAR TK_RIGHT_PAR
@@ -39,12 +41,13 @@ BlockStatement *statement;
 
 %type<expr_t> expr equalities relationals arithmetic term factor
 %type<exprlist_t> expr_list
+%type<parameterList_t> parameters op_parameters
 %type<statement_t> assign_statement
 %type<statement_t> if_statement
 %type<statement_t> opt_else
 %type<statement_t> while_statement
 %type<statement_t> print_statement
-%type<statement_t> statement
+%type<statement_t> statement function_statement return_statement
 %type<blk_statement_t> statement_list opt_statement_list
 
 %%
@@ -55,7 +58,7 @@ input: opt_statement_list {
 ;
 
 opt_statement_list: statement_list	{ $$ = $1; }
-					|				{ $$ = NULL; }
+					|%empty			{ $$ = NULL; }
 ;
 
 statement_list: statement_list statement
@@ -67,6 +70,22 @@ statement: print_statement	 { $$ = $1; }
 		 | assign_statement	 { $$ = $1; }
 		 | if_statement	     { $$ = $1; }
 		 | while_statement	 { $$ = $1; }
+		 | function_statement {$$ = $1; }
+		 | return_statement { $$ = $1; }
+;
+
+return_statement: KW_RETURN expr ';' { $$ = new ReturnStatement($2);}
+;
+
+op_parameters: parameters {$$ = $1;}
+	| %empty {$$ = new list<string>();}
+;
+
+parameters: parameters ',' TK_ID {$1->push_back(string($3)); $$=$1; }
+		 | TK_ID {auto params = new list<string>; params->push_back(string($1)); $$=params; }
+;
+
+function_statement: TK_ID '(' op_parameters ')' '{' statement_list '}' {$$ =  new FunctionStatement(string($1),$3,$6); }
 ;
 
 print_statement: KW_PRINT expr ';' { $$ = new PrintStatement($2,false); }
@@ -86,7 +105,7 @@ if_statement: KW_IF '(' expr ')' '{' statement_list '}' opt_else
 ;
 
 opt_else: KW_ELSE '{' statement_list '}' { $$ = $3; }
-		 | 								 { $$ = NULL; }
+		 | %empty						 { $$ = NULL; }
 ;
 
 while_statement: KW_WHILE '(' expr ')' '{' statement_list '}' { $$ = new WhileStatement($3, $6); }

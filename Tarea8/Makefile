@@ -19,7 +19,7 @@ $(EXPR_PARSER_SRC): expr.y
 	g++ -std=c++11 -g -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) samples/RelOperators.c > main.S
+	./$(TARGET) samples/proc1.c > main.S
 	#nasm -f macho32 -o test.o --prefix _ main.S
 	#gcc -m32 test.o -o test -Wl,-no_pie
 	nasm -f elf32 -o asm.o main.S

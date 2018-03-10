@@ -37,10 +37,11 @@ int main(int argc, char *argv[]) {
 		 	 << "global main" << endl;
 		genDataSection();
 		cout << endl << "section .text" << endl;
-		cout << "main:"
+		cout << "main:" <<endl
 			 << "push ebp"<<endl << "mov ebp, esp"<<endl
 			 << code
-			 << "leave\nret";
+			 << "leave\nret\n";
+	    genFunctionSection();
 
 	}
 }

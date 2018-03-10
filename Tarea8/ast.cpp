@@ -9,12 +9,22 @@
 using namespace std;
 
 set<string> variables;
+set<string> fucntion_codes;
 static int tmp_offset =4;
 map<int, bool> tempInUse;
 static int labelCount = 0;
+static string currentContext ="";
 
 void registerVariable(string varName) {
-	variables.insert(varName);
+	variables.insert(currentContext+varName);
+}
+
+string getVariable(string varName){
+	auto var = currentContext+varName;
+	if(variables.find(var)!= variables.end())
+		return var;
+	else
+		return varName;
 }
 
 void genDataSection() {
@@ -25,6 +35,14 @@ void genDataSection() {
 
 	for (auto &var : variables) {
 		cout << var << " dd 0" << endl;
+	}
+}
+
+
+void genFunctionSection(){
+	cout<<endl;
+	for (auto &fun : fucntion_codes) {
+		cout << fun << endl;
 	}
 }
 
@@ -376,12 +394,27 @@ void GreaterThanEqualExpr::genCode(ExprContext &ctx) {
 
 void IdExpr::genCode(ExprContext &ctx) {
     ctx.place = newTemp();
-    ctx.code = "mov eax, DWORD[" + varName+"]\n"+
+    ctx.code = "mov eax, DWORD[" + getVariable(varName)+"]\n"+
 	"mov " + ctx.place + ", eax\n";
 	ctx.isConstant = false;
 }
 
 void FunctionCallExpr::genCode(ExprContext &ctx){
+	this->expressionList->reverse();
+	ExprContext tmpCtx;
+	stringstream ss;
+	for(auto e : *this->expressionList){
+		e->genCode(tmpCtx);
+		ss << tmpCtx.code
+			<< "push "<< tmpCtx.place << endl;
+	}
+	releaseTemp(tmpCtx.place);
+	ctx.place = newTemp();
+	ss << "call " << this->varName << endl;
+	ss << "add esp, "<<(4*(*this->expressionList).size()) << endl;
+	ss << "mov " << ctx.place <<", eax" << endl;
+	ctx.code = ss.str();
+	releaseTemp(ctx.place);
 
 }
 
@@ -399,9 +432,9 @@ string AssignStatement::genCode() {
 
 	expr->genCode(ctx);
 	registerVariable(varName);
-	ss << ctx.code << endl;
+	ss << ctx.code;
 	ss << "mov eax, " << ctx.place << endl;
-    ss << "mov DWORD[" << varName << "], eax\n";
+    ss << "mov DWORD[" << getVariable(varName) << "], eax\n";
 	releaseTemp(ctx.place);
 	return ss.str();
 }
@@ -473,6 +506,36 @@ string WhileStatement::genCode() {
 
 	releaseTemp(ctx.place);
 
+	return ss.str();
+}
+
+string FunctionStatement::genCode(){
+	currentContext=this->id;
+	stringstream ss;
+	ss << currentContext << ":" << endl
+	<< "push ebp"<<endl << "mov ebp, esp"<<endl;
+	int i =0;
+	for(string p : *params){
+		registerVariable(p);
+		ss << "mov eax, "<<  "DWORD [ebp+"<<(8+(i*4))<<"]"<<endl;
+		ss << "mov DWORD ["<< getVariable(p) << "], eax"<<endl;
+		i++;
+	}	
+	ss<< this->st->genCode() << endl
+	<< "leave" <<endl
+	<< "ret";
+	currentContext="";
+	fucntion_codes.insert(ss.str());
+	return "";
+}
+
+string ReturnStatement::genCode(){
+	stringstream ss;
+	ExprContext ctx;
+	this->expression->genCode(ctx);
+	ss << ctx.code << endl
+	<< "mov eax, " << ctx.place;
+	releaseTemp(ctx.place);
 	return ss.str();
 }
 
