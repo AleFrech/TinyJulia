@@ -522,6 +522,7 @@ string FunctionStatement::genCode(){
 		i++;
 	}	
 	ss<< this->st->genCode() << endl
+	<< "xor eax, eax"<<endl
 	<< "leave" <<endl
 	<< "ret";
 	currentContext="";
@@ -534,7 +535,8 @@ string ReturnStatement::genCode(){
 	ExprContext ctx;
 	this->expression->genCode(ctx);
 	ss << ctx.code << endl
-	<< "mov eax, " << ctx.place;
+	<< "mov eax, " << ctx.place <<endl
+	<< "leave\nret"<< endl;
 	releaseTemp(ctx.place);
 	return ss.str();
 }
