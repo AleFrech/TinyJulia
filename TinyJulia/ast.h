@@ -331,20 +331,20 @@ public:
 
 class Statement {
 public:
-    virtual void execute() = 0;
+    virtual string genCode() = 0;
 };
 
 
 class BreakStatement : public Statement{
 public:
     BreakStatement(){}
-    void execute();
+    string genCode();
 };
 
 class ContinueStatement : public Statement{
 public:
     ContinueStatement(){}
-    void execute();
+    string genCode();
 };
 
 class FunctionStatement: public Statement {
@@ -359,7 +359,7 @@ public:
         this->expList = expList;
         this->Block = block;
     }
-    void execute();
+    string genCode();
 };
 
 class DeclarationStatement: public Statement {
@@ -372,14 +372,14 @@ public:
         this->Type = type;
         this->expr = exp;
     }
-    void execute();
+    string genCode();
 };
 
 class BlockStatement: public Statement {
 public:
     list<Statement *> stList;
     BlockStatement() {}
-    void execute();
+    string genCode();
 	void add(Statement *st) { stList.push_back(st); }
 };
 
@@ -393,7 +393,7 @@ public:
         this->ifBody = ifBody;
         this->elseBody = elseBody;
     }
-    void execute();
+    string genCode();
 };
 
 class ForStatement: public Statement {
@@ -409,7 +409,7 @@ public:
         this->blockStatement = blockStatement;
 
     }
-    void execute();
+    string genCode();
 };
 
 
@@ -421,7 +421,7 @@ public:
         this->expr=exp;
         this->blockStatement = blockSt;
     }
-    void execute();
+    string genCode();
 };
 
 class ExprStatement: public Statement {
@@ -430,7 +430,7 @@ public:
     ExprStatement(Expr * expr){
         this->expr=expr;
     }
-    void execute();
+    string genCode();
 };
 
 class PrintStatement: public Statement {
@@ -441,8 +441,11 @@ public:
         this->exprList = exprList;
         this->hasNewLine = hasNewLine; 
     }
-    void execute();
+    string genCode();
    
 };
+
+void genDataSection();
+void genFunctionSection();
 
 #endif

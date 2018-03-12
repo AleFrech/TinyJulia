@@ -3,6 +3,7 @@
 }
 
 %{
+#include "ast.h"
 #include <stdio.h>
 #include <list>
 #include <iostream>
@@ -14,6 +15,8 @@ extern int yylineno;
 void yyerror(const char* msg){
     printf("%s  in Line : %d\n",msg,yylineno);
 }
+
+BlockStatement *statement;
 
 #define YYERROR_VERBOSE 1  
 %}
@@ -48,7 +51,7 @@ void yyerror(const char* msg){
 
 %%
 
-start: opEols statementList opEols {$2->execute();}
+start: opEols statementList opEols {statement = $2;}
 ;
 
 new_line:  new_line TK_EOL
@@ -58,6 +61,7 @@ new_line:  new_line TK_EOL
 opEols: new_line
     | %empty
 ;
+
 
 statementList: statementList new_line statement { $$ = $1; $$->add($3); }
     | statement { $$ = new BlockStatement; $$->add($1); }
