@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <iostream>
+#include <string>
+#include "ast.h"
 int yyparse();
+extern BlockStatement *statement;
 void initLexer(char *);
 
 int main (int argc , char * args[]){
@@ -9,4 +13,19 @@ int main (int argc , char * args[]){
     }
     initLexer(args[1]);
     yyparse();
+
+    if (statement != NULL) {
+            string code = statement->genCode();
+
+            cout << "extern printf" << endl
+                << "global main" << endl;
+            genDataSection();
+            cout << endl << "section .text" << endl;
+            cout << "main:" <<endl
+                 << "push ebp"<<endl << "mov ebp, esp"<<endl
+                 << code
+                 << "leave\nret\n";
+            //genFunctionSection();
+
+    }
 }

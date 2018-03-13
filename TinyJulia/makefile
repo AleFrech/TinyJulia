@@ -16,7 +16,7 @@ parser.cpp: parser.y
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) input1.txt
+	./$(TARGET) input1.txt > main.S
 
 clean: 
 	rm -f $(OBJ_FILES) tokens.h 
