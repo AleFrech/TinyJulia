@@ -42,8 +42,8 @@ BlockStatement *statement;
 %token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
 %type<exprlist_t> argument_expression_list print_arguments param_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic  
-%type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent shift_exp aritmethic relational_expr param
+%type<expr_t> bit_and_exp bit_xor_exp bit_or_exp conditional_and_exp conditional_or_exp conditional_exp assign_exp 
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
 %type<blkstatement_t> statementList 
@@ -158,6 +158,13 @@ assign_exp: post_id '=' assign_exp {$$ = new AssignExpr($1,$3);}
     | post_id TK_DIV_ASGN assign_exp {$$ = new AssignExpr($1,new DivExpr($1,$3));}
     | post_id TK_MOD_ASGN assign_exp {$$ = new AssignExpr($1,new ModExpr($1,$3));}
     | post_id TK_POW_ASGN assign_exp {$$ = new AssignExpr($1,new ExponentExpr($1,$3));}
+    | post_id TK_BIT_OR_ASGN assign_exp {$$ = new AssignExpr($1,new BitOrExpr($1,$3));}
+    | post_id TK_BIT_XOR_ASGN assign_exp {$$ = new AssignExpr($1,new BitXorExpr($1,$3));}
+    | post_id TK_BIT_AND_ASGN assign_exp {$$ = new AssignExpr($1,new BitAndExpr($1,$3));}
+    | conditional_exp {$$ = $1;}
+;
+
+conditional_exp: conditional_or_exp '?' expression ':' expression {$$ = new TernaryExpr($1,$3,$5);}
     | conditional_or_exp {$$ = $1;}
 ;
 
@@ -165,7 +172,19 @@ conditional_or_exp: conditional_or_exp TL_LOGICAL_OR conditional_and_exp {$$ = n
     | conditional_and_exp {$$ =$1;}
 ;
 
-conditional_and_exp: conditional_and_exp TK_LOGICAL_AND relational_expr {$$ = new LogicalAndExpr($1,$3);}
+conditional_and_exp: conditional_and_exp TK_LOGICAL_AND bit_or_exp {$$ = new LogicalAndExpr($1,$3);}
+    | bit_or_exp {$$ = $1;}
+;
+
+bit_or_exp: bit_or_exp '|' bit_xor_exp {$$ = new BitOrExpr($1,$3);}
+    | bit_xor_exp {$$ =$1;}
+;
+
+bit_xor_exp: bit_xor_exp '$' bit_and_exp {$$ = new BitXorExpr($1,$3);}
+    | bit_and_exp {$$ =$1;}
+;
+
+bit_and_exp: bit_and_exp '&' relational_expr {$$ = new BitAndExpr($1,$3);}
     | relational_expr {$$ = $1;}
 ;
 
@@ -178,9 +197,14 @@ relational_expr: relational_expr TK_EQUALS aritmethic {$$ = new EqualExpr($1,$3)
     | aritmethic {$$ =$1;}
 ;
 
-aritmethic: aritmethic '-' term {$$ = new SubExpr($1,$3);}
-    | aritmethic '+' term {$$ = new AddExpr($1,$3);}
-    | term {$$ = $1;}
+aritmethic: aritmethic '-' shift_exp {$$ = new SubExpr($1,$3);}
+    | aritmethic '+' shift_exp {$$ = new AddExpr($1,$3);}
+    | shift_exp {$$ = $1;}
+;
+
+shift_exp: shift_exp TK_SHIFT_LEFT term {$$ = new LeftShiftExpr($1,$3);}
+    | shift_exp TK_SHIFT_RIGHT term {$$ = new RightShiftExpr($1,$3);}
+    | term { $$ = $1;}
 ;
 
 term: term '*' exponent { $$ = new MulExpr($1,$3);}
@@ -194,6 +218,9 @@ exponent: exponent '^' unary_exp {$$ = new ExponentExpr($1,$3);}
 ;
 
 unary_exp: '-' unary_exp {$$ = new UnarySubExpr($2);}
+    | '+' unary_exp {$$ = new UnaryAddExpr($2);}
+    | '~' unary_exp {$$ = new UnaryDistintExpr($2);}
+    | '!' unary_exp {$$ = new UnaryNotExpr($2);}
     | post_id {$$ = $1;}
 ;
 

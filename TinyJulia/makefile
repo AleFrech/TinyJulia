@@ -17,6 +17,10 @@ parser.cpp: parser.y
 
 run: $(TARGET)
 	./$(TARGET) input1.txt > main.S
+	nasm -f macho32 -o test.o --prefix _ main.S
+	gcc -m32 test.o -o test -Wl,-no_pie
+	#nasm -f elf32 -o asm.o main.S
+	#gcc -m32 -o test asm.o
 
 clean: 
 	rm -f $(OBJ_FILES) tokens.h 

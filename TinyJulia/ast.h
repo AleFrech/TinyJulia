@@ -5,6 +5,8 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <string>
 using namespace std;
 
 enum primitiveType {
@@ -12,6 +14,11 @@ enum primitiveType {
     BOOL_TYPE,
     ARRAY_INT_TYPE,
     ARRAY_BOOL_TYPE,
+};
+
+struct ExprContext {
+    string code;
+    string place;
 };
 
 class BaseType {
@@ -58,6 +65,7 @@ typedef list<Expr*> ExprList;
 class Expr {
 public:
     virtual int getKind() = 0;
+    virtual void genCode(ExprContext &ctx) = 0;
 };
 
 class BinaryExpr : public Expr {
@@ -79,74 +87,85 @@ public:
         this->right = exp2;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
     
 };
 
-class TernaryExpr : public Expr {
-public:
-    Expr* exp;
-    Expr* trueExp;
-    Expr* falseExp;
-    TernaryExpr(Expr* exp ,Expr* trueExp, Expr* falseExp){
-        this->exp = exp;
-        this->trueExp = trueExp;
-        this->falseExp = falseExp;
-    }
-    int getKind(){return TYPE;}
-};
+// class TernaryExpr : public Expr {
+// public:
+//     Expr* exp;
+//     Expr* trueExp;
+//     Expr* falseExp;
+//     TernaryExpr(Expr* exp ,Expr* trueExp, Expr* falseExp){
+//         this->exp = exp;
+//         this->trueExp = trueExp;
+//         this->falseExp = falseExp;
+//     }
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
 class LogicalOrExpr : public BinaryExpr {
 public:
     LogicalOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class LogicalAndExpr : public BinaryExpr {
 public:
     LogicalAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
-class BitOrExpr : public BinaryExpr {
-public:
-    BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-    int getKind(){return TYPE;}
-};
+// class BitOrExpr : public BinaryExpr {
+// public:
+//     BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
-class BitXorExpr : public BinaryExpr {
-public:
-    BitXorExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-    int getKind(){return TYPE;}
-};
+// class BitXorExpr : public BinaryExpr {
+// public:
+//     BitXorExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
-class BitAndExpr : public BinaryExpr {
-public:
-    BitAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-    int getKind(){return TYPE;}
-};
+// class BitAndExpr : public BinaryExpr {
+// public:
+//     BitAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
 class EqualExpr : public BinaryExpr {
 public:
     EqualExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class NotEqualExpr : public BinaryExpr {
 public:
     NotEqualExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class GreaterThanExpr : public BinaryExpr {
 public:
     GreaterThanExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class LessThanExpr : public BinaryExpr {
 public:
     LessThanExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 
@@ -154,70 +173,81 @@ class LessThanEqualsExpr : public BinaryExpr {
 public:
     LessThanEqualsExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class GreaterThanEqualsExpr : public BinaryExpr {
 public:
     GreaterThanEqualsExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class SubExpr : public BinaryExpr {
 public:
     SubExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class AddExpr : public BinaryExpr {
 public:
     AddExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
-class LeftShiftExpr : public BinaryExpr {
-public:
-    LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-    int getKind(){return TYPE;}
-};
+// class LeftShiftExpr : public BinaryExpr {
+// public:
+//     LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
-class RightShiftExpr : public BinaryExpr {
-public:
-    RightShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-    int getKind(){return TYPE;}
-};
+// class RightShiftExpr : public BinaryExpr {
+// public:
+//     RightShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
 class MulExpr : public BinaryExpr {
 public:
     MulExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class DivExpr : public BinaryExpr {
 public:
     DivExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class ModExpr : public BinaryExpr {
 public:
     ModExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class ExponentExpr : public BinaryExpr{
 public:
     ExponentExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
-class UnaryAddExpr : public Expr{
-public:
-    Expr* expr;
-    UnaryAddExpr(Expr* expr){
-        this->expr = expr;
-    }
-    int getKind(){return TYPE;}
-};
+// class UnaryAddExpr : public Expr{
+// public:
+//     Expr* expr;
+//     UnaryAddExpr(Expr* expr){
+//         this->expr = expr;
+//     }
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
 class UnarySubExpr : public Expr{
 public:
@@ -226,25 +256,27 @@ public:
         this->expr = expr;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
-class UnaryDistintExpr : public Expr{
-public:
-    Expr* expr;
-    UnaryDistintExpr(Expr* expr){
-        this->expr = expr;
-    }
-    int getKind(){return TYPE;}
-};
+// class UnaryDistintExpr : public Expr{
+// public:
+//     Expr* expr;
+//     UnaryDistintExpr(Expr* expr){
+//         this->expr = expr;
+//     }
+//     int getKind(){return TYPE;}
+//     void genCode(ExprContext &ctx);
+// };
 
-class UnaryNotExpr : public Expr{
-public:
-    Expr* expr;
-    UnaryNotExpr(Expr* expr){
-        this->expr = expr;
-    }
-    int getKind(){return TYPE;}
-};
+// class UnaryNotExpr : public Expr{
+// public:
+//     Expr* expr;
+//     UnaryNotExpr(Expr* expr){
+//         this->expr = expr;
+//     }
+//     int getKind(){return TYPE;}
+// };
 
 class ParenthesisPosIdExpr: public Expr{
 public:
@@ -252,13 +284,14 @@ public:
     ExprList * expressionList;
     ParenthesisPosIdExpr(string id){
         this->Id = id;
-        this->expressionList = NULL;
+        this->expressionList = new list<Expr*>;
     }
     ParenthesisPosIdExpr(string id, ExprList * exprList){
         this->Id = id;
         this->expressionList = exprList;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 
 
 };
@@ -272,6 +305,7 @@ public:
         this->Index =index;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 
 };
 
@@ -282,6 +316,7 @@ public:
          this->expressionList = list;
      }
      int getKind(){return TYPE;}
+     void genCode(ExprContext &ctx);
 };
 
 class BoolExpr : public Expr{
@@ -291,6 +326,7 @@ public:
         this->value = value;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class NumberExpr : public Expr {
@@ -298,6 +334,7 @@ public:
     NumberExpr(int value) { this->value = value; }
     int value;
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class VarExpr: public Expr{
@@ -305,15 +342,19 @@ public:
     string  Id;
     VarExpr(string  id) { this->Id = id; }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 class StringExpr: public Expr {
 public:
     string str;
     StringExpr(string str) { 
+        
         this->str = str;
     }
-    int getKind() { return LIT_STRING; }
+    int getKind() {return LIT_STRING; }
+    void genCode(ExprContext &ctx);
+
 };
 
 
@@ -326,6 +367,7 @@ public:
         this->Type = type;
     }
     int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
 };
 
 

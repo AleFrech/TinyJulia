@@ -1,8 +1,8 @@
-x::Int = 10
+#x::Int = 10
 
 
-print("This is a ")
-
+print("This is an " , "and will be ")
+#=
 while (5 < 3)
     print("fwrf")
 end 
@@ -17,5 +17,5 @@ for x = 5 : 10
         println("x is equal to y")
     end
 end
-
+=#
 println("Hello World")
