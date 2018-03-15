@@ -42,8 +42,8 @@ BlockStatement *statement;
 %token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
 %type<exprlist_t> argument_expression_list print_arguments param_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic  
-%type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp
+%type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param bit_or_exp bit_xor_exp
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
 %type<blkstatement_t> statementList 
@@ -165,10 +165,21 @@ conditional_or_exp: conditional_or_exp TL_LOGICAL_OR conditional_and_exp {$$ = n
     | conditional_and_exp {$$ =$1;}
 ;
 
-conditional_and_exp: conditional_and_exp TK_LOGICAL_AND relational_expr {$$ = new LogicalAndExpr($1,$3);}
-    | relational_expr {$$ = $1;}
+conditional_and_exp: conditional_and_exp TK_LOGICAL_AND bit_or_exp {$$ = new LogicalAndExpr($1,$3);}
+    | bit_or_exp {$$ = $1;}
 ;
 
+bit_or_exp: bit_or_exp '|' bit_xor_exp {$$ = new BitOrExpr($1,$3);}
+    | bit_xor_exp {$$ =$1;}
+;
+
+bit_xor_exp: bit_xor_exp '$' bit_and_exp {$$ = new BitXorExpr($1,$3);}
+    | bit_and_exp {$$ =$1;}
+;
+
+bit_and_exp: bit_and_exp '&' relational_expr {$$ = new BitAndExpr($1,$3);}
+    | relational_expr {$$ = $1;}
+;
 relational_expr: relational_expr TK_EQUALS aritmethic {$$ = new EqualExpr($1,$3);} 
     | relational_expr TK_NOT_EQUALS aritmethic {$$ = new NotEqualExpr($1,$3);} 
     | relational_expr '>' aritmethic {$$ = new GreaterThanExpr($1,$3);}
@@ -204,8 +215,8 @@ post_id: factor {$$ = $1;}
 ;
 
 factor: TK_NUM  {$$ = new NumberExpr($1);}
-    | TK_TRUE   {$$ = new BoolExpr($1);}
-    | TK_FALSE {$$ = new BoolExpr($1);}
+    | TK_TRUE   {$$ = new BoolExpr(true);}
+    | TK_FALSE {$$ = new BoolExpr(false);}
     | '[' argument_expression_list ']' {$$ = new ArrayExpr($2);}
     | TK_ID     {$$ = new VarExpr(string($1)); delete $1;}
     | '(' expression ')' {$$ = $2;}

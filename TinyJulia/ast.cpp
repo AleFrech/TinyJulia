@@ -1,16 +1,17 @@
 #include "ast.h"
 #include <iostream>
 #include <map>
+#include <vector>
 #include <string>
 #include <sstream>
 using namespace std;
-map<string ,BaseType> variables;
+map<string ,BaseType*> variables;
+vector<map<string,string>>$scopes;
 map<string ,string> stringLiterals;
 static int tmp_offset =4;
 static int labelCount = 0;
 static int literalCount =0;
 map<int, bool> tempInUse;
-static string currentContext ="";
 
 void genDataSection() {
 	cout<<endl;
@@ -25,8 +26,27 @@ void genDataSection() {
     }
 
 	for (auto &var : variables) {
-		cout << var.first << " dd 0" << endl;
+			cout << var.first << " dd " << 0 << endl;
 	}
+}
+
+string resolveId(string id){
+
+	int scopes = $scopes.size() - 1;
+	for(int i = scopes; i >= 0; i--) {
+		if($scopes[i].find(id) != $scopes[i].end()){
+			return "DWORD[ebp " + $scopes[i][id] + "]";
+		}
+	}
+
+	if(variables.find(id) != variables.end()){
+		return  "DWORD ["+id+"]";
+	}
+
+	$scopes[scopes][id] = " - " + to_string(tmp_offset);
+	string addr = "DWORD[ebp - " + to_string(tmp_offset) + "]";
+	tmp_offset += 4;
+	return addr;
 }
 
 string newTemp() {
@@ -114,7 +134,8 @@ void ArrayExpr::genCode(ExprContext &ctx) {
 }
 
 void BoolExpr::genCode(ExprContext &ctx) {
-
+	ctx.place =  this->value ? "1" : "0";
+    ctx.code = "";
 }
 
 void StringExpr::genCode(ExprContext &ctx) {
@@ -122,11 +143,13 @@ void StringExpr::genCode(ExprContext &ctx) {
 }
 
 void NumberExpr::genCode(ExprContext &ctx) {
-
+	ctx.place = to_string(this->value);
+	ctx.code = "";
 }
 
 void VarExpr::genCode(ExprContext &ctx) {
-
+	ctx.place = resolveId(this->Id);
+    ctx.code = "";
 }
 
 void ParamExpr::genCode(ExprContext &ctx) {
@@ -165,8 +188,35 @@ void LogicalOrExpr::genCode(ExprContext &ctx) {
 
 }
 
-void AssignExpr::genCode(ExprContext &ctx) {
+void BitOrExpr::genCode(ExprContext &ctx) {
 
+}
+
+void BitXorExpr::genCode(ExprContext &ctx) {
+
+}
+
+void BitAndExpr::genCode(ExprContext &ctx) {
+
+}
+
+void AssignExpr::genCode(ExprContext &ctx) {
+	stringstream ss;
+	ExprContext ctx1 , ctx2;
+
+	this->right->genCode(ctx2);
+	ss << ctx2.code;
+	ss << "mov eax, " << ctx2.place << endl;
+	this->left->genCode(ctx1);
+	//todo la mierda con arrays tmbn
+	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
+		ss << "mov " << ctx1.place  << ", eax\n";
+		releaseTemp(ctx2.place);
+		releaseTemp(ctx1.place);
+		ctx.code += ss.str();
+	}else{
+		throw invalid_argument("left side of asignation must be a variable");
+	}
 }
 
 string BreakStatement::genCode(){
@@ -213,7 +263,23 @@ string FunctionStatement::genCode(){
 }
 
 string DeclarationStatement::genCode(){
-    return "";
+   stringstream ss;
+   ExprContext ctx;
+   if(this->Type == INT_TYPE)
+		variables[this->Id] = new IntType(0);
+   else if(this->Type == BOOL_TYPE)
+		variables[this->Id] = new BoolType(0);
+
+	expr->genCode(ctx);
+	ss << ctx.code;
+	ss << "mov eax, " << ctx.place << endl;
+    ss << "mov " <<resolveId(this->Id) << ", eax\n";
+	releaseTemp(ctx.place);
+	return ss.str();
+
+
+
+
 }
 
 string PrintStatement::genCode()

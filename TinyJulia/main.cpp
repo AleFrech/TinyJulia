@@ -4,6 +4,7 @@
 #include "ast.h"
 int yyparse();
 extern BlockStatement *statement;
+extern vector<map<string,string>>$scopes;
 void initLexer(char *);
 
 int main (int argc , char * args[]){
@@ -12,6 +13,7 @@ int main (int argc , char * args[]){
         return 1;
     }
     initLexer(args[1]);
+    $scopes.push_back(map<string,string>());
     yyparse();
 
     if (statement != NULL) {

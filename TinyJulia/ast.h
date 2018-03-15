@@ -119,26 +119,26 @@ public:
     void genCode(ExprContext &ctx);
 };
 
-// class BitOrExpr : public BinaryExpr {
-// public:
-//     BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class BitOrExpr : public BinaryExpr {
+public:
+    BitOrExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
-// class BitXorExpr : public BinaryExpr {
-// public:
-//     BitXorExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class BitXorExpr : public BinaryExpr {
+public:
+    BitXorExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
-// class BitAndExpr : public BinaryExpr {
-// public:
-//     BitAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class BitAndExpr : public BinaryExpr {
+public:
+    BitAndExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
 class EqualExpr : public BinaryExpr {
 public:

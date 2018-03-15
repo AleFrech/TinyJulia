@@ -1,7 +1,7 @@
-#x::Int = 10
+x::Int = 10
 
 
-print("This is an " , "and will be ")
+#print("This is the number " , "and will be ")
 #=
 while (5 < 3)
     print("fwrf")
@@ -18,4 +18,4 @@ for x = 5 : 10
     end
 end
 =#
-println("Hello World")
+#println("Hello World")
