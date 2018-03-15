@@ -41,7 +41,7 @@ BlockStatement *statement;
 %token TK_PRINT TK_PRINTLN TK_BOOL TK_INT TK_IF TK_ELSE TK_ELSEIF TK_WHILE TK_FOR TK_FUNCTION TK_RETURN TK_BIT_XOR_ASGN TK_BIT_OR_ASGN
 %token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
-%type<exprlist_t> argument_expression_list print_arguments param_list
+%type<exprlist_t> argument_expression_list print_arguments param_list op_param_list
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp
 %type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param bit_or_exp bit_xor_exp
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
@@ -88,7 +88,11 @@ break_statement: TK_BREAK {$$ = new BreakStatement();}
 continue_statement: TK_CONTINUE {$$ = new ContinueStatement();}
 ;
 
-function_statement: TK_FUNCTION TK_ID '(' param_list ')' type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}
+function_statement: TK_FUNCTION TK_ID '(' op_param_list ')' type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}
+;
+
+op_param_list: param_list {$$ = $1;}
+    | %empty {$$ =new ExprList;}
 ;
 
 param_list: param_list ',' param {$1->push_back($3); $$=$1;}
@@ -204,7 +208,7 @@ exponent: exponent '^' unary_exp {$$ = new ExponentExpr($1,$3);}
     | unary_exp {$$ = $1;}
 ;
 
-unary_exp: '-' unary_exp {$$ = new UnarySubExpr($2);}
+unary_exp: '-' unary_exp {$$ = new UnarySubExpr(new MulExpr($2,new NumberExpr(-1)));}
     | post_id {$$ = $1;}
 ;
 

@@ -1,21 +1,14 @@
+
 x::Int = 10
 
-
-#print("This is the number " , "and will be ")
-#=
-while (5 < 3)
-    print("fwrf")
-end 
-
-
-for x = 5 : 10
-    if x < y
-        println("x is less than y")
-    elseif x > y
-        println("x is greater than y")
-    else
-        println("x is equal to y")
-    end
+function Suma()::Int 
+    x::Int = 30
+    println("Este es el numero dentro ",x)
+   
 end
-=#
-#println("Hello World")
+
+
+
+Suma()
+
+ println("Y esta es el numero afuera ",x)

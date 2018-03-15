@@ -12,6 +12,10 @@
         "memory": "cpp",
         "set": "cpp",
         "vector": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "__locale": "cpp",
+        "locale": "cpp",
+        "algorithm": "cpp",
+        "ostream": "cpp"
     }
 }

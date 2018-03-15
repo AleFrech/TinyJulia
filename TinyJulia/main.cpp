@@ -27,7 +27,7 @@ int main (int argc , char * args[]){
                  << "push ebp"<<endl << "mov ebp, esp"<<endl
                  << code
                  << "leave\nret\n";
-            //genFunctionSection();
+            genFunctionSection();
 
     }
 }
