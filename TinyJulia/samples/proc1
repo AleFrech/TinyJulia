@@ -1,0 +1,9 @@
+function suma(a::Int,b::Int)::Int
+    return a + b
+end
+
+x::Int = 10
+y::Int = 20
+
+z::Int = suma(x, y)
+println(z)

@@ -76,7 +76,7 @@
 "Array" {return TK_ARRAY;}          
 [0-9]+  {yylval.int_t = atoi(yytext); return TK_NUM;}
 [_a-zA-Z][a-zA-Z0-9]* {yylval.charPointer_t = strdup(yytext); return TK_ID;}
-\"([^"])*\" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return STRING_LITERAL;}
+\"(\\[\\"tn]|[^"\\])*\" {yytext[yyleng-1] = '\0'; yylval.charPointer_t = strdup(&yytext[1]); return STRING_LITERAL;}
 .       {printf("Invalid Character: %s\n",yytext); return TK_ERROR;}
 <INITIAL><<EOF>> {return 0;}
 <commentState>"=#" {BEGIN(INITIAL);}

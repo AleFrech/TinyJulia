@@ -1,0 +1,12 @@
+y::Int = 10
+
+function func(n::Int)::Int
+    x::Int = 10;
+    z::Int = x+n+y;
+    
+    return z;
+end
+
+y = 20;
+r::Int = y;
+print(func(5));

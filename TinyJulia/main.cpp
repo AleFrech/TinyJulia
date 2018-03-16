@@ -20,6 +20,7 @@ int main (int argc , char * args[]){
             string code = statement->genCode();
 
             cout << "extern printf" << endl
+                << "extern power" <<endl
                 << "global main" << endl;
             genDataSection();
             cout << endl << "section .text" << endl;

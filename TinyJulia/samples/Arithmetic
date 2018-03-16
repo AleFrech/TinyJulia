@@ -1,6 +1,6 @@
 #=
 *******************************************
- * File: ArithOperators.py
+ * File: ArithOperators
  * A test program for arithmethic operators
  ******************************************
 =#
@@ -10,9 +10,9 @@ y::Int = 3
 println (x)
 println (y)
 println (-x)
-println (-y)
-println (x + y)
+println (-y);println (x + y)
 println (x - y)
 println (x * y)
 println (x / y)
 println (x % y)
+println (x ^ y)

@@ -1,0 +1,7 @@
+function rec(x::Int)::Int
+    println(x)
+    return rec(x+1);
+end
+
+
+rec(1)

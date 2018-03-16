@@ -42,7 +42,7 @@ BlockStatement *statement;
 %token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
 %type<exprlist_t> argument_expression_list print_arguments param_list op_param_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp shift_exp
 %type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param bit_or_exp bit_xor_exp
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
@@ -56,6 +56,7 @@ start: opEols statementList opEols {statement = $2;}
 
 new_line:  new_line TK_EOL
     | TK_EOL
+    | ';'
 ;
 
 opEols: new_line
@@ -193,9 +194,14 @@ relational_expr: relational_expr TK_EQUALS aritmethic {$$ = new EqualExpr($1,$3)
     | aritmethic {$$ =$1;}
 ;
 
-aritmethic: aritmethic '-' term {$$ = new SubExpr($1,$3);}
-    | aritmethic '+' term {$$ = new AddExpr($1,$3);}
-    | term {$$ = $1;}
+aritmethic: aritmethic '-' shift_exp {$$ = new SubExpr($1,$3);}
+    | aritmethic '+' shift_exp {$$ = new AddExpr($1,$3);}
+    | shift_exp {$$ = $1;}
+;
+
+shift_exp: shift_exp TK_SHIFT_LEFT term {$$ = new LeftShiftExpr($1,$3);}
+    | shift_exp TK_SHIFT_RIGHT term {$$ = new RightShiftExpr($1,$3);}
+    | term { $$ = $1;}
 ;
 
 term: term '*' exponent { $$ = new MulExpr($1,$3);}

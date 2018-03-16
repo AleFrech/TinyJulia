@@ -55,7 +55,7 @@
 "range" {return TK_RANGE;}
 "pass"  {return TK_PASS;}
 "input" {return TK_INPUT;}
-\"(\\.|[^"\\])*\"  {yylval.string_t= new string(yytext); return LIT_STRING;}
+\"(\\[\\"tn]|[^"\\])*\"  {yylval.string_t= new string(yytext); return LIT_STRING;}
 [0-9]+  {yylval.int_t=atoi(yytext); return LIT_NUM;}
 [_a-zA-z][_a-zA-z0-9]* {yylval.string_t= new string(yytext); return TK_ID;}
 \n      { exprectsIndent = true; BEGIN(newlineState);}

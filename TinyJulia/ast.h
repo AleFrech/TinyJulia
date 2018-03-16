@@ -10,15 +10,22 @@
 using namespace std;
 
 enum primitiveType {
-    INT_TYPE,
-    BOOL_TYPE,
-    ARRAY_INT_TYPE,
-    ARRAY_BOOL_TYPE,
+    INT_TYPE =1,
+    BOOL_TYPE =2,
+    ARRAY_INT_TYPE = 3,
+    ARRAY_BOOL_TYPE = 4,
 };
 
 struct ExprContext {
     string code;
     string place;
+    primitiveType type;
+};
+
+
+struct VariableMetaData{
+    string address;
+    primitiveType type;
 };
 
 class BaseType {
@@ -197,19 +204,19 @@ public:
     void genCode(ExprContext &ctx);
 };
 
-// class LeftShiftExpr : public BinaryExpr {
-// public:
-//     LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class LeftShiftExpr : public BinaryExpr {
+public:
+    LeftShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
-// class RightShiftExpr : public BinaryExpr {
-// public:
-//     RightShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class RightShiftExpr : public BinaryExpr {
+public:
+    RightShiftExpr(Expr *expr1, Expr *expr2) : BinaryExpr(expr1, expr2) {}
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
 class MulExpr : public BinaryExpr {
 public:
@@ -351,8 +358,19 @@ public:
     StringExpr(string str) { 
         
         this->str = str;
+        myReplace(this->str,"\\n","\n",2);
+        myReplace(this->str,"\\\"","\"",2);
+        myReplace(this->str,"\\t","\t",2);
+        myReplace(this->str,"\\\\","\\",2);
     }
     int getKind() {return LIT_STRING; }
+    void myReplace(string &str, string toReplace,string replaced,int size ){
+    auto charIndex = str.find(toReplace);
+    while(charIndex!=string::npos){
+        str.replace(charIndex,size,replaced);
+        charIndex = str.find(toReplace);
+    }
+}
     void genCode(ExprContext &ctx);
 
 };

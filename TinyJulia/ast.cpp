@@ -7,8 +7,9 @@
 #include <sstream>
 using namespace std;
 map<string ,BaseType*> variables;
+map<string, primitiveType> functions;
 set<string> fucntion_codes;
-vector<map<string,string>>$scopes;
+vector<map<string,VariableMetaData>>$scopes;
 map<string ,string> stringLiterals;
 static int tmp_offset =4;
 static int labelCount = 0;
@@ -40,23 +41,31 @@ void genFunctionSection(){
 	}
 }
 
-string getId(string id){
+
+string getId(string id,primitiveType& type){
 
 	int scopes = $scopes.size() - 1;
 	for(int i = scopes; i >= 0; i--) {
 		if($scopes[i].find(id) != $scopes[i].end()){
-			return "DWORD[ebp " + $scopes[i][id] + "]";
+			type = $scopes[i][id].type;
+			return "DWORD[ebp " + $scopes[i][id].address + "]";
 		}
 	}
 
 	if(variables.find(id) != variables.end()){
+		type = variables[id]->Type;
 		return  "DWORD ["+id+"]";
 	}
 
-	$scopes[scopes][id] = " - " + to_string(tmp_offset);
+	$scopes[scopes][id].address = " - " + to_string(tmp_offset);
 	string addr = "DWORD[ebp - " + to_string(tmp_offset) + "]";
 	tmp_offset += 4;
 	return addr;
+}
+
+string getId(string id){
+	primitiveType type;
+	return getId(id,type);
 }
 
 string newTemp() {
@@ -114,6 +123,10 @@ void AddExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE){
+		throw invalid_argument("Cant add incompatible types");
+	}
+
     ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -121,6 +134,7 @@ void AddExpr::genCode(ExprContext &ctx) {
     ctx.code += "mov eax, " + ctx1.place+"\n"+
     "add eax," + ctx2.place+"\n"+
     "mov "+ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
 }
 
 void SubExpr::genCode(ExprContext &ctx) {
@@ -130,6 +144,9 @@ void SubExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant sub incompatible types");
+
     ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -137,6 +154,7 @@ void SubExpr::genCode(ExprContext &ctx) {
     ctx.code += "mov eax, " + ctx1.place+"\n"+
     "sub eax," + ctx2.place+"\n"+
     "mov "+ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
 }
 
 void MulExpr::genCode(ExprContext &ctx) {
@@ -146,6 +164,9 @@ void MulExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant multiplicate incompatible types");
+
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -154,6 +175,7 @@ void MulExpr::genCode(ExprContext &ctx) {
     ctx.code += "imul ecx\n";
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
 }
 
 void DivExpr::genCode(ExprContext &ctx) {
@@ -163,6 +185,9 @@ void DivExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant divide incompatible types");
+
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -171,6 +196,7 @@ void DivExpr::genCode(ExprContext &ctx) {
     ctx.code += "idiv ecx\n";
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
 
 }
 
@@ -181,6 +207,9 @@ void ModExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant mod incompatible types");
+
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -189,21 +218,47 @@ void ModExpr::genCode(ExprContext &ctx) {
     ctx.code += "idiv ecx\n";
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", edx\n";
+	ctx.type = INT_TYPE;
 }
 
 void ExponentExpr::genCode(ExprContext &ctx) {
+	ExprContext ctx1;
+    ExprContext ctx2;
 
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant pow incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "push "+ctx2.place+"\n";
+    ctx.code += "push "+ctx1.place+"\n";
+    ctx.code += "call power\n";
+	ctx.code += "add esp,8\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
 }
 
 void UnarySubExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
-    this->expr->genCode(ctx1);
+	this->expr->genCode(ctx1);
+	if(ctx1.type != INT_TYPE){
+		cout<< ctx1.type << endl;
+		throw invalid_argument("unary '-' only compatible with int type");
+	}
     ctx.code = ctx1.code + "\n";
     ctx.place = ctx1.place;
     releaseTemp(ctx1.place);
+	ctx.type = INT_TYPE;
 }
 
 void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
+	if(functions.find(this->Id) == functions.end())
+		throw invalid_argument("undeclared function "+this->Id);
     this->expressionList->reverse();
     ExprContext tmpCtx;
 	stringstream ss;
@@ -219,6 +274,7 @@ void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
 	ss << "add esp, "<<(4*(*this->expressionList).size()) << endl;
 	ss << "mov " << ctx.place <<", eax" << endl;
 	ctx.code = ss.str();
+	ctx.type = functions[this->Id];
 	releaseTemp(ctx.place);
 }
 
@@ -233,6 +289,7 @@ void ArrayExpr::genCode(ExprContext &ctx) {
 void BoolExpr::genCode(ExprContext &ctx) {
 	ctx.place =  this->value ? "1" : "0";
     ctx.code = "";
+	ctx.type = BOOL_TYPE;
 }
 
 void StringExpr::genCode(ExprContext &ctx) {
@@ -242,10 +299,11 @@ void StringExpr::genCode(ExprContext &ctx) {
 void NumberExpr::genCode(ExprContext &ctx) {
 	ctx.place = to_string(this->value);
 	ctx.code = "";
+	ctx.type = INT_TYPE;
 }
 
 void VarExpr::genCode(ExprContext &ctx) {
-	ctx.place = getId(this->Id);
+	ctx.place = getId(this->Id,ctx.type);
     ctx.code = "";
 }
 
@@ -297,15 +355,23 @@ void BitAndExpr::genCode(ExprContext &ctx) {
 
 }
 
+void LeftShiftExpr::genCode(ExprContext &ctx) {
+	
+}
+
+void RightShiftExpr::genCode(ExprContext &ctx) {
+	
+}
+
 void AssignExpr::genCode(ExprContext &ctx) {
 	stringstream ss;
 	ExprContext ctx1 , ctx2;
-
 	this->right->genCode(ctx2);
+	this->left->genCode(ctx1);
+	if(ctx1.type != ctx2.type)
+		throw invalid_argument("invalid assignation of diffrent type");	
 	ss << ctx2.code;
 	ss << "mov eax, " << ctx2.place << endl;
-	this->left->genCode(ctx1);
-	//todo la mierda con arrays tmbn
 	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
          if( variables.find(idnode->Id) == variables.end())
             throw invalid_argument("Invalid asignation of a undifined global variable "+idnode->Id);
@@ -316,6 +382,7 @@ void AssignExpr::genCode(ExprContext &ctx) {
 		releaseTemp(ctx2.place);
 		releaseTemp(ctx1.place);
 		ctx.code += ss.str();
+		ctx.type = ctx1.type;
 	}else{
 		throw invalid_argument("left side of asignation must be a variable");
 	}
@@ -332,7 +399,6 @@ string ContinueStatement::genCode(){
 string BlockStatement::genCode()
 {
     stringstream ss;
-
 	for (Statement *st : this->stList) {
 		ss << st->genCode() << endl;
 	}
@@ -350,7 +416,14 @@ string ExprStatement::genCode(){
 }
 
 string ReturnStatement::genCode(){
-   return "";
+    stringstream ss;
+	ExprContext ctx;
+	this->exp->genCode(ctx);
+	ss << ctx.code << endl
+	<< "mov eax, " << ctx.place <<endl
+	<< "leave\nret"<< endl;
+	releaseTemp(ctx.place);
+	return ss.str();
 }
 
 string WhileStatement::genCode(){
@@ -368,15 +441,18 @@ string IfStatement::genCode(){
 string FunctionStatement::genCode(){
     stringstream ss;
     isInnerContext = true;
-	map <string, string> methodParams;
+	map <string, VariableMetaData> methodParams;
 	int paramOffset = 8;
     for(auto expr : *expList){
         if(ParamExpr* param = dynamic_cast<ParamExpr*>(expr)){
-            methodParams[param->Id] = "+ " + to_string(paramOffset);
+            methodParams[param->Id].address = "+ " + to_string(paramOffset);
+			methodParams[param->Id].type = param->Type;
             paramOffset += 4;
         }
     }
+	
     $scopes.push_back(methodParams);
+	functions[this->Id] = this->Type;
     ss << this->Id << ":" << endl
     << "push ebp" << endl 
 	<< "mov ebp, esp" << endl;
@@ -405,11 +481,15 @@ string DeclarationStatement::genCode(){
 		    variables[this->Id] = new BoolType(0);
     }else{
         int scopes = $scopes.size() - 1;
-        $scopes[scopes][this->Id] = " - " + to_string(tmp_offset);
+        $scopes[scopes][this->Id].address = " - " + to_string(tmp_offset);
+		 $scopes[scopes][this->Id].type = this->Type;
         tmp_offset += 4;
     }
 
 	expr->genCode(ctx);
+	if(ctx.type != this->Type){
+		throw invalid_argument("Invalid declaration of diffrent types");
+	}
 	ss << ctx.code;
 	ss << "mov eax, " << ctx.place << endl;
     ss << "mov " <<getId(this->Id) << ", eax\n";
@@ -426,7 +506,21 @@ string PrintStatement::genCode()
         if (expr->getKind() == ExprKind::LIT_STRING) {
             string lit = ((StringExpr*)expr)->str.c_str();
             string pointer = newLiteral();
-            stringLiterals[pointer] = " db \""+lit+"\", 0";
+			string value = " db \"";
+			for(int i =0; i<lit.size();i++){
+				if(lit[i]=='\n'){
+					value+="\", 10, \"";
+				}else if(lit[i]=='\t'){
+					value+="\", 9, \"";
+				}else if(lit[i]=='\"'){
+					value+="\", 34, \"";
+				}else if(lit[i]=='\\'){
+					value+="\", 92, \"";
+				}else
+					value+=lit[i];
+			}
+			value+="\", 0";
+            stringLiterals[pointer] = value;
             ss << "push "<<pointer <<endl;
             if(hasNewLine)
                 ss << "push  formatStringln" <<endl;
