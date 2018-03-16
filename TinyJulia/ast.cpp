@@ -262,7 +262,7 @@ void LessThanExpr::genCode(ExprContext &ctx) {
 		ctx.code += "setl al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '<' incompatible types");
 }
@@ -286,7 +286,7 @@ void LessThanEqualsExpr::genCode(ExprContext &ctx) {
 		ctx.code += "setle al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '<=' incompatible types");
 }
@@ -311,7 +311,7 @@ void GreaterThanExpr::genCode(ExprContext &ctx) {
 		ctx.code += "setg al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '>' incompatible types");
 }
@@ -335,7 +335,7 @@ void GreaterThanEqualsExpr::genCode(ExprContext &ctx) {
 		ctx.code += "setge al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '>=' incompatible types");
 }
@@ -359,7 +359,7 @@ void EqualExpr::genCode(ExprContext &ctx) {
 		ctx.code += "sete al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '>=' incompatible types");
 }
@@ -383,9 +383,166 @@ void NotEqualExpr::genCode(ExprContext &ctx) {
 		ctx.code += "setne al\n";
 		ctx.place = newTemp();
 	    ctx.code += "mov " + ctx.place+", eax\n";
-		ctx.type = ctx1.type;
+		ctx.type = BOOL_TYPE;
     }else
 	    throw invalid_argument("Cant '>=' incompatible types");
+}
+
+void LeftShiftExpr::genCode(ExprContext &ctx) {
+	ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant >> incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "mov eax,"+ctx1.place+"\n";
+    ctx.code += "xor ecx, ecx\n";
+    ctx.code += "mov cl,"+ctx2.place+"\n";
+    ctx.code += "sal eax, cl\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;	
+}
+
+void RightShiftExpr::genCode(ExprContext &ctx) {
+	ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant >> incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "mov eax,"+ctx1.place+"\n";
+    ctx.code += "xor ecx, ecx\n";
+    ctx.code += "mov cl,"+ctx2.place+"\n";
+    ctx.code += "sar eax, cl\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
+}
+
+void BitOrExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant bit and incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+    ctx.code += "mov ecx,"+ctx2.place+"\n";
+    ctx.code += "or eax, ecx\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
+}
+
+void BitXorExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant bit and incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+    ctx.code += "mov ecx,"+ctx2.place+"\n";
+    ctx.code += "xor eax, ecx\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
+}
+
+void BitAndExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+		throw invalid_argument("Cant bit and incompatible types");
+
+    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+    ctx.code += "mov ecx,"+ctx2.place+"\n";
+    ctx.code += "and eax, ecx\n";
+    ctx.place = newTemp();
+    ctx.code += "mov " + ctx.place+", eax\n";
+	ctx.type = INT_TYPE;
+}
+
+void UnaryAddExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+	this->expr->genCode(ctx1);
+	if(ctx1.type != INT_TYPE){
+		throw invalid_argument("unary '+' only compatible with int type");
+	}
+    ctx.code = ctx1.code + "\n";
+    ctx.place = ctx1.place;
+    releaseTemp(ctx1.place);
+	ctx.type = INT_TYPE;
+}
+
+void LogicalAndExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+    ExprContext ctx2;
+
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != BOOL_TYPE || ctx2.type != BOOL_TYPE){
+		throw invalid_argument("Cant && incompatible types");
+	}
+
+    ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    string isfalse = newLabel();
+    string isTrue = newLabel();
+    string done = newLabel();
+    ctx.place = newTemp();
+    ctx.code += "mov eax, " + ctx1.place+"\n"+
+    "test eax, eax\n"+
+    "jz "+ isfalse +"\n"+
+    "mov eax ,"+ctx2.place+"\n"+
+    "test eax, eax\n"+
+    "jnz "+ isTrue +"\n"+
+    isfalse+":\n"+
+    "mov "+ctx.place+", 0\n"+
+    "jmp "+done+"\n"+
+    isTrue+":\n"+
+    "mov "+ctx.place+", 1\n"
+    "jmp "+done+"\n"+
+    done + ":\n";
+	ctx.type = BOOL_TYPE;
+}
+
+void LogicalOrExpr::genCode(ExprContext &ctx) {
+
 }
 
 
@@ -394,13 +551,26 @@ void UnarySubExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
 	this->expr->genCode(ctx1);
 	if(ctx1.type != INT_TYPE){
-		cout<< ctx1.type << endl;
 		throw invalid_argument("unary '-' only compatible with int type");
 	}
     ctx.code = ctx1.code + "\n";
     ctx.place = ctx1.place;
     releaseTemp(ctx1.place);
 	ctx.type = INT_TYPE;
+}
+
+void UnaryNotExpr::genCode(ExprContext &ctx){
+     ExprContext ctx1;
+	 this->expr->genCode(ctx1);
+     if(ctx1.type != INT_TYPE){
+		throw invalid_argument("unary '~' only compatible with int type");
+	 }
+     ctx.code = ctx1.code + "\n";
+     ctx.code += "mov eax,"+ctx1.place+"\n";
+     ctx.code += "not eax\n";
+     ctx.place = newTemp();
+     ctx.code += "mov " + ctx.place+", eax\n";
+	 ctx.type = INT_TYPE;
 }
 
 void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
@@ -425,13 +595,7 @@ void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
 	releaseTemp(ctx.place);
 }
 
-void BracketPostIdExpr::genCode(ExprContext &ctx) {
 
-}
-
-void ArrayExpr::genCode(ExprContext &ctx) {
-
-}
 
 void BoolExpr::genCode(ExprContext &ctx) {
 	ctx.place =  this->value ? "1" : "0";
@@ -458,33 +622,16 @@ void ParamExpr::genCode(ExprContext &ctx) {
 
 }
 
-void LogicalAndExpr::genCode(ExprContext &ctx) {
+void BracketPostIdExpr::genCode(ExprContext &ctx) {
 
 }
 
-void LogicalOrExpr::genCode(ExprContext &ctx) {
+void ArrayExpr::genCode(ExprContext &ctx) {
 
 }
 
-void BitOrExpr::genCode(ExprContext &ctx) {
 
-}
 
-void BitXorExpr::genCode(ExprContext &ctx) {
-
-}
-
-void BitAndExpr::genCode(ExprContext &ctx) {
-
-}
-
-void LeftShiftExpr::genCode(ExprContext &ctx) {
-	
-}
-
-void RightShiftExpr::genCode(ExprContext &ctx) {
-	
-}
 
 void AssignExpr::genCode(ExprContext &ctx) {
 	stringstream ss;

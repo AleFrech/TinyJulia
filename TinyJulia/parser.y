@@ -215,6 +215,8 @@ exponent: exponent '^' unary_exp {$$ = new ExponentExpr($1,$3);}
 ;
 
 unary_exp: '-' unary_exp {$$ = new UnarySubExpr(new MulExpr($2,new NumberExpr(-1)));}
+    | '~' unary_exp {$$ = new UnaryNotExpr($2);}
+    | '+' unary_exp {$$ = new UnaryAddExpr($2);}
     | post_id {$$ = $1;}
 ;
 

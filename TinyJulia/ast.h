@@ -246,15 +246,15 @@ public:
     void genCode(ExprContext &ctx);
 };
 
-// class UnaryAddExpr : public Expr{
-// public:
-//     Expr* expr;
-//     UnaryAddExpr(Expr* expr){
-//         this->expr = expr;
-//     }
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class UnaryAddExpr : public Expr{
+public:
+    Expr* expr;
+    UnaryAddExpr(Expr* expr){
+        this->expr = expr;
+    }
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
 class UnarySubExpr : public Expr{
 public:
@@ -276,14 +276,15 @@ public:
 //     void genCode(ExprContext &ctx);
 // };
 
-// class UnaryNotExpr : public Expr{
-// public:
-//     Expr* expr;
-//     UnaryNotExpr(Expr* expr){
-//         this->expr = expr;
-//     }
-//     int getKind(){return TYPE;}
-// };
+class UnaryNotExpr : public Expr{
+public:
+    Expr* expr;
+    UnaryNotExpr(Expr* expr){
+        this->expr = expr;
+    }
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
 class ParenthesisPosIdExpr: public Expr{
 public:
