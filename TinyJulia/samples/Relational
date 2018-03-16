@@ -1,0 +1,37 @@
+#=
+*******************************************
+ * File: Relational
+ * A test program for relational operators
+ *******************************************
+=#
+
+x::Int = 10
+y::Int = 20
+
+trueValue::Bool = true
+falseValue::Bool = false
+
+print("trueValue = ",trueValue,"\n")
+print("falseValue = ",falseValue,"\n")
+
+
+print("x = ",x,"\n")
+print("y = ",y,"\n")
+
+print ("x > y = ",x > y,"\n")
+
+print ("x >= y = ",x >= y,"\n")
+
+print ("x < y = ",x < y,"\n")
+
+print ("x <= y = ",x <= y,"\n")
+
+print ("x != y = ",x != y,"\n")
+
+print ("x == y = ",x == y,"\n")
+
+print ("x != y = ",x != y,"\n")
+
+print ("trueValue == falseValue = ",trueValue == falseValue,"\n")
+
+print ("trueValue != falseValue =",trueValue != falseValue,"\n")
