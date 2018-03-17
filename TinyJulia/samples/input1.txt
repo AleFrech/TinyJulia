@@ -1,0 +1,18 @@
+
+x::Int = 10
+
+function Suma(z::Int)
+    x::Int = 50 + z
+    println("Este es el numero dentro ",x)
+   
+end
+
+function Suma(a::Int,b::Int)::Int
+    w::Bool = false;
+    return a+b;
+end
+
+
+y::Int = Suma(5,3)
+
+println(y)

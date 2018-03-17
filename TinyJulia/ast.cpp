@@ -574,24 +574,27 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
 }
 
 void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
-	if(functions.find(this->Id) == functions.end())
-		throw invalid_argument("undeclared function "+this->Id);
+	
     this->expressionList->reverse();
     ExprContext tmpCtx;
 	stringstream ss;
+    string functionName = this->Id;
     for(auto e : *this->expressionList){
 		e->genCode(tmpCtx);
+        functionName+=to_string(tmpCtx.type);
 		ss << tmpCtx.code
 			<< "push "<< tmpCtx.place << endl;
 	}
+    if(functions.find(functionName) == functions.end())
+		throw invalid_argument("undeclared function "+this->Id);
     releaseTemp(tmpCtx.place);
     ctx.place = newTemp();
-    ss << "call " << this->Id << endl;
+    ss << "call " << functionName << endl;
     if((*this->expressionList).size()!=0)
 	ss << "add esp, "<<(4*(*this->expressionList).size()) << endl;
 	ss << "mov " << ctx.place <<", eax" << endl;
 	ctx.code = ss.str();
-	ctx.type = functions[this->Id];
+	ctx.type = functions[functionName];
 	releaseTemp(ctx.place);
 }
 
@@ -713,21 +716,39 @@ string FunctionStatement::genCode(){
     isInnerContext = true;
 	map <string, VariableMetaData> methodParams;
 	int paramOffset = 8;
+    string functionfullName = this->Id;
     for(auto expr : *expList){
         if(ParamExpr* param = dynamic_cast<ParamExpr*>(expr)){
             methodParams[param->Id].address = "+ " + to_string(paramOffset);
 			methodParams[param->Id].type = param->Type;
             paramOffset += 4;
+            functionfullName+=to_string(param->Type);
         }
     }
 	
     $scopes.push_back(methodParams);
-	functions[this->Id] = this->Type;
-    ss << this->Id << ":" << endl
+	functions[functionfullName] = this->Type;
+    ss << functionfullName << ":" << endl
     << "push ebp" << endl 
 	<< "mov ebp, esp" << endl;
     string methodBlock;
-	if(this->Block != NULL) methodBlock = this->Block->genCode();
+	if(this->Block != NULL){
+         methodBlock = this->Block->genCode();
+        if(this->Type != VOID_TYPE){
+            if(BlockStatement* bst = dynamic_cast<BlockStatement*>(this->Block)){
+                for(auto st : bst->stList){
+                    if(ReturnStatement* rt = dynamic_cast<ReturnStatement*>(st)){
+                        ExprContext ctx;
+                        rt->exp->genCode(ctx);
+                        if(ctx.type != this->Type){
+                            throw invalid_argument("function and return type are incompatible");
+                        }
+                            
+                    }
+                }
+            }
+        }
+    }
 	string espStack = "sub esp, " + to_string(tmp_offset - 4);
 	if(tmp_offset > 4) ss << espStack << endl;
 	ss << methodBlock << endl

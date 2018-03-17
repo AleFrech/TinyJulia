@@ -47,7 +47,7 @@ BlockStatement *statement;
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
 %type<blkstatement_t> statementList 
-%type<primitiveType_t> type
+%type<primitiveType_t> type function_type
 
 %%
 
@@ -89,8 +89,11 @@ break_statement: TK_BREAK {$$ = new BreakStatement();}
 continue_statement: TK_CONTINUE {$$ = new ContinueStatement();}
 ;
 
-function_statement: TK_FUNCTION TK_ID '(' op_param_list ')' type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}
+function_statement: TK_FUNCTION TK_ID '(' op_param_list ')' function_type block_statement TK_END { $$ = new FunctionStatement(string($2),$4,$6,$7); delete $2;}
 ;
+
+function_type: type {$$ = $1;}
+    | %empty {$$ =primitiveType::VOID_TYPE; }
 
 op_param_list: param_list {$$ = $1;}
     | %empty {$$ =new ExprList;}

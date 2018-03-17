@@ -14,6 +14,7 @@ enum primitiveType {
     BOOL_TYPE =2,
     ARRAY_INT_TYPE = 3,
     ARRAY_BOOL_TYPE = 4,
+    VOID_TYPE = 5
 };
 
 struct ExprContext {
