@@ -3,28 +3,21 @@ extern power
 global main
 
 section .data
-formatln db "%d", 10, 0
 format db "%d", 0
-formatStringln db "%s", 10, 0
 formatString db "%s", 0
+newline db "" ,10 ,0
 literal0 db "x = ", 0
-literal1 db "", 10, "", 0
-literal10 db "~y = ", 0
-literal11 db "", 10, "", 0
-literal12 db "x & y = ", 0
-literal13 db "", 10, "", 0
-literal14 db "x | y = ", 0
-literal15 db "", 10, "", 0
-literal16 db "x $ y = ", 0
-literal17 db "", 10, "", 0
-literal2 db "y = ", 0
-literal3 db "", 10, "", 0
-literal4 db "x < y && x > y = ", 0
-literal5 db "", 10, "", 0
-literal6 db "x < y || x > y = ", 0
-literal7 db "", 10, "", 0
-literal8 db "~x = ", 0
-literal9 db "", 10, "", 0
+literal1 db "y = ", 0
+literal10 db "x $ y = ", 0
+literal2 db "boolValue = ", 0
+literal3 db "x < y && x > y = ", 0
+literal4 db "x < y || x > y = ", 0
+literal5 db "~x = ", 0
+literal6 db "~y = ", 0
+literal7 db "!boolValue = ", 0
+literal8 db "x & y = ", 0
+literal9 db "x | y = ", 0
+boolValue dd 0
 x dd 0
 y dd 0
 
@@ -38,6 +31,9 @@ mov DWORD [x], eax
 mov eax, 20
 mov DWORD [y], eax
 
+mov eax, 1
+mov DWORD [boolValue], eax
+
 push literal0
 push  formatString
 call printf
@@ -47,12 +43,11 @@ push DWORD [x]
 push format
 call printf
 add esp, 8
-push literal1
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal2
+push literal1
 push  formatString
 call printf
 add esp, 8
@@ -61,12 +56,24 @@ push DWORD [y]
 push format
 call printf
 add esp, 8
-push literal3
+push newline
+call printf
+add esp, 4
+
+push literal2
 push  formatString
 call printf
 add esp, 8
 
-push literal4
+push DWORD [boolValue]
+push format
+call printf
+add esp, 8
+push newline
+call printf
+add esp, 4
+
+push literal3
 push  formatString
 call printf
 add esp, 8
@@ -106,12 +113,11 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal5
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal6
+push literal4
 push  formatString
 call printf
 add esp, 8
@@ -151,12 +157,11 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal7
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal8
+push literal5
 push  formatString
 call printf
 add esp, 8
@@ -169,12 +174,11 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal9
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal10
+push literal6
 push  formatString
 call printf
 add esp, 8
@@ -187,12 +191,30 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal11
+push newline
+call printf
+add esp, 4
+
+push literal7
 push  formatString
 call printf
 add esp, 8
 
-push literal12
+mov eax,DWORD [boolValue]
+xor ecx, ecx
+test eax, eax
+setz cl
+mov DWORD[ebp - 4], ecx
+
+push DWORD[ebp - 4]
+push format
+call printf
+add esp, 8
+push newline
+call printf
+add esp, 4
+
+push literal8
 push  formatString
 call printf
 add esp, 8
@@ -208,12 +230,11 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal13
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal14
+push literal9
 push  formatString
 call printf
 add esp, 8
@@ -229,12 +250,11 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal15
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
-push literal16
+push literal10
 push  formatString
 call printf
 add esp, 8
@@ -250,10 +270,9 @@ push DWORD[ebp - 4]
 push format
 call printf
 add esp, 8
-push literal17
-push  formatString
+push newline
 call printf
-add esp, 8
+add esp, 4
 
 leave
 ret

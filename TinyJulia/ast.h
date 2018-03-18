@@ -267,15 +267,15 @@ public:
     void genCode(ExprContext &ctx);
 };
 
-// class UnaryDistintExpr : public Expr{
-// public:
-//     Expr* expr;
-//     UnaryDistintExpr(Expr* expr){
-//         this->expr = expr;
-//     }
-//     int getKind(){return TYPE;}
-//     void genCode(ExprContext &ctx);
-// };
+class UnaryDistintExpr : public Expr{
+public:
+    Expr* expr;
+    UnaryDistintExpr(Expr* expr){
+        this->expr = expr;
+    }
+    int getKind(){return TYPE;}
+    void genCode(ExprContext &ctx);
+};
 
 class UnaryNotExpr : public Expr{
 public:

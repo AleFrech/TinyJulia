@@ -7,27 +7,26 @@
 
 x::Int = 10
 y::Int = 20
+boolValue::Bool = true;
 
-print("x = ",x,"\n")
-print("y = ",y,"\n")
+ println("x = ",x )
+ println("y = ",y )
+ println("boolValue = ",boolValue )
 
-print ("x < y && x > y = ", x < y && x > y ,"\n");
+ println ("x < y && x > y = ", x < y && x > y  )
 
-print ("x < y || x > y = ", x < y || x > y ,"\n");
+ println ("x < y || x > y = ", x < y || x > y  )
 
-print("~x = ",~x,"\n");
+ println("~x = ",~x ); println("~y = ",~y )
 
-print("~y = ",~y,"\n");
+ println("!boolValue = ",!boolValue )
 
-print ("x & y = ",x & y,"\n")
+ println ("x & y = ",x & y )
 
-print ("x | y = ",x | y,"\n")
+ println ("x | y = ",x | y )
 
-print ("x $ y = ",x $ y,"\n")
+ println ("x $ y = ",x $ y )
 
-#print ("x >> y = ",x >> y,"\n")
+# println ("x >> y = ",x >> y )
 
-#print ("x << y = ",x << y,"\n")
-
-
-
+# println ("x << y = ",x << y )

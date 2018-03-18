@@ -11,27 +11,27 @@ y::Int = 20
 trueValue::Bool = true
 falseValue::Bool = false
 
-print("trueValue = ",trueValue,"\n")
-print("falseValue = ",falseValue,"\n")
+ println("trueValue = ",trueValue)
+ println("falseValue = ",falseValue)
 
 
-print("x = ",x,"\n")
-print("y = ",y,"\n")
+ println("x = ",x)
+ println("y = ",y)
 
-print ("x > y = ",x > y,"\n")
+ println ("x > y = ",x > y)
 
-print ("x >= y = ",x >= y,"\n")
+ println ("x >= y = ",x >= y)
 
-print ("x < y = ",x < y,"\n")
+ println ("x < y = ",x < y)
 
-print ("x <= y = ",x <= y,"\n")
+ println ("x <= y = ",x <= y)
 
-print ("x != y = ",x != y,"\n")
+ println ("x != y = ",x != y)
 
-print ("x == y = ",x == y,"\n")
+ println ("x == y = ",x == y)
 
-print ("x != y = ",x != y,"\n")
+ println ("x != y = ",x != y)
 
-print ("trueValue == falseValue = ",trueValue == falseValue,"\n")
+ println ("trueValue == falseValue = ",trueValue == falseValue)
 
-print ("trueValue != falseValue =",trueValue != falseValue,"\n")
+ println ("trueValue != falseValue =",trueValue != falseValue)

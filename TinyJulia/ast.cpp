@@ -20,10 +20,9 @@ map<int, bool> tempInUse;
 void genDataSection() {
 	cout<<endl;
 	cout << "section .data" << endl;
-	cout << "formatln db \"%d\", 10, 0"<< endl;
 	cout << "format db \"%d\", 0"<< endl;
-    cout << "formatStringln db \"%s\", 10, 0"<< endl;
 	cout << "formatString db \"%s\", 0"<< endl;
+    cout << "newline db \"\" ,10 ,0"<<endl;
 
     for(auto &lit : stringLiterals){
         cout << lit.first << lit.second << endl;
@@ -603,6 +602,22 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
 	 ctx.type = INT_TYPE;
 }
 
+void UnaryDistintExpr::genCode(ExprContext &ctx){
+     ExprContext ctx1;
+	 this->expr->genCode(ctx1);
+     if(ctx1.type != BOOL_TYPE){
+		throw invalid_argument("unary '!' only compatible with bool type");
+	 }
+     ctx.code = ctx1.code + "\n";
+     ctx.code += "mov eax,"+ctx1.place+"\n";
+     ctx.code += "xor ecx, ecx\n";
+     ctx.code += "test eax, eax\n";
+     ctx.code += "setz cl\n";
+     ctx.place = newTemp();
+     ctx.code += "mov " + ctx.place+", ecx\n";
+	 ctx.type = BOOL_TYPE;
+}
+
 void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
 	
     this->expressionList->reverse();
@@ -841,24 +856,22 @@ string PrintStatement::genCode()
 			value+="\", 0";
             stringLiterals[pointer] = value;
             ss << "push "<<pointer <<endl;
-            if(hasNewLine)
-                ss << "push  formatStringln" <<endl;
-            else
-                ss << "push  formatString" <<endl;
+            ss << "push  formatString" <<endl;
                 
         }else{
             expr->genCode(ctx);
             ss << ctx.code << endl
 	        << "push " << ctx.place << endl;
-            if(hasNewLine)
-                ss << "push formatln" <<endl;
-            else
-                ss << "push format" <<endl;
-            
+            ss << "push format" <<endl;
             releaseTemp(ctx.place);
         }
         ss<< "call printf"<<endl
 	    << "add esp, 8"<<endl;
+    }
+    if(this->hasNewLine){
+        ss<< "push newline"<<endl;
+        ss<< "call printf"<<endl
+        << "add esp, 4"<<endl;
     }
     return ss.str();    
 }
