@@ -4,6 +4,7 @@ x::Int = 10
 function Suma(z::Int)
     x::Int = 50 + z
     println("Este es el numero dentro ",x)
+    #return 22
    
 end
 

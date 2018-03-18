@@ -11,7 +11,9 @@ y::Int = 20
 print("x = ",x,"\n")
 print("y = ",y,"\n")
 
-print ("x < y && x > y = ", x<y && x>0 ,"\n");
+print ("x < y && x > y = ", x < y && x > y ,"\n");
+
+print ("x < y || x > y = ", x < y || x > y ,"\n");
 
 print("~x = ",~x,"\n");
 
@@ -23,9 +25,9 @@ print ("x | y = ",x | y,"\n")
 
 print ("x $ y = ",x $ y,"\n")
 
-print ("x >> y = ",x >> y,"\n")
+#print ("x >> y = ",x >> y,"\n")
 
-print ("x << y = ",x << y,"\n")
+#print ("x << y = ",x << y,"\n")
 
 
 

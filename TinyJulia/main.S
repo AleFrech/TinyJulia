@@ -9,23 +9,21 @@ formatStringln db "%s", 10, 0
 formatString db "%s", 0
 literal0 db "x = ", 0
 literal1 db "", 10, "", 0
-literal10 db "x & y = ", 0
+literal10 db "~y = ", 0
 literal11 db "", 10, "", 0
-literal12 db "x | y = ", 0
+literal12 db "x & y = ", 0
 literal13 db "", 10, "", 0
-literal14 db "x $ y = ", 0
+literal14 db "x | y = ", 0
 literal15 db "", 10, "", 0
-literal16 db "x >> y = ", 0
+literal16 db "x $ y = ", 0
 literal17 db "", 10, "", 0
-literal18 db "x << y = ", 0
-literal19 db "", 10, "", 0
 literal2 db "y = ", 0
 literal3 db "", 10, "", 0
 literal4 db "x < y && x > y = ", 0
 literal5 db "", 10, "", 0
-literal6 db "~x = ", 0
+literal6 db "x < y || x > y = ", 0
 literal7 db "", 10, "", 0
-literal8 db "~y = ", 0
+literal8 db "~x = ", 0
 literal9 db "", 10, "", 0
 x dd 0
 y dd 0
@@ -84,7 +82,7 @@ mov DWORD[ebp - 4], eax
 
 
 mov ecx,DWORD [x]
-mov edx,0
+mov edx,DWORD [y]
 xor eax, eax
 cmp ecx, edx
 setg al
@@ -118,9 +116,36 @@ push  formatString
 call printf
 add esp, 8
 
-mov eax,DWORD [x]
-not eax
+
+mov ecx,DWORD [x]
+mov edx,DWORD [y]
+xor eax, eax
+cmp ecx, edx
+setl al
 mov DWORD[ebp - 4], eax
+
+
+
+mov ecx,DWORD [x]
+mov edx,DWORD [y]
+xor eax, eax
+cmp ecx, edx
+setg al
+mov DWORD[ebp - 8], eax
+
+mov eax, DWORD[ebp - 4]
+test eax, eax
+jnz .L4
+mov eax ,DWORD[ebp - 8]
+test eax, eax
+jnz .L4
+.L3:
+mov DWORD[ebp - 4], 0
+jmp .L5
+.L4:
+mov DWORD[ebp - 4], 1
+jmp .L5
+.L5:
 
 push DWORD[ebp - 4]
 push format
@@ -136,7 +161,7 @@ push  formatString
 call printf
 add esp, 8
 
-mov eax,DWORD [y]
+mov eax,DWORD [x]
 not eax
 mov DWORD[ebp - 4], eax
 
@@ -154,11 +179,8 @@ push  formatString
 call printf
 add esp, 8
 
-
-mov eax,DWORD [x]
-cdq
-mov ecx,DWORD [y]
-and eax, ecx
+mov eax,DWORD [y]
+not eax
 mov DWORD[ebp - 4], eax
 
 push DWORD[ebp - 4]
@@ -179,7 +201,7 @@ add esp, 8
 mov eax,DWORD [x]
 cdq
 mov ecx,DWORD [y]
-or eax, ecx
+and eax, ecx
 mov DWORD[ebp - 4], eax
 
 push DWORD[ebp - 4]
@@ -200,7 +222,7 @@ add esp, 8
 mov eax,DWORD [x]
 cdq
 mov ecx,DWORD [y]
-xor eax, ecx
+or eax, ecx
 mov DWORD[ebp - 4], eax
 
 push DWORD[ebp - 4]
@@ -219,9 +241,9 @@ add esp, 8
 
 
 mov eax,DWORD [x]
-xor ecx, ecx
-mov cl,DWORD [y]
-sar eax, cl
+cdq
+mov ecx,DWORD [y]
+xor eax, ecx
 mov DWORD[ebp - 4], eax
 
 push DWORD[ebp - 4]
@@ -229,27 +251,6 @@ push format
 call printf
 add esp, 8
 push literal17
-push  formatString
-call printf
-add esp, 8
-
-push literal18
-push  formatString
-call printf
-add esp, 8
-
-
-mov eax,DWORD [x]
-xor ecx, ecx
-mov cl,DWORD [y]
-sal eax, cl
-mov DWORD[ebp - 4], eax
-
-push DWORD[ebp - 4]
-push format
-call printf
-add esp, 8
-push literal19
 push  formatString
 call printf
 add esp, 8

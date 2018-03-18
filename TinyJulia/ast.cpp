@@ -542,7 +542,37 @@ void LogicalAndExpr::genCode(ExprContext &ctx) {
 }
 
 void LogicalOrExpr::genCode(ExprContext &ctx) {
+    ExprContext ctx1;
+    ExprContext ctx2;
 
+    expr1->genCode(ctx1);
+    expr2->genCode(ctx2);
+
+	if(ctx1.type != BOOL_TYPE || ctx2.type != BOOL_TYPE){
+		throw invalid_argument("Cant || incompatible types");
+	}
+
+    ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    string isfalse = newLabel();
+    string isTrue = newLabel();
+    string done = newLabel();
+    ctx.place = newTemp();
+    ctx.code += "mov eax, " + ctx1.place+"\n"+
+    "test eax, eax\n"+
+    "jnz "+ isTrue +"\n"+
+    "mov eax ,"+ctx2.place+"\n"+
+    "test eax, eax\n"+
+    "jnz "+ isTrue +"\n"+
+    isfalse+":\n"+
+    "mov "+ctx.place+", 0\n"+
+    "jmp "+done+"\n"+
+    isTrue+":\n"+
+    "mov "+ctx.place+", 1\n"
+    "jmp "+done+"\n"+
+    done + ":\n";
+	ctx.type = BOOL_TYPE;
 }
 
 
@@ -733,18 +763,16 @@ string FunctionStatement::genCode(){
 	<< "mov ebp, esp" << endl;
     string methodBlock;
 	if(this->Block != NULL){
-         methodBlock = this->Block->genCode();
-        if(this->Type != VOID_TYPE){
-            if(BlockStatement* bst = dynamic_cast<BlockStatement*>(this->Block)){
-                for(auto st : bst->stList){
-                    if(ReturnStatement* rt = dynamic_cast<ReturnStatement*>(st)){
-                        ExprContext ctx;
-                        rt->exp->genCode(ctx);
-                        if(ctx.type != this->Type){
-                            throw invalid_argument("function and return type are incompatible");
-                        }
-                            
-                    }
+        methodBlock = this->Block->genCode();
+        if(BlockStatement* bst = dynamic_cast<BlockStatement*>(this->Block)){
+            for(auto st : bst->stList){
+                if(ReturnStatement* rt = dynamic_cast<ReturnStatement*>(st)){
+                    if(this->Type == VOID_TYPE)
+                        throw invalid_argument("Cant have return type in void function");
+                    ExprContext ctx;
+                    rt->exp->genCode(ctx);
+                    if(ctx.type != this->Type)
+                        throw invalid_argument("function and return type are incompatible");
                 }
             }
         }
