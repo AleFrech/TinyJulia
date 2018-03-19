@@ -11,10 +11,13 @@ map<string, primitiveType> functions;
 set<string> fucntion_codes;
 vector<map<string,VariableMetaData>>$scopes;
 map<string ,string> stringLiterals;
+static string nearestLoop;
+static string nearestLoopEnd;
 static int tmp_offset =4;
 static int labelCount = 0;
 static int literalCount =0;
 static bool isInnerContext = false;
+static bool inLoop = false;
 map<int, bool> tempInUse;
 
 void genDataSection() {
@@ -101,7 +104,6 @@ string newTemp() {
 string newLabel() {
 	string label = ".L" + to_string(labelCount);
 	labelCount++;
-
 	return label;
 }
 
@@ -395,14 +397,13 @@ void LeftShiftExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
 
 	if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
-		throw invalid_argument("Cant >> incompatible types");
+		throw invalid_argument("Cant << incompatible types");
 
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
     ctx.code += "mov eax,"+ctx1.place+"\n";
-    ctx.code += "xor ecx, ecx\n";
-    ctx.code += "mov cl,"+ctx2.place+"\n";
+    ctx.code += "mov ecx,"+ctx2.place+"\n";
     ctx.code += "sal eax, cl\n";
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
@@ -423,8 +424,7 @@ void RightShiftExpr::genCode(ExprContext &ctx) {
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
     ctx.code += "mov eax,"+ctx1.place+"\n";
-    ctx.code += "xor ecx, ecx\n";
-    ctx.code += "mov cl,"+ctx2.place+"\n";
+    ctx.code += "mov ecx,"+ctx2.place+"\n";
     ctx.code += "sar eax, cl\n";
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
@@ -707,11 +707,15 @@ void AssignExpr::genCode(ExprContext &ctx) {
 }
 
 string BreakStatement::genCode(){
-    return "";
+    if(!inLoop)
+        throw invalid_argument("break is not within a loop");
+    return "jmp "+nearestLoopEnd+"\n";
 }
 
 string ContinueStatement::genCode(){
-    return "";
+    if(!inLoop)
+        throw invalid_argument("continue is not within a loop");
+    return "jmp "+nearestLoop+"\n";;
 }
 
 string BlockStatement::genCode()

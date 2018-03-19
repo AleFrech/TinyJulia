@@ -9,6 +9,8 @@ newline db "" ,10 ,0
 literal0 db "x = ", 0
 literal1 db "y = ", 0
 literal10 db "x $ y = ", 0
+literal11 db "-8 >> 3 = ", 0
+literal12 db "2 << 4 = ", 0
 literal2 db "boolValue = ", 0
 literal3 db "x < y && x > y = ", 0
 literal4 db "x < y || x > y = ", 0
@@ -264,6 +266,52 @@ mov eax,DWORD [x]
 cdq
 mov ecx,DWORD [y]
 xor eax, ecx
+mov DWORD[ebp - 4], eax
+
+push DWORD[ebp - 4]
+push format
+call printf
+add esp, 8
+push newline
+call printf
+add esp, 4
+
+push literal11
+push  formatString
+call printf
+add esp, 8
+
+
+mov eax,8
+cdq
+mov ecx,-1
+imul ecx
+mov DWORD[ebp - 4], eax
+
+
+
+mov eax,DWORD[ebp - 4]
+mov ecx,3
+sar eax, cl
+mov DWORD[ebp - 4], eax
+
+push DWORD[ebp - 4]
+push format
+call printf
+add esp, 8
+push newline
+call printf
+add esp, 4
+
+push literal12
+push  formatString
+call printf
+add esp, 8
+
+
+mov eax,2
+mov ecx,4
+sal eax, cl
 mov DWORD[ebp - 4], eax
 
 push DWORD[ebp - 4]

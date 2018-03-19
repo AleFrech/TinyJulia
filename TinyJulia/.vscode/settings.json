@@ -16,6 +16,7 @@
         "__locale": "cpp",
         "locale": "cpp",
         "algorithm": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "system_error": "cpp"
     }
 }

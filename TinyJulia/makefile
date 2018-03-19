@@ -20,8 +20,8 @@ run: $(TARGET)
 	#nasm -f macho32 -o test.o --prefix _ main.S
 	#gcc -m32 test.o -o test -Wl,-no_pie
 	nasm -f elf32 -o asm.o main.S
-	gcc -m32 -c -o pow.o pow.c
-	gcc -m32 -o test asm.o pow.o
+	gcc -m32 -c -o util.o util.c
+	gcc -m32 -o test asm.o util.o
 
 clean: 
 	rm -f $(OBJ_FILES) tokens.h 
