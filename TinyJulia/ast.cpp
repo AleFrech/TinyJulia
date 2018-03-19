@@ -749,7 +749,27 @@ string ReturnStatement::genCode(){
 }
 
 string WhileStatement::genCode(){
-    return ""; 
+    inLoop = true;
+    stringstream ss;
+	ExprContext ctx;
+
+	expr->genCode(ctx);
+    string labelWhile = newLabel();
+    nearestLoop = labelWhile;
+	string labelEndW = newLabel();
+    nearestLoopEnd = labelEndW;
+    ss << labelWhile << ":" << endl
+    << ctx.code << endl
+    << "mov eax, "<<ctx.place << endl
+    << "cmp eax , 0" << endl
+    << "jz "<<labelEndW << endl
+    << this->blockStatement->genCode() << endl
+    << "jmp " << labelWhile << endl
+    << labelEndW << ":";
+
+	releaseTemp(ctx.place);
+    inLoop = false;
+	return ss.str();
 }
 
 string ForStatement::genCode(){
@@ -879,4 +899,3 @@ string PrintStatement::genCode()
     }
     return ss.str();    
 }
-
