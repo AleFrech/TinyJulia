@@ -755,6 +755,8 @@ string WhileStatement::genCode(){
 	ExprContext ctx;
     $scopes.push_back(map <string, VariableMetaData>());
 	expr->genCode(ctx);
+    if(ctx.type != BOOL_TYPE )
+        throw invalid_argument("while expresion must be bool type");
     string labelWhile = newLabel();
     nearestLoop = labelWhile;
 	string labelEndW = newLabel();
@@ -778,9 +780,9 @@ string WhileStatement::genCode(){
 string ForStatement::genCode(){
     inLoop = true;
     isInnerContext =true;
-    $scopes.push_back(map <string, VariableMetaData>());
+    ExprContext ctx1,ctx2;
     stringstream ss;
-	ExprContext ctx1,ctx2;
+    $scopes.push_back(map <string, VariableMetaData>()); 
     string labelFor = newLabel();
     nearestLoop = labelFor;
 	string labelForEnd = newLabel();
@@ -792,12 +794,12 @@ string ForStatement::genCode(){
     
     ss << ctx1.code <<endl;
     ss << ctx2.code <<endl;
-    ss << "mov " <<getId(this->Id) << ", "<< ctx1.place<<endl;
-    ss << "mov edx, "<<ctx2.place<<endl;
+    ss << "mov " <<getId(this->Id) <<", "<<ctx1.place<<endl;
     ss << labelFor << ":"<<endl;
-    ss << "cmp " <<getId(this->Id) << ", edx"<<endl;
-    ss << "je " <<labelForEnd << endl
-    << this->blockStatement->genCode() << endl
+    ss << "mov ecx , "<<ctx2.place<<endl;
+    ss << "cmp " <<getId(this->Id) << ", ecx"<<endl;
+    ss << "jg " <<labelForEnd << endl
+    << this->blockStatement->genCode()
     << "inc " <<  getId(this->Id) << endl
     << "jmp " << labelFor << endl
     << labelForEnd << ":";
@@ -915,12 +917,14 @@ string PrintStatement::genCode()
 			}
 			value+="\", 0";
             stringLiterals[pointer] = value;
+            ss << "sub esp, 8"<<endl;
             ss << "push "<<pointer <<endl;
             ss << "push  formatString" <<endl;
                 
         }else{
             expr->genCode(ctx);
             ss << ctx.code << endl
+            << "sub esp, 8"<<endl
 	        << "push " << ctx.place << endl;
             ss << "push format" <<endl;
             releaseTemp(ctx.place);
@@ -929,6 +933,7 @@ string PrintStatement::genCode()
 	    << "add esp, 8"<<endl;
     }
     if(this->hasNewLine){
+        ss << "sub esp, 4"<<endl;
         ss<< "push newline"<<endl;
         ss<< "call printf"<<endl
         << "add esp, 4"<<endl;

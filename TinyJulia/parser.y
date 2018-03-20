@@ -44,9 +44,9 @@ BlockStatement *statement;
 %type<exprlist_t> argument_expression_list print_arguments param_list op_param_list
 %type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp shift_exp
 %type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param bit_or_exp bit_xor_exp
-%type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif
+%type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif fun_statement
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
-%type<blkstatement_t> statementList 
+%type<blkstatement_t> statementList function_statement_list
 %type<primitiveType_t> type function_type
 
 %%
@@ -68,9 +68,23 @@ statementList: statementList new_line statement { $$ = $1; $$->add($3); }
     | statement { $$ = new BlockStatement; $$->add($1); }
 ;
 
+function_statement_list: function_statement_list new_line fun_statement { $$ = $1; $$->add($3); }
+    | fun_statement { $$ = new BlockStatement; $$->add($1);}
+
 statement: print_statement  {$$ = $1;}
     | declaration_statement {$$ = $1;}
     | function_statement {$$ = $1;}
+    | expression_statement  {$$ = $1;}
+    | while_statement {$$ = $1;}
+    | for_statement {$$ = $1;}
+    | if_statement {$$ = $1;}
+    | break_statement {$$ = $1;}
+    | continue_statement {$$ = $1;}
+    | return_statement {$$ = $1;}
+;
+
+fun_statement: print_statement  {$$ = $1;}
+    | declaration_statement {$$ = $1;}
     | expression_statement  {$$ = $1;}
     | while_statement {$$ = $1;}
     | for_statement {$$ = $1;}
@@ -133,7 +147,7 @@ for_tk: '='
 while_statement: TK_WHILE expression block_statement TK_END {$$ = new WhileStatement($2,$3);}
 ;
 
-block_statement: TK_EOL opEols statementList opEols {$$ = $3;}
+block_statement: TK_EOL opEols function_statement_list opEols {$$ = $3;}
     | TK_EOL opEols { auto bs = new BlockStatement(); bs->stList = list<Statement*>(); $$ = new BlockStatement();}
 ;
 

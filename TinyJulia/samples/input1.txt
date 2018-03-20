@@ -1,15 +1,13 @@
-
-
 function Suma(z::Int)
     x::Int = 10
-    println("Este es el numero dentro ",x)
-   
+    println("Este es el numero dentro ",x)   
 end
 
 function Suma(a::Int,b::Int)::Int
     w::Bool = false;
     return a+b;
 end
+
 
 Suma(5)
 println(x)
