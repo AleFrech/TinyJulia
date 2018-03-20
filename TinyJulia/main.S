@@ -6,30 +6,20 @@ section .data
 format db "%d", 0
 formatString db "%s", 0
 newline db "" ,10 ,0
-test1 dd 0
 
 section .text
 main:
 push ebp
 mov ebp, esp
-mov eax, 1
-mov DWORD [test1], eax
 
+
+mov DWORD[ebp - 4], 1
+mov edx, 5
 .L0:
+cmp DWORD[ebp  - 4], edx
+je .L1
 
-
-mov ecx,DWORD [test1]
-mov edx,10
-xor eax, eax
-cmp ecx, edx
-setle al
-mov DWORD[ebp - 4], eax
-
-mov eax, DWORD[ebp - 4]
-cmp eax , 0
-jz .L1
-
-push DWORD [test1]
+push DWORD[ebp  - 4]
 push format
 call printf
 add esp, 8
@@ -38,15 +28,7 @@ call printf
 add esp, 4
 
 
-
-mov eax, DWORD [test1]
-add eax,1
-mov DWORD[ebp - 8], eax
-mov eax, DWORD[ebp - 8]
-mov DWORD [test1], eax
-
-
-
+inc DWORD[ebp  - 4]
 jmp .L0
 .L1:
 leave

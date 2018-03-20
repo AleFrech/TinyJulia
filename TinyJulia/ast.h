@@ -470,13 +470,13 @@ public:
 class ForStatement: public Statement {
 public:
     string Id;
-    Expr* to;
-    Expr* from;
+    Expr* desde;
+    Expr* hasta;
     Statement* blockStatement;
-    ForStatement(string id, Expr* to, Expr* from, Statement* blockStatement){
+    ForStatement(string id, Expr* desde, Expr* hasta, Statement* blockStatement){
         this->Id = id;
-        this->to = to;
-        this->from = from;
+        this->desde = desde;
+        this->hasta = hasta;
         this->blockStatement = blockStatement;
 
     }

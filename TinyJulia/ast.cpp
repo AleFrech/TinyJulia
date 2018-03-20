@@ -694,8 +694,8 @@ void AssignExpr::genCode(ExprContext &ctx) {
          if( variables.find(idnode->Id) == variables.end())
             throw invalid_argument("Invalid asignation of a undifined global variable "+idnode->Id);
 
-        if(isInnerContext && variables.find(idnode->Id)!= variables.end())
-            throw invalid_argument("Invalid asignation of a global variable "+idnode->Id);
+        // if(isInnerContext && variables.find(idnode->Id)!= variables.end())
+        //     throw invalid_argument("Invalid asignation of a global variable "+idnode->Id);
 		ss << "mov " << ctx1.place  << ", eax\n";
 		releaseTemp(ctx2.place);
 		releaseTemp(ctx1.place);
@@ -750,9 +750,10 @@ string ReturnStatement::genCode(){
 
 string WhileStatement::genCode(){
     inLoop = true;
+    isInnerContext = true;
     stringstream ss;
 	ExprContext ctx;
-
+    $scopes.push_back(map <string, VariableMetaData>());
 	expr->genCode(ctx);
     string labelWhile = newLabel();
     nearestLoop = labelWhile;
@@ -768,12 +769,45 @@ string WhileStatement::genCode(){
     << labelEndW << ":";
 
 	releaseTemp(ctx.place);
+    $scopes.pop_back();
     inLoop = false;
+    isInnerContext = false;
 	return ss.str();
 }
 
 string ForStatement::genCode(){
-    return "";
+    inLoop = true;
+    isInnerContext =true;
+    $scopes.push_back(map <string, VariableMetaData>());
+    stringstream ss;
+	ExprContext ctx1,ctx2;
+    string labelFor = newLabel();
+    nearestLoop = labelFor;
+	string labelForEnd = newLabel();
+    nearestLoopEnd = labelForEnd;
+    this->desde->genCode(ctx1);
+    this->hasta->genCode(ctx2);
+    if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
+        throw invalid_argument("for indexes must be int type");
+    
+    ss << ctx1.code <<endl;
+    ss << ctx2.code <<endl;
+    ss << "mov " <<getId(this->Id) << ", "<< ctx1.place<<endl;
+    ss << "mov edx, "<<ctx2.place<<endl;
+    ss << labelFor << ":"<<endl;
+    ss << "cmp " <<getId(this->Id) << ", edx"<<endl;
+    ss << "je " <<labelForEnd << endl
+    << this->blockStatement->genCode() << endl
+    << "inc " <<  getId(this->Id) << endl
+    << "jmp " << labelFor << endl
+    << labelForEnd << ":";
+
+	releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
+    inLoop = false;
+    isInnerContext = false;
+    $scopes.pop_back();
+	return ss.str();   
 }
 
 string IfStatement::genCode(){
@@ -833,10 +867,12 @@ string DeclarationStatement::genCode(){
    stringstream ss;
    ExprContext ctx;
    if(!isInnerContext){
+        if(variables.find(this->Id) != variables.end())
+            throw invalid_argument("Invalid re declaration of variable");
         if(this->Type == INT_TYPE)
-		    variables[this->Id] = new IntType(0);
+            variables[this->Id] = new IntType(0);
         else if(this->Type == BOOL_TYPE)
-		    variables[this->Id] = new BoolType(0);
+            variables[this->Id] = new BoolType(0);
     }else{
         int scopes = $scopes.size() - 1;
         $scopes[scopes][this->Id].address = " - " + to_string(tmp_offset);

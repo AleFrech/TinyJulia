@@ -1,10 +1,8 @@
 
-x::Int = 10
 
 function Suma(z::Int)
-    x::Int = 50 + z
+    x::Int = 10
     println("Este es el numero dentro ",x)
-    #return 22
    
 end
 
@@ -13,7 +11,5 @@ function Suma(a::Int,b::Int)::Int
     return a+b;
 end
 
-
-y::Int = Suma(5,3)
-
-println(y)
+Suma(5)
+println(x)
