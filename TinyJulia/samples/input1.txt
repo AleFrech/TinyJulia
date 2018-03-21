@@ -9,5 +9,5 @@ function Suma(a::Int,b::Int)::Int
 end
 
 
-x::Int = Suma(15)
-println(x)
+z::Int = Suma(15,20)
+println(z)

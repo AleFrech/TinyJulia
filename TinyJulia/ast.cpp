@@ -667,12 +667,14 @@ void VarExpr::genCode(ExprContext &ctx) {
 		if($scopes[i].find(this->Id) != $scopes[i].end()){
 			ctx.type = $scopes[i][this->Id].type;
 			ctx.place = "DWORD[ebp " + $scopes[i][this->Id].address + "]";
+            return;
 		}
 	}
 
 	if(variables.find(this->Id) != variables.end()){
 		ctx.type = variables[this->Id]->Type;
 		ctx.place =  "DWORD ["+this->Id+"]";
+        return;
 	}
 
     throw invalid_argument("undifined variable "+this->Id);	
