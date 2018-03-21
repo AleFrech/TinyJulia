@@ -1,0 +1,9 @@
+x::Int = 20
+
+if x<20 
+    println("menor")
+elseif x> 20
+    println("mayor")
+else
+    println("igual")
+end

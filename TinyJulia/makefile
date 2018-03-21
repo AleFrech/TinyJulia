@@ -16,7 +16,7 @@ parser.cpp: parser.y
 	g++ -std=c++11 -c -o $@ $<
 
 run: $(TARGET)
-	./$(TARGET) samples/For > main.S
+	./$(TARGET) samples/input1.txt > main.S
 	#nasm -f macho32 -o test.o --prefix _ main.S
 	#gcc -m32 test.o -o test -Wl,-no_pie
 	nasm -f elf32 -o asm.o main.S

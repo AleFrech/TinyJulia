@@ -348,7 +348,6 @@ void EqualExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
     if((ctx1.type == INT_TYPE && ctx2.type == INT_TYPE ) || (ctx1.type == BOOL_TYPE && ctx2.type == BOOL_TYPE )){
         ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
 		releaseTemp(ctx1.place);
@@ -362,7 +361,7 @@ void EqualExpr::genCode(ExprContext &ctx) {
 	    ctx.code += "mov " + ctx.place+", eax\n";
 		ctx.type = BOOL_TYPE;
     }else
-	    throw invalid_argument("Cant '>=' incompatible types");
+	    throw invalid_argument("Cant '==' incompatible types");
 }
 
 void NotEqualExpr::genCode(ExprContext &ctx) {
@@ -386,7 +385,7 @@ void NotEqualExpr::genCode(ExprContext &ctx) {
 	    ctx.code += "mov " + ctx.place+", eax\n";
 		ctx.type = BOOL_TYPE;
     }else
-	    throw invalid_argument("Cant '>=' incompatible types");
+	    throw invalid_argument("Cant '!=' incompatible types");
 }
 
 void LeftShiftExpr::genCode(ExprContext &ctx) {
@@ -662,8 +661,21 @@ void NumberExpr::genCode(ExprContext &ctx) {
 }
 
 void VarExpr::genCode(ExprContext &ctx) {
-	ctx.place = getId(this->Id,ctx.type);
-    ctx.code = "";
+	//ctx.place = getId(this->Id,ctx.type);
+    int scopes = $scopes.size() - 1;
+	for(int i = scopes; i >= 0; i--) {
+		if($scopes[i].find(this->Id) != $scopes[i].end()){
+			ctx.type = $scopes[i][this->Id].type;
+			ctx.place = "DWORD[ebp " + $scopes[i][this->Id].address + "]";
+		}
+	}
+
+	if(variables.find(this->Id) != variables.end()){
+		ctx.type = variables[this->Id]->Type;
+		ctx.place =  "DWORD ["+this->Id+"]";
+	}
+
+    throw invalid_argument("undifined variable "+this->Id);	
 }
 
 void ParamExpr::genCode(ExprContext &ctx) {
@@ -691,11 +703,6 @@ void AssignExpr::genCode(ExprContext &ctx) {
 	ss << ctx2.code;
 	ss << "mov eax, " << ctx2.place << endl;
 	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
-         if( variables.find(idnode->Id) == variables.end())
-            throw invalid_argument("Invalid asignation of a undifined global variable "+idnode->Id);
-
-        // if(isInnerContext && variables.find(idnode->Id)!= variables.end())
-        //     throw invalid_argument("Invalid asignation of a global variable "+idnode->Id);
 		ss << "mov " << ctx1.place  << ", eax\n";
 		releaseTemp(ctx2.place);
 		releaseTemp(ctx1.place);
@@ -792,6 +799,10 @@ string ForStatement::genCode(){
     if(ctx1.type != INT_TYPE || ctx2.type != INT_TYPE)
         throw invalid_argument("for indexes must be int type");
     
+    int scopes = $scopes.size() - 1;
+    $scopes[scopes][this->Id].address = " - " + to_string(tmp_offset);
+	$scopes[scopes][this->Id].type = INT_TYPE;
+    tmp_offset += 4;
     ss << ctx1.code <<endl;
     ss << ctx2.code <<endl;
     ss << "mov " <<getId(this->Id) <<", "<<ctx1.place<<endl;
@@ -813,7 +824,28 @@ string ForStatement::genCode(){
 }
 
 string IfStatement::genCode(){
-    return "";
+    stringstream ss;
+    ExprContext ctx1;
+    this->exp->genCode(ctx1);
+    if(ctx1.type != BOOL_TYPE )
+        throw invalid_argument("for indexes must be int type");
+
+    string endifLabel = newLabel();
+    string falseLable = newLabel();
+
+    ss <<ctx1.code<<endl
+       <<"mov eax, "<<ctx1.place<<endl
+       <<"cmp eax , 0" <<endl
+       <<"je "<<falseLable << endl
+       <<this->ifBody->genCode()
+       <<"jmp "<<endifLabel <<endl
+       <<falseLable << ":" <<endl;
+    if(this->elseBody != NULL){
+        ss << this->elseBody->genCode();
+    }
+    ss << endifLabel << ":" << endl;
+
+    return ss.str();
 }
 
 string FunctionStatement::genCode(){
@@ -839,18 +871,6 @@ string FunctionStatement::genCode(){
     string methodBlock;
 	if(this->Block != NULL){
         methodBlock = this->Block->genCode();
-        if(BlockStatement* bst = dynamic_cast<BlockStatement*>(this->Block)){
-            for(auto st : bst->stList){
-                if(ReturnStatement* rt = dynamic_cast<ReturnStatement*>(st)){
-                    if(this->Type == VOID_TYPE)
-                        throw invalid_argument("Cant have return type in void function");
-                    ExprContext ctx;
-                    rt->exp->genCode(ctx);
-                    if(ctx.type != this->Type)
-                        throw invalid_argument("function and return type are incompatible");
-                }
-            }
-        }
     }
 	string espStack = "sub esp, " + to_string(tmp_offset - 4);
 	if(tmp_offset > 4) ss << espStack << endl;

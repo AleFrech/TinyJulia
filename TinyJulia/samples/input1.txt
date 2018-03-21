@@ -1,6 +1,6 @@
-function Suma(z::Int)
+function Suma(z::Int)::Int
     x::Int = 10
-    println("Este es el numero dentro ",x)   
+    println("Este es el numero dentro ",x)
 end
 
 function Suma(a::Int,b::Int)::Int
@@ -9,5 +9,5 @@ function Suma(a::Int,b::Int)::Int
 end
 
 
-Suma(5)
+x::Int = Suma(15)
 println(x)
