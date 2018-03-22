@@ -10,7 +10,7 @@ y::Int = 3
 println ("x = ",x)
 println ("y = ",y)
 println ("-x = ",-x)
-println ("-y = ",-y);println ("x+y = ",x + y)
+println ("-y = ",-y);println ("x+y = ",x + y); println("x+true = ",x+true)
 println ("x-y = ",x - y)
 println ("x*y = ",x * y)
 println ("x/y = ",x / y)

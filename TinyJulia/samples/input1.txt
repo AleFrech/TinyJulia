@@ -10,4 +10,8 @@ end
 
 
 z::Int = Suma(15,20)
-println(z)
+
+g::Int
+
+println(g)
+#println(z)

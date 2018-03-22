@@ -1,4 +1,4 @@
-for j = 2:10
+for j = 1:10
     if j%2 == 0
         println(j," es par")
     else
@@ -6,4 +6,4 @@ for j = 2:10
     end
 end
 
-println(j)
+#println(j)

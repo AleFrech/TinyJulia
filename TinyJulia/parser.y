@@ -42,7 +42,7 @@ BlockStatement *statement;
 %token TK_ARRAY TK_END TK_ERROR TK_BREAK TK_CONTINUE
 
 %type<exprlist_t> argument_expression_list print_arguments param_list op_param_list
-%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp shift_exp
+%type<expr_t> print_argument factor post_id unary_exp expression term exponent  aritmethic bit_and_exp shift_exp op_decAsgn
 %type<expr_t> conditional_and_exp conditional_or_exp  assign_exp relational_expr param bit_or_exp bit_xor_exp
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif fun_statement
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
@@ -120,7 +120,11 @@ param_list: param_list ',' param {$1->push_back($3); $$=$1;}
 param: TK_ID type { $$ = new ParamExpr(string($1),$2); delete $1;}
 ;
 
-declaration_statement: TK_ID type '=' expression {$$ = new DeclarationStatement(string($1),$2,$4); delete $1;}
+declaration_statement: TK_ID type op_decAsgn {$$ = new DeclarationStatement(string($1),$2,$3); delete $1;}
+;
+
+op_decAsgn: '=' expression {$$ = $2;}
+    | %empty {$$ = new NumberExpr(0);}
 ;
 
 type: TK_DOUBLE_COLON TK_INT {$$ = primitiveType::INT_TYPE;}
