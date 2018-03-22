@@ -652,6 +652,7 @@ void BracketPostIdExpr::genCode(ExprContext &ctx) {
      stringstream ss;
 	 ExprContext ctx1;
      primitiveType type;
+     int size = -1;
      if(variables.find(this->Id) == variables.end())
         throw invalid_argument("undefined variable "+this->Id);
 
@@ -661,10 +662,12 @@ void BracketPostIdExpr::genCode(ExprContext &ctx) {
         type = INT_TYPE;
     else
         throw invalid_argument(" variable "+this->Id+" is not an array");
+
     this->Index->genCode(ctx1);
     ctx.code+=ctx1.code;
     ctx.place = newTemp();
     ctx.code += "mov eax, "+ctx1.place+"\n";
+    ctx.code += "sub eax, 1\n";
     ctx.code += "lea edi, ["+this->Id+"]\n";
     ctx.code += "mov esi, [edi + eax * 4]\n";
     ctx.code += "mov "+ctx.place+", esi\n";
@@ -698,6 +701,7 @@ void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrNa
         ctx.code += "mov [edi+ecx*4], eax\n";
         counter++;
         ctx.code += "inc ecx\n";
+        ctx.type = type;
     }
 }
 
@@ -706,6 +710,8 @@ void AssignExpr::genCode(ExprContext &ctx) {
 	ExprContext ctx1 , ctx2;
 	this->right->genCode(ctx2);
 	this->left->genCode(ctx1);
+
+
 	if(ctx1.type != ctx2.type)
 		throw invalid_argument("invalid assignation of diffrent type");	
 	ss << ctx2.code;
@@ -813,7 +819,8 @@ string ForStatement::genCode(){
     tmp_offset += 4;
     ss << ctx1.code <<endl;
     ss << ctx2.code <<endl;
-    ss << "mov " <<getId(this->Id) <<", "<<ctx1.place<<endl;
+    ss << "mov eax, "<<ctx1.place<<endl;
+    ss << "mov " <<getId(this->Id) <<", eax"<<endl;
     ss << labelFor << ":"<<endl;
     ss << "mov ecx , "<<ctx2.place<<endl;
     ss << "cmp " <<getId(this->Id) << ", ecx"<<endl;
