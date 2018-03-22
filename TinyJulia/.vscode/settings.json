@@ -17,6 +17,8 @@
         "locale": "cpp",
         "algorithm": "cpp",
         "ostream": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "stdexcept": "cpp",
+        "iosfwd": "cpp"
     }
 }

@@ -1,0 +1,5 @@
+a::Array{Int} = [1,2,3,4,5]
+
+for j = 0:4
+   println(a[j])
+end

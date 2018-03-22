@@ -47,7 +47,7 @@ BlockStatement *statement;
 %type<statement_t> print_statement expression_statement while_statement for_statement if_statement elseif fun_statement
 %type<statement_t> statement block_statement declaration_statement function_statement break_statement continue_statement return_statement
 %type<blkstatement_t> statementList function_statement_list
-%type<primitiveType_t> type function_type
+%type<primitiveType_t> type function_type arr_type
 
 %%
 
@@ -70,6 +70,7 @@ statementList: statementList new_line statement { $$ = $1; $$->add($3); }
 
 function_statement_list: function_statement_list new_line fun_statement { $$ = $1; $$->add($3); }
     | fun_statement { $$ = new BlockStatement; $$->add($1);}
+;
 
 statement: print_statement  {$$ = $1;}
     | declaration_statement {$$ = $1;}
@@ -121,16 +122,20 @@ param: TK_ID type { $$ = new ParamExpr(string($1),$2); delete $1;}
 ;
 
 declaration_statement: TK_ID type op_decAsgn {$$ = new DeclarationStatement(string($1),$2,$3); delete $1;}
+    | TK_ID arr_type '=' '[' argument_expression_list ']' {$$ = new DeclarationStatement(string($1),$2,new ArrayExpr($5)); delete $1;}
 ;
+
 
 op_decAsgn: '=' expression {$$ = $2;}
     | %empty {$$ = new NumberExpr(0);}
 ;
 
+arr_type: TK_DOUBLE_COLON TK_ARRAY'{' TK_INT '}' {$$ = primitiveType::ARRAY_INT_TYPE;}
+    | TK_DOUBLE_COLON TK_ARRAY'{' TK_BOOL '}' {$$ = primitiveType::ARRAY_BOOL_TYPE;}
+;
+
 type: TK_DOUBLE_COLON TK_INT {$$ = primitiveType::INT_TYPE;}
     | TK_DOUBLE_COLON TK_BOOL {$$ = primitiveType::BOOL_TYPE;}
-    | TK_DOUBLE_COLON TK_ARRAY'{' TK_INT '}' {$$ = primitiveType::ARRAY_INT_TYPE;}
-    | TK_DOUBLE_COLON TK_ARRAY'{' TK_BOOL '}' {$$ = primitiveType::ARRAY_BOOL_TYPE;}
 ;
 
 if_statement: TK_IF expression block_statement elseif {$$ = new IfStatement($2,$3,$4);}
@@ -251,7 +256,6 @@ post_id: factor {$$ = $1;}
 factor: TK_NUM  {$$ = new NumberExpr($1);}
     | TK_TRUE   {$$ = new BoolExpr(true);}
     | TK_FALSE {$$ = new BoolExpr(false);}
-    | '[' argument_expression_list ']' {$$ = new ArrayExpr($2);}
     | TK_ID     {$$ = new VarExpr(string($1)); delete $1;}
     | '(' expression ')' {$$ = $2;}
 ;

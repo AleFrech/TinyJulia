@@ -326,6 +326,7 @@ public:
      }
      int getKind(){return TYPE;}
      void genCode(ExprContext &ctx);
+     void genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName);
 };
 
 class BoolExpr : public Expr{
@@ -516,7 +517,7 @@ public:
    
 };
 
-
+void genBssSection();
 void genDataSection();
 void genFunctionSection();
 

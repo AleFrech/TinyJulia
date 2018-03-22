@@ -22,6 +22,7 @@ int main (int argc , char * args[]){
             cout << "extern printf" << endl
                 << "extern power" <<endl
                 << "global main" << endl;
+            genBssSection();
             genDataSection();
             cout << endl << "section .text" << endl;
             cout << "main:" <<endl

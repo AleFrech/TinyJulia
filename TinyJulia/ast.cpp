@@ -32,7 +32,17 @@ void genDataSection() {
     }
 
 	for (auto &var : variables) {
+        if(var.second->Type != ARRAY_INT_TYPE && var.second->Type != ARRAY_BOOL_TYPE)
 			cout << var.first << " dd " << 0 << endl;
+	}
+}
+
+void genBssSection(){
+    cout<<endl;
+	cout << "section .bss" << endl;
+    for (auto &var : variables) {
+        if(var.second->Type == ARRAY_INT_TYPE || var.second->Type == ARRAY_BOOL_TYPE)
+            cout << var.first << " resb " << 100 << endl;
 	}
 }
 
@@ -639,11 +649,56 @@ void ParamExpr::genCode(ExprContext &ctx) {
 }
 
 void BracketPostIdExpr::genCode(ExprContext &ctx) {
+     stringstream ss;
+	 ExprContext ctx1;
+     primitiveType type;
+     if(variables.find(this->Id) == variables.end())
+        throw invalid_argument("undefined variable "+this->Id);
 
+    if(variables[this->Id]->Type == ARRAY_BOOL_TYPE)
+        type = BOOL_TYPE;
+    else if(variables[this->Id]->Type == ARRAY_INT_TYPE)
+        type = INT_TYPE;
+    else
+        throw invalid_argument(" variable "+this->Id+" is not an array");
+    this->Index->genCode(ctx1);
+    ctx.code+=ctx1.code;
+    ctx.place = newTemp();
+    ctx.code += "mov eax, "+ctx1.place+"\n";
+    ctx.code += "lea edi, ["+this->Id+"]\n";
+    ctx.code += "mov esi, [edi + eax * 4]\n";
+    ctx.code += "mov "+ctx.place+", esi\n";
+    releaseTemp(ctx1.place);
 }
 
 void ArrayExpr::genCode(ExprContext &ctx) {
 
+}
+
+void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName){
+    stringstream ss;
+	ExprContext ctx1;
+    int counter =0;
+    primitiveType type;
+    if(arrType == ARRAY_INT_TYPE){
+        type = INT_TYPE;
+    }else{
+        type =BOOL_TYPE;
+    }
+    ctx.code +="lea edi,["+arrName+"]\n";
+    ctx.code +="mov ecx, 0\n";
+
+    for(auto e : *this->expressionList){
+        e->genCode(ctx1);
+        if(ctx1.type != type){
+            throw invalid_argument("Incompatible in array declaration");
+        }
+        ctx.code += ctx1.code;
+        ctx.code += "mov eax, "+ctx1.place+"\n";
+        ctx.code += "mov [edi+ecx*4], eax\n";
+        counter++;
+        ctx.code += "inc ecx\n";
+    }
 }
 
 void AssignExpr::genCode(ExprContext &ctx) {
@@ -808,7 +863,7 @@ string FunctionStatement::genCode(){
 	int paramOffset = 8;
     string functionfullName = this->Id;
     for(auto expr : *expList){
-        if(ParamExpr* param = dynamic_cast<ParamExpr*>(expr)){
+       if(ParamExpr* param = dynamic_cast<ParamExpr*>(expr)){
             methodParams[param->Id].address = "+ " + to_string(paramOffset);
 			methodParams[param->Id].type = param->Type;
             paramOffset += 4;
@@ -839,31 +894,52 @@ string FunctionStatement::genCode(){
 }
 
 string DeclarationStatement::genCode(){
-   stringstream ss;
-   ExprContext ctx;
-   if(!isInnerContext){
-        if(variables.find(this->Id) != variables.end())
-            throw invalid_argument("Invalid re declaration of variable");
-        if(this->Type == INT_TYPE)
-            variables[this->Id] = new IntType(0);
-        else if(this->Type == BOOL_TYPE)
-            variables[this->Id] = new BoolType(0);
-    }else{
-        int scopes = $scopes.size() - 1;
-        $scopes[scopes][this->Id].address = " - " + to_string(tmp_offset);
-		 $scopes[scopes][this->Id].type = this->Type;
-        tmp_offset += 4;
-    }
+    stringstream ss;
+    ExprContext ctx;
 
-        expr->genCode(ctx);
-        if(ctx.type != this->Type){
-            throw invalid_argument("Invalid declaration of diffrent types");
+    if(this->Type == INT_TYPE || this->Type == BOOL_TYPE){
+        if(!isInnerContext){
+            if(variables.find(this->Id) != variables.end())
+                throw invalid_argument("Invalid re declaration of variable");
+            if(this->Type == INT_TYPE)
+                variables[this->Id] = new IntType(0);
+            else if(this->Type == BOOL_TYPE)
+                variables[this->Id] = new BoolType(0);
+        }else{
+            int scopes = $scopes.size() - 1;
+            $scopes[scopes][this->Id].address = " - " + to_string(tmp_offset);
+                $scopes[scopes][this->Id].type = this->Type;
+            tmp_offset += 4;
         }
-        ss << ctx.code;
-        ss << "mov eax, " << ctx.place << endl;
-        ss << "mov " <<getId(this->Id) << ", eax\n";
-        releaseTemp(ctx.place);
-        return ss.str();
+
+            expr->genCode(ctx);
+            if(ctx.type != this->Type){
+                throw invalid_argument("Invalid declaration of diffrent types");
+            }
+            ss << ctx.code;
+            ss << "mov eax, " << ctx.place << endl;
+            ss << "mov " <<getId(this->Id) << ", eax\n";
+            releaseTemp(ctx.place);
+            return ss.str();
+    }else{
+        if(isInnerContext)
+             throw invalid_argument("Declaration of Arrays not suported in inner scopes :'v");
+
+         if(variables.find(this->Id) != variables.end())
+            throw invalid_argument("Invalid re declaration of variable");
+         if(this->Type == ARRAY_BOOL_TYPE)
+            variables[this->Id] = new ArrayBoolType();
+         else if(this->Type == ARRAY_INT_TYPE)
+            variables[this->Id] = new ArrayIntType();
+
+        if(ArrayExpr* arrExpr = dynamic_cast<ArrayExpr*>(this->expr)){
+            arrExpr->genCodeArray(ctx,this->Type,this->Id);
+            ss << ctx.code;
+            return ss.str();
+        }else{
+            throw invalid_argument("Invalid declaration of array variable");
+        }
+    }
 }
 
 string PrintStatement::genCode()
