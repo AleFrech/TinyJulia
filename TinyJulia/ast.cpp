@@ -18,7 +18,7 @@ static int labelCount = 0;
 static int literalCount =0;
 static bool isInnerContext = false;
 static bool inLoop = false;
-map<int, bool> tempInUse;
+list<int> tempInUse;
 
 void genDataSection() {
 	cout<<endl;
@@ -81,34 +81,22 @@ string getId(string id){
 }
 
 string newTemp() {
-	map<int, bool>::iterator it = tempInUse.begin();
-	while (it != tempInUse.end()) {
-		pair<int, bool> itm = *it;
 
-		if (!itm.second) {
-			tempInUse[itm.first] = true;
-			return "DWORD[ebp - "+to_string(itm.first)+"]";
-		}
-		it++;
-	}
-	tempInUse[tmp_offset] = true;
+    tempInUse.push_back(tmp_offset);
 	auto temp = "DWORD[ebp - "+to_string(tmp_offset)+"]";
 	tmp_offset += 4;
 	return temp;
 }
 
  void releaseTemp(string temp) {
-	map<int, bool>::iterator it = tempInUse.begin();
-	while (it != tempInUse.end()) {
-		pair<int, bool> itm = *it;
-
-		auto str ="DWORD[ebp - "+to_string(itm.first)+"]";
+    for(auto itm : tempInUse){
+        auto str ="DWORD[ebp - "+to_string(itm)+"]";
 		if(str == temp){
-			tempInUse[itm.first] = false;
+            tempInUse.remove(itm);
+            tmp_offset-=4;
 			return;
 		}
-		it++;
-	}
+    }
 }
 
 string newLabel() {
@@ -136,13 +124,13 @@ void AddExpr::genCode(ExprContext &ctx) {
 
 
     ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
     ctx.place = newTemp();
     ctx.code += "mov eax, " + ctx1.place+"\n"+
     "add eax," + ctx2.place+"\n"+
     "mov "+ctx.place+", eax\n";
 	ctx.type = INT_TYPE;
+    releaseTemp(ctx1.place);
+    releaseTemp(ctx2.place);
 }
 
 void SubExpr::genCode(ExprContext &ctx) {
@@ -563,6 +551,7 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
      ctx.place = newTemp();
      ctx.code += "mov " + ctx.place+", eax\n";
 	 ctx.type = INT_TYPE;
+     releaseTemp(ctx1.place);
 }
 
 void UnaryDistintExpr::genCode(ExprContext &ctx){
@@ -578,32 +567,49 @@ void UnaryDistintExpr::genCode(ExprContext &ctx){
      ctx.code += "setz cl\n";
      ctx.place = newTemp();
      ctx.code += "mov " + ctx.place+", ecx\n";
+     releaseTemp(ctx1.place);
 	 ctx.type = BOOL_TYPE;
 }
 
 void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
 	
     this->expressionList->reverse();
-    ExprContext tmpCtx;
+    list<ExprContext> listExpCtx;
 	stringstream ss;
     string functionName = this->Id;
     for(auto e : *this->expressionList){
+        ExprContext tmpCtx;
 		e->genCode(tmpCtx);
+        listExpCtx.push_back(tmpCtx);
         functionName+=to_string(tmpCtx.type);
-		ss << tmpCtx.code
-			<< "push "<< tmpCtx.place << endl;
 	}
+     //auto tmp = newTemp();
+    for(auto &ct : listExpCtx){
+        
+        ss << ct.code <<endl;
+        // ss << "mov ebx, "<<ct.place<<endl;
+        // ss << "mov "<<tmp<<", ebx"<<endl;
+        // ct.place = tmp;
+        // tmp = newTemp();
+    }
+
+    for(auto ct : listExpCtx){
+        ss << "push "<< ct.place << endl;
+    }
+
+    for(auto &ct : listExpCtx){
+        releaseTemp(ct.place);
+    }
+
     if(functions.find(functionName) == functions.end())
 		throw invalid_argument("undeclared function "+this->Id);
-    releaseTemp(tmpCtx.place);
     ctx.place = newTemp();
     ss << "call " << functionName << endl;
     if((*this->expressionList).size()!=0)
-	ss << "add esp, "<<(4*(*this->expressionList).size()) << endl;
+	    ss << "add esp, "<<(4*(*this->expressionList).size()) << endl;
 	ss << "mov " << ctx.place <<", eax" << endl;
 	ctx.code = ss.str();
 	ctx.type = functions[functionName];
-	releaseTemp(ctx.place);
 }
 
 
@@ -703,6 +709,7 @@ void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrNa
         counter++;
         ctx.code += "inc ecx\n";
         ctx.type = type;
+        releaseTemp(ctx1.place);
     }
 }
 
@@ -716,23 +723,25 @@ void AssignExpr::genCode(ExprContext &ctx) {
 	if(ctx1.type != ctx2.type)
 		throw invalid_argument("invalid assignation of diffrent type");	
 	ss << ctx2.code;
-	ss << "mov eax, " << ctx2.place << endl;
 	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
+        ss << "mov eax, " << ctx2.place << endl;
 		ss << "mov " << ctx1.place  << ", eax\n";
-		releaseTemp(ctx2.place);
-		releaseTemp(ctx1.place);
+		// releaseTemp(ctx2.place);
+		// releaseTemp(ctx1.place);
 		ctx.code += ss.str();
 		ctx.type = ctx1.type;
     }else if(BracketPostIdExpr * bracketExpr = dynamic_cast<BracketPostIdExpr*>(this->left)){
         ExprContext ctx3;
         bracketExpr->Index->genCode(ctx3);
         ss << ctx3.code<<endl;
+        ss << "mov eax, " << ctx2.place << endl;
         ss << "mov ebx, "+ctx3.place+"\n";
         ss << "sub ebx, 1\n";
         ss << "lea edi, ["+bracketExpr->Id+"]\n";
         ss << "mov [edi + ebx*4], eax\n";
-		releaseTemp(ctx2.place);
-		releaseTemp(ctx1.place);
+        releaseTemp(ctx3.place);
+		// releaseTemp(ctx2.place);
+		// releaseTemp(ctx1.place);
 		ctx.code += ss.str();
 		ctx.type = ctx1.type;
 	}else{
@@ -833,6 +842,7 @@ string ForStatement::genCode(){
     ss << ctx1.code <<endl;
     ss << ctx2.code <<endl;
     ss << "mov eax, "<<ctx1.place<<endl;
+    ss<<"sub esp, 4\n";
     ss << "mov " <<getId(this->Id) <<", eax"<<endl;
     ss << labelFor << ":"<<endl;
     ss << "mov ecx , "<<ctx2.place<<endl;
@@ -842,7 +852,7 @@ string ForStatement::genCode(){
     << "inc " <<  getId(this->Id) << endl
     << "jmp " << labelFor << endl
     << labelForEnd << ":";
-
+    releaseTemp(getId(this->Id));
 	releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
     inLoop = false;
@@ -872,7 +882,7 @@ string IfStatement::genCode(){
         ss << this->elseBody->genCode();
     }
     ss << endifLabel << ":" << endl;
-
+    releaseTemp(ctx1.place);
     return ss.str();
 }
 
@@ -932,17 +942,14 @@ string DeclarationStatement::genCode(){
             tmp_offset += 4;
         }
 
-                expr->genCode(ctx);
-            
-
-            if(ctx.type != this->Type){
-                throw invalid_argument("Invalid declaration of diffrent types");
-            }
-            ss << ctx.code;
-            ss << "mov eax, " << ctx.place << endl;
-            ss << "mov " <<getId(this->Id) << ", eax\n";
-            releaseTemp(ctx.place);
-            return ss.str();
+        expr->genCode(ctx);
+        if(ctx.type != this->Type){
+            throw invalid_argument("Invalid declaration of diffrent types");
+        }
+        ss << ctx.code;
+        ss << "mov eax, " << ctx.place << endl;
+        ss << "mov " <<getId(this->Id) << ", eax\n";
+        return ss.str();
     }else{
         if(isInnerContext)
              throw invalid_argument("Declaration of Arrays not suported in inner scopes :'v");
@@ -967,8 +974,8 @@ string DeclarationStatement::genCode(){
 string PrintStatement::genCode()
 {
     stringstream ss;
-    ExprContext ctx;
-    for(auto expr : *this->exprList){ 
+    for(auto expr : *this->exprList){
+        ExprContext ctx;
         if (expr->getKind() == ExprKind::LIT_STRING) {
             string lit = ((StringExpr*)expr)->str.c_str();
             string pointer = newLiteral();

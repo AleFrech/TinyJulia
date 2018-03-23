@@ -8,5 +8,4 @@ function func(n::Int)::Int
 end
 
 y = 20;
-r::Int = y;
 print(func(5));
