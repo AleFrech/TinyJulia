@@ -666,11 +666,12 @@ void BracketPostIdExpr::genCode(ExprContext &ctx) {
     this->Index->genCode(ctx1);
     ctx.code+=ctx1.code;
     ctx.place = newTemp();
-    ctx.code += "mov eax, "+ctx1.place+"\n";
-    ctx.code += "sub eax, 1\n";
+    ctx.code += "mov ebx, "+ctx1.place+"\n";
+    ctx.code += "sub ebx, 1\n";
     ctx.code += "lea edi, ["+this->Id+"]\n";
-    ctx.code += "mov esi, [edi + eax * 4]\n";
+    ctx.code += "mov esi, [edi + ebx * 4]\n";
     ctx.code += "mov "+ctx.place+", esi\n";
+    ctx.type = type;
     releaseTemp(ctx1.place);
 }
 
@@ -718,6 +719,18 @@ void AssignExpr::genCode(ExprContext &ctx) {
 	ss << "mov eax, " << ctx2.place << endl;
 	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
 		ss << "mov " << ctx1.place  << ", eax\n";
+		releaseTemp(ctx2.place);
+		releaseTemp(ctx1.place);
+		ctx.code += ss.str();
+		ctx.type = ctx1.type;
+    }else if(BracketPostIdExpr * bracketExpr = dynamic_cast<BracketPostIdExpr*>(this->left)){
+        ExprContext ctx3;
+        bracketExpr->Index->genCode(ctx3);
+        ss << ctx3.code<<endl;
+        ss << "mov ebx, "+ctx3.place+"\n";
+        ss << "sub ebx, 1\n";
+        ss << "lea edi, ["+bracketExpr->Id+"]\n";
+        ss << "mov [edi + ebx*4], eax\n";
 		releaseTemp(ctx2.place);
 		releaseTemp(ctx1.place);
 		ctx.code += ss.str();
@@ -919,7 +932,9 @@ string DeclarationStatement::genCode(){
             tmp_offset += 4;
         }
 
-            expr->genCode(ctx);
+                expr->genCode(ctx);
+            
+
             if(ctx.type != this->Type){
                 throw invalid_argument("Invalid declaration of diffrent types");
             }
