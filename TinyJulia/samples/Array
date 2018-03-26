@@ -1,11 +1,7 @@
-function suma(a::Int,b::Int)::Int
-    return a + b
-end
+a::Array{Int} = [7,4,9,2,10,1,5,3,8,6]
 
-a::Array{Int} = [4,2,1,5,3]
-
- for i = 1:5
-    for j = 1:5-1
+ for i = 1:10
+    for j = 1:10-1
         if(a[j] > a[j+1])
             temp::Int = a[j+1]
             a[j+1] = a[j]
@@ -14,44 +10,7 @@ a::Array{Int} = [4,2,1,5,3]
     end
 end
 
-
-
-for i = 1:5
-    println(a[i])
-end
-
-
-
-
-
-#=
-
-for i = 1:5
-    for j = 1:5-1
-        if(a[j] > a[j+1])
-            temp::Int = a[j+1]
-            a[j+1] = a[j]
-            a[j]=temp
-        end
-    end
-end
-
-
-println(suma(x,y))
-
-temp::Int = 0
-for i = 1:5
-    for j = 2:5-i
-        if(a[j-1] > a[j])
-            temp = a[j-1]
-            a[j-1] = a[j]
-            a[j]=temp
-        end
-    end
-end
-
-
-for i = 1:5
+for i = 1:10
     println(a[i])
 end
 
@@ -62,5 +21,3 @@ println("Imprimiendo Booleans")
 for j = 1:6
    println(b[j])
 end
-
-=#

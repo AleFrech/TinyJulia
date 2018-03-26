@@ -21,6 +21,8 @@ struct ExprContext {
     string code;
     string place;
     primitiveType type;
+    int numberValue;
+    bool isConstant;
 };
 
 

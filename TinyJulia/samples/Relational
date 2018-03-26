@@ -32,4 +32,4 @@ falseValue::Bool = false
 
  println ("trueValue == falseValue = ",trueValue == falseValue)
 
- println ("trueValue != falseValue =",trueValue != falseValue)
+ println ("trueValue != falseValue = ",trueValue != falseValue)

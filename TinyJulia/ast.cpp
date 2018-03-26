@@ -1,6 +1,7 @@
 #include "ast.h"
 #include <iostream>
 #include <map>
+#include <math.h>
 #include <set>
 #include <vector>
 #include <string>
@@ -122,15 +123,21 @@ void AddExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
-    ctx.place = newTemp();
-    ctx.code += "mov eax, " + ctx1.place+"\n"+
-    "add eax," + ctx2.place+"\n"+
-    "mov "+ctx.place+", eax\n";
-	ctx.type = INT_TYPE;
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
+    if(ctx1.isConstant && ctx2.isConstant){
+        ctx.numberValue = ctx1.numberValue + ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+    }else{
+        ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.place = newTemp();
+        ctx.code += "mov eax, " + ctx1.place+"\n"+
+        "add eax," + ctx2.place+"\n"+
+        "mov "+ctx.place+", eax\n";
+    }
 }
 
 void SubExpr::genCode(ExprContext &ctx) {
@@ -140,14 +147,21 @@ void SubExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-    ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.place = newTemp();
-    ctx.code += "mov eax, " + ctx1.place+"\n"+
-    "sub eax," + ctx2.place+"\n"+
-    "mov "+ctx.place+", eax\n";
-	ctx.type = INT_TYPE;
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
+	if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue - ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+    }else{
+        ctx.code = ctx1.code + "\n" + ctx2. code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.place = newTemp();
+        ctx.code += "mov eax, " + ctx1.place+"\n"+
+        "sub eax," + ctx2.place+"\n"+
+        "mov "+ctx.place+", eax\n";
+    }
 }
 
 void MulExpr::genCode(ExprContext &ctx) {
@@ -157,16 +171,22 @@ void MulExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
-    ctx.code += "mov ecx,"+ctx2.place+"\n";
-    ctx.code += "imul ecx\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
-	ctx.type = INT_TYPE;
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue * ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+    }else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+        ctx.code += "mov ecx,"+ctx2.place+"\n";
+        ctx.code += "imul ecx\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 }
 
 void DivExpr::genCode(ExprContext &ctx) {
@@ -176,16 +196,22 @@ void DivExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
-    ctx.code += "mov ecx,"+ctx2.place+"\n";
-    ctx.code += "idiv ecx\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
-	ctx.type = INT_TYPE;
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
+    if(ctx1.isConstant && ctx2.isConstant){
+        ctx.numberValue = ctx1.numberValue / ctx2.numberValue;
+        ctx.place = to_string(ctx.numberValue);
+        ctx.isConstant = true;
+    }else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+        ctx.code += "mov ecx,"+ctx2.place+"\n";
+        ctx.code += "idiv ecx\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 
 }
 
@@ -195,16 +221,23 @@ void ModExpr::genCode(ExprContext &ctx) {
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
 
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
-    ctx.code += "mov ecx,"+ctx2.place+"\n";
-    ctx.code += "idiv ecx\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", edx\n";
-	ctx.type = INT_TYPE;
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue % ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov eax,"+ctx1.place+"\ncdq\n";
+        ctx.code += "mov ecx,"+ctx2.place+"\n";
+        ctx.code += "idiv ecx\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", edx\n";
+    }
 }
 
 void ExponentExpr::genCode(ExprContext &ctx) {
@@ -214,17 +247,24 @@ void ExponentExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "push "+ctx2.place+"\n";
-    ctx.code += "push "+ctx1.place+"\n";
-    ctx.code += "call power\n";
-	ctx.code += "add esp,8\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
-	ctx.type = INT_TYPE;
+    ctx.isConstant = false;
+    ctx.type = INT_TYPE;
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue =  pow(ctx1.numberValue ,ctx2.numberValue);
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "push "+ctx2.place+"\n";
+        ctx.code += "push "+ctx1.place+"\n";
+        ctx.code += "call power\n";
+        ctx.code += "add esp,8\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+        ctx.type = INT_TYPE;
+    }
 }
 
 void LessThanExpr::genCode(ExprContext &ctx) {
@@ -234,18 +274,24 @@ void LessThanExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "setl al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue < ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "setl al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 
 }
 
@@ -256,18 +302,25 @@ void LessThanEqualsExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "setle al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue <= ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	}else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "setle al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 }
 
 
@@ -278,18 +331,25 @@ void GreaterThanExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "setg al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue > ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	}else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "setg al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 }
 
 void GreaterThanEqualsExpr::genCode(ExprContext &ctx) {
@@ -299,17 +359,25 @@ void GreaterThanEqualsExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "setge al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue >= ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	}else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "setge al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 
 }
 
@@ -320,17 +388,26 @@ void EqualExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "sete al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue == ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	}else{
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "sete al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+        ctx.type = BOOL_TYPE;
+    }
 
 }
 
@@ -341,18 +418,25 @@ void NotEqualExpr::genCode(ExprContext &ctx) {
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
 
-
-    ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
-    releaseTemp(ctx1.place);
-    releaseTemp(ctx2.place);
-    ctx.code += "mov ecx,"+ctx1.place+"\n";
-    ctx.code += "mov edx,"+ctx2.place+"\n";
-    ctx.code += "xor eax, eax\n";
-    ctx.code += "cmp ecx, edx\n";
-    ctx.code += "setne al\n";
-    ctx.place = newTemp();
-    ctx.code += "mov " + ctx.place+", eax\n";
+    ctx.isConstant = false;
     ctx.type = BOOL_TYPE;
+
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue != ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+        ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
+        releaseTemp(ctx1.place);
+        releaseTemp(ctx2.place);
+        ctx.code += "mov ecx,"+ctx1.place+"\n";
+        ctx.code += "mov edx,"+ctx2.place+"\n";
+        ctx.code += "xor eax, eax\n";
+        ctx.code += "cmp ecx, edx\n";
+        ctx.code += "setne al\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+    }
 }
 
 void LeftShiftExpr::genCode(ExprContext &ctx) {
@@ -361,6 +445,7 @@ void LeftShiftExpr::genCode(ExprContext &ctx) {
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
+    ctx.isConstant = false;
 
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
@@ -379,6 +464,7 @@ void RightShiftExpr::genCode(ExprContext &ctx) {
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
+    ctx.isConstant = false;
 
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
@@ -394,6 +480,7 @@ void RightShiftExpr::genCode(ExprContext &ctx) {
 void BitOrExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
     ExprContext ctx2;
+    ctx.isConstant = false;
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
@@ -412,6 +499,7 @@ void BitOrExpr::genCode(ExprContext &ctx) {
 void BitXorExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
     ExprContext ctx2;
+    ctx.isConstant = false;
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
@@ -430,6 +518,7 @@ void BitXorExpr::genCode(ExprContext &ctx) {
 void BitAndExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
     ExprContext ctx2;
+    ctx.isConstant = false;
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
@@ -447,6 +536,7 @@ void BitAndExpr::genCode(ExprContext &ctx) {
 
 void UnaryAddExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
+    ctx.isConstant = false;
 	this->expr->genCode(ctx1);
 	if(ctx1.type != INT_TYPE){
 		throw invalid_argument("unary '+' only compatible with int type");
@@ -463,6 +553,7 @@ void LogicalAndExpr::genCode(ExprContext &ctx) {
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
+    ctx.isConstant = false;
 
 	if(ctx1.type != BOOL_TYPE || ctx2.type != BOOL_TYPE){
 		throw invalid_argument("Cant && incompatible types");
@@ -497,6 +588,7 @@ void LogicalOrExpr::genCode(ExprContext &ctx) {
 
     expr1->genCode(ctx1);
     expr2->genCode(ctx2);
+    ctx.isConstant = false;
 
 	if(ctx1.type != BOOL_TYPE || ctx2.type != BOOL_TYPE){
 		throw invalid_argument("Cant || incompatible types");
@@ -530,6 +622,7 @@ void LogicalOrExpr::genCode(ExprContext &ctx) {
 void UnarySubExpr::genCode(ExprContext &ctx) {
     ExprContext ctx1;
 	this->expr->genCode(ctx1);
+    ctx.isConstant = false;
 	if(ctx1.type != INT_TYPE){
 		throw invalid_argument("unary '-' only compatible with int type");
 	}
@@ -542,6 +635,7 @@ void UnarySubExpr::genCode(ExprContext &ctx) {
 void UnaryNotExpr::genCode(ExprContext &ctx){
      ExprContext ctx1;
 	 this->expr->genCode(ctx1);
+     ctx.isConstant = false;
      if(ctx1.type != INT_TYPE){
 		throw invalid_argument("unary '~' only compatible with int type");
 	 }
@@ -557,6 +651,7 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
 void UnaryDistintExpr::genCode(ExprContext &ctx){
      ExprContext ctx1;
 	 this->expr->genCode(ctx1);
+     ctx.isConstant = false;
      if(ctx1.type != BOOL_TYPE){
 		throw invalid_argument("unary '!' only compatible with bool type");
 	 }
@@ -610,13 +705,16 @@ void ParenthesisPosIdExpr::genCode(ExprContext &ctx) {
 	ss << "mov " << ctx.place <<", eax" << endl;
 	ctx.code = ss.str();
 	ctx.type = functions[functionName];
+    ctx.isConstant = false;
 }
 
 
 
 void BoolExpr::genCode(ExprContext &ctx) {
 	ctx.place =  this->value ? "1" : "0";
+    ctx.numberValue = this->value ? 1 : 0;
     ctx.code = "";
+    ctx.isConstant = true;
 	ctx.type = BOOL_TYPE;
 }
 
@@ -625,13 +723,15 @@ void StringExpr::genCode(ExprContext &ctx) {
 }
 
 void NumberExpr::genCode(ExprContext &ctx) {
+    ctx.numberValue = this->value;
 	ctx.place = to_string(this->value);
 	ctx.code = "";
+    ctx.isConstant = true;
 	ctx.type = INT_TYPE;
 }
 
 void VarExpr::genCode(ExprContext &ctx) {
-	//ctx.place = getId(this->Id,ctx.type);
+    ctx.isConstant = false;
     int scopes = $scopes.size() - 1;
 	for(int i = scopes; i >= 0; i--) {
 		if($scopes[i].find(this->Id) != $scopes[i].end()){
@@ -678,6 +778,7 @@ void BracketPostIdExpr::genCode(ExprContext &ctx) {
     ctx.code += "mov esi, [edi + ebx * 4]\n";
     ctx.code += "mov "+ctx.place+", esi\n";
     ctx.type = type;
+    ctx.isConstant = false;
     releaseTemp(ctx1.place);
 }
 
@@ -701,7 +802,7 @@ void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrNa
     for(auto e : *this->expressionList){
         e->genCode(ctx1);
         if(ctx1.type != type){
-            throw invalid_argument("Incompatible in array declaration");
+            throw invalid_argument("Incompatible types in array declaration");
         }
         ctx.code += ctx1.code;
         ctx.code += "mov eax, "+ctx1.place+"\n";
@@ -719,15 +820,15 @@ void AssignExpr::genCode(ExprContext &ctx) {
 	this->right->genCode(ctx2);
 	this->left->genCode(ctx1);
 
-
+    ctx.isConstant = false;
 	if(ctx1.type != ctx2.type)
 		throw invalid_argument("invalid assignation of diffrent type");	
 	ss << ctx2.code;
 	if(VarExpr* idnode = dynamic_cast<VarExpr*>(this->left)){
         ss << "mov eax, " << ctx2.place << endl;
 		ss << "mov " << ctx1.place  << ", eax\n";
-		// releaseTemp(ctx2.place);
-		// releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
+		releaseTemp(ctx1.place);
 		ctx.code += ss.str();
 		ctx.type = ctx1.type;
     }else if(BracketPostIdExpr * bracketExpr = dynamic_cast<BracketPostIdExpr*>(this->left)){
@@ -740,8 +841,8 @@ void AssignExpr::genCode(ExprContext &ctx) {
         ss << "lea edi, ["+bracketExpr->Id+"]\n";
         ss << "mov [edi + ebx*4], eax\n";
         releaseTemp(ctx3.place);
-		// releaseTemp(ctx2.place);
-		// releaseTemp(ctx1.place);
+		releaseTemp(ctx2.place);
+		releaseTemp(ctx1.place);
 		ctx.code += ss.str();
 		ctx.type = ctx1.type;
 	}else{
