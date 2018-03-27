@@ -121,8 +121,8 @@ param_list: param_list ',' param {$1->push_back($3); $$=$1;}
 param: TK_ID type { $$ = new ParamExpr(string($1),$2); delete $1;}
 ;
 
-declaration_statement: TK_ID type op_decAsgn {$$ = new DeclarationStatement(string($1),$2,0,$3); delete $1;}
-    | TK_ID arr_type '(' TK_NUM ')' '=' '[' argument_expression_list ']' {$$ = new DeclarationStatement(string($1),$2,$4,new ArrayExpr($8)); delete $1;}
+declaration_statement: TK_ID type op_decAsgn {$$ = new DeclarationStatement(string($1),$2,$3); delete $1;}
+    | TK_ID arr_type '=' '[' argument_expression_list ']' {$$ = new DeclarationStatement(string($1),$2,new ArrayExpr($5)); delete $1;}
 ;
 
 

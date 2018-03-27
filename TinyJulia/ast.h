@@ -330,7 +330,7 @@ public:
      }
      int getKind(){return TYPE;}
      void genCode(ExprContext &ctx);
-     void genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName, int arrSize);
+     void genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName);
 };
 
 class BoolExpr : public Expr{
@@ -443,12 +443,10 @@ public:
     string Id;
     Expr* expr;
     primitiveType Type;
-    int arraySize;
-    DeclarationStatement(string id,primitiveType type, int size ,Expr* exp){
+    DeclarationStatement(string id,primitiveType type ,Expr* exp){
         this->Id = id;
         this->Type = type;
         this->expr = exp;
-        this->arraySize = size;
     }
     string genCode();
 };

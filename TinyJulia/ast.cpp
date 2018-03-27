@@ -786,7 +786,7 @@ void ArrayExpr::genCode(ExprContext &ctx) {
 
 }
 
-void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName,int arrSize){
+void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName){
     stringstream ss;
 	ExprContext ctx1;
 
@@ -796,9 +796,6 @@ void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrNa
     }else{
         type =BOOL_TYPE;
     }
-
-    if(arrSize != this->expressionList->size())
-        throw invalid_argument("Invalid  sizes in array declaration");
 
     ctx.code +="lea edi,["+arrName+"]\n";
     ctx.code +="mov ecx, 0\n";
@@ -1064,9 +1061,8 @@ string DeclarationStatement::genCode(){
             variables[this->Id] = new ArrayBoolType();
          else if(this->Type == ARRAY_INT_TYPE)
             variables[this->Id] = new ArrayIntType();
-        variables[this->Id]->size = this->arraySize;
         if(ArrayExpr* arrExpr = dynamic_cast<ArrayExpr*>(this->expr)){
-            arrExpr->genCodeArray(ctx,this->Type,this->Id,this->arraySize);
+            arrExpr->genCodeArray(ctx,this->Type,this->Id);
             ss << ctx.code;
             return ss.str();
         }else{
