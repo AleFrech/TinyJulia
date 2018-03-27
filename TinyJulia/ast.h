@@ -33,10 +33,11 @@ struct VariableMetaData{
 
 class BaseType {
 public:
-  primitiveType Type;
-  BaseType(primitiveType type){
+    primitiveType Type;
+    int size;
+    BaseType(primitiveType type){
       this->Type = type;
-  }
+    }
 };
 
 class IntType : public BaseType { 
@@ -54,6 +55,7 @@ public:
 class ArrayIntType : public BaseType { 
 public:
     vector<int> array;
+
     ArrayIntType() : BaseType(ARRAY_INT_TYPE) {  }
 };
 
@@ -328,7 +330,7 @@ public:
      }
      int getKind(){return TYPE;}
      void genCode(ExprContext &ctx);
-     void genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName);
+     void genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName, int arrSize);
 };
 
 class BoolExpr : public Expr{
@@ -441,10 +443,12 @@ public:
     string Id;
     Expr* expr;
     primitiveType Type;
-    DeclarationStatement(string id,primitiveType type,Expr* exp){
+    int arraySize;
+    DeclarationStatement(string id,primitiveType type, int size ,Expr* exp){
         this->Id = id;
         this->Type = type;
         this->expr = exp;
+        this->arraySize = size;
     }
     string genCode();
 };

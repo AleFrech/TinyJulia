@@ -48,6 +48,9 @@ inc ecx
 mov eax, 6
 mov [edi+ecx*4], eax
 inc ecx
+mov eax, 0
+mov [edi+ecx*4], eax
+inc ecx
 
 
 
@@ -55,7 +58,7 @@ mov eax, 1
 sub esp, 4
 mov DWORD[ebp  - 4], eax
 .L0:
-mov ecx , 10
+mov ecx , 11
 cmp DWORD[ebp  - 4], ecx
 jg .L1
 
@@ -64,7 +67,7 @@ mov eax, 1
 sub esp, 4
 mov DWORD[ebp  - 8], eax
 .L2:
-mov ecx , 9
+mov ecx , 10
 cmp DWORD[ebp  - 8], ecx
 jg .L3
 mov ebx, DWORD[ebp  - 8]
@@ -149,7 +152,7 @@ mov eax, 1
 sub esp, 4
 mov DWORD[ebp  - 24], eax
 .L6:
-mov ecx , 10
+mov ecx , 11
 cmp DWORD[ebp  - 24], ecx
 jg .L7
 mov ebx, DWORD[ebp  - 24]

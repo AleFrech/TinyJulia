@@ -786,28 +786,31 @@ void ArrayExpr::genCode(ExprContext &ctx) {
 
 }
 
-void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName){
+void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrName,int arrSize){
     stringstream ss;
 	ExprContext ctx1;
-    int counter =0;
+
     primitiveType type;
     if(arrType == ARRAY_INT_TYPE){
         type = INT_TYPE;
     }else{
         type =BOOL_TYPE;
     }
+
+    if(arrSize != this->expressionList->size())
+        throw invalid_argument("Invalid  sizes in array declaration");
+
     ctx.code +="lea edi,["+arrName+"]\n";
     ctx.code +="mov ecx, 0\n";
 
     for(auto e : *this->expressionList){
         e->genCode(ctx1);
-        if(ctx1.type != type){
+        if(type == BOOL_TYPE && ctx1.type == INT_TYPE ){
             throw invalid_argument("Incompatible types in array declaration");
         }
         ctx.code += ctx1.code;
         ctx.code += "mov eax, "+ctx1.place+"\n";
         ctx.code += "mov [edi+ecx*4], eax\n";
-        counter++;
         ctx.code += "inc ecx\n";
         ctx.type = type;
         releaseTemp(ctx1.place);
@@ -1061,9 +1064,9 @@ string DeclarationStatement::genCode(){
             variables[this->Id] = new ArrayBoolType();
          else if(this->Type == ARRAY_INT_TYPE)
             variables[this->Id] = new ArrayIntType();
-
+        variables[this->Id]->size = this->arraySize;
         if(ArrayExpr* arrExpr = dynamic_cast<ArrayExpr*>(this->expr)){
-            arrExpr->genCodeArray(ctx,this->Type,this->Id);
+            arrExpr->genCodeArray(ctx,this->Type,this->Id,this->arraySize);
             ss << ctx.code;
             return ss.str();
         }else{
