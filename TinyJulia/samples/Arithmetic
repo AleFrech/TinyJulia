@@ -6,7 +6,7 @@
 =#
 x::Int = 10
 y::Int = 3
-
+z::Bool = false
 println ("x = ",x)
 println ("y = ",y)
 println ("-x = ",-x)

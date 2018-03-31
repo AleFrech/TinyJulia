@@ -829,6 +829,7 @@ void AssignExpr::genCode(ExprContext &ctx) {
 		ss << "mov " << ctx1.place  << ", eax\n";
 		releaseTemp(ctx2.place);
 		releaseTemp(ctx1.place);
+        ctx.place = ctx1.place;
 		ctx.code += ss.str();
 		ctx.type = ctx1.type;
     }else if(BracketPostIdExpr * bracketExpr = dynamic_cast<BracketPostIdExpr*>(this->left)){
