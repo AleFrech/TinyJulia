@@ -1,9 +1,16 @@
-x::Int = 20
+x::Int = 3 + 2*5
 
-if x<20 
-    println("menor")
-elseif x> 20
-    println("mayor")
+println(x)
+if x > 3
+    println("Mayor")
+elseif x < 3
+    println("Menor")
 else
-    println("igual")
+    println("Igual")
 end
+
+#=
+should print:
+    13
+    Mayor
+=#

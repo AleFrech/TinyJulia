@@ -636,14 +636,22 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
      ExprContext ctx1;
 	 this->expr->genCode(ctx1);
      ctx.isConstant = false;
-     if(ctx1.type != INT_TYPE){
-		throw invalid_argument("unary '~' only compatible with int type");
-	 }
-     ctx.code = ctx1.code + "\n";
-     ctx.code += "mov eax,"+ctx1.place+"\n";
-     ctx.code += "not eax\n";
-     ctx.place = newTemp();
-     ctx.code += "mov " + ctx.place+", eax\n";
+     if(ctx1.type == INT_TYPE){
+        ctx.code = ctx1.code + "\n";
+        ctx.code += "mov eax,"+ctx1.place+"\n";
+        ctx.code += "not eax\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", eax\n";
+		
+	 }else{
+        ctx.code = ctx1.code + "\n";
+        ctx.code += "mov eax,"+ctx1.place+"\n";
+        ctx.code += "xor ecx, ecx\n";
+        ctx.code += "test eax, eax\n";
+        ctx.code += "setz cl\n";
+        ctx.place = newTemp();
+        ctx.code += "mov " + ctx.place+", ecx\n";
+     }
 	 ctx.type = INT_TYPE;
      releaseTemp(ctx1.place);
 }

@@ -36,7 +36,7 @@ for i = 1:11
     println(a[i])
 end
 
-println("-------------------------------------")
+println("---------------Ya Ordenado----------------------")
 
 quickSort(0, 11)
 
