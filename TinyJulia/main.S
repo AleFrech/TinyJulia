@@ -93,7 +93,7 @@ add esp, 4
 
 
 push 11
-push 0
+push 1
 call quickSort11
 add esp, 8
 mov DWORD[ebp - 8], eax
