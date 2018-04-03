@@ -450,6 +450,12 @@ void LeftShiftExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
     ctx.isConstant = false;
 
+     if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue << ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -459,6 +465,7 @@ void LeftShiftExpr::genCode(ExprContext &ctx) {
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
 	ctx.type = INT_TYPE;	
+    }
 }
 
 void RightShiftExpr::genCode(ExprContext &ctx) {
@@ -469,6 +476,12 @@ void RightShiftExpr::genCode(ExprContext &ctx) {
     expr2->genCode(ctx2);
     ctx.isConstant = false;
 
+    if (ctx1.isConstant && ctx2.isConstant) {
+		ctx.numberValue = ctx1.numberValue << ctx2.numberValue;
+		ctx.place = to_string(ctx.numberValue);
+		ctx.isConstant = true;
+	} else {
+
     ctx.code = ctx1.code + "\n" + ctx2.code + "\n";
     releaseTemp(ctx1.place);
     releaseTemp(ctx2.place);
@@ -478,6 +491,7 @@ void RightShiftExpr::genCode(ExprContext &ctx) {
     ctx.place = newTemp();
     ctx.code += "mov " + ctx.place+", eax\n";
 	ctx.type = INT_TYPE;
+    }
 }
 
 void BitOrExpr::genCode(ExprContext &ctx) {
