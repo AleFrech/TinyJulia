@@ -26,6 +26,7 @@ void genDataSection() {
 	cout << "section .data" << endl;
 	cout << "format db \"%d\", 0"<< endl;
 	cout << "formatString db \"%s\", 0"<< endl;
+    cout << "nothing db \"\",0"<<endl;
     cout << "newline db \"\" ,10 ,0"<<endl;
 
     for(auto &lit : stringLiterals){
@@ -813,13 +814,34 @@ void ArrayExpr::genCodeArray(ExprContext &ctx,primitiveType arrType,string arrNa
         if(type == BOOL_TYPE && ctx1.type == INT_TYPE ){
             throw invalid_argument("Incompatible types in array declaration");
         }
-        ctx.code += ctx1.code;
-        ctx.code += "mov eax, "+ctx1.place+"\n";
-        ctx.code += "mov [edi+ecx*4], eax\n";
-        ctx.code += "inc ecx\n";
-        ctx.type = type;
-        releaseTemp(ctx1.place);
+        if(BracketPostIdExpr * bracketExpr = dynamic_cast<BracketPostIdExpr*>(e)){
+            bracketExpr->Index->genCode(ctx1);
+            ctx.code+=ctx1.code;
+            ctx.code += "mov ebx, "+ctx1.place+"\n";
+            ctx.code += "sub ebx, 1\n";
+            ctx.code += "lea edi, ["+bracketExpr->Id+"]\n";
+            ctx.code += "mov esi, [edi + ebx * 4]\n";
+            ctx.code +="lea edi,["+arrName+"]\n";
+            ctx.code += "mov [edi+ecx*4], esi\n";
+            ctx.code += "inc ecx\n";
+            ctx.type = type;
+            releaseTemp(ctx1.place);
+        }else{
+            ctx.code += ss.str();
+            ctx.type = ctx1.type;
+            ctx.code += ctx1.code;
+            ctx.code += "mov eax, "+ctx1.place+"\n";
+            ctx.code +="lea edi,["+arrName+"]\n";
+            ctx.code += "mov [edi+ecx*4], eax\n";
+            ctx.code += "inc ecx\n";
+            ctx.type = type;
+            releaseTemp(ctx1.place);
+        }
     }
+    ctx.code+="sub esp, 4\n";
+    ctx.code+="push nothing\n";
+    ctx.code+="call printf\n";
+    ctx.code+="add esp, 4\n";
 }
 
 void AssignExpr::genCode(ExprContext &ctx) {

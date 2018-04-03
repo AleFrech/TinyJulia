@@ -10,7 +10,7 @@ function quickSort(left::Int, right::Int)::Int
         while (a[i] < pivot)
             i = i+1
         end
-        
+
         while (a[j] > pivot)
             j = j-1
         end
@@ -31,9 +31,13 @@ function quickSort(left::Int, right::Int)::Int
     end
 end
 
- 
+
 for i = 1:11
-    println(a[i])
+    if(i != 11)
+        print(a[i], ", ")
+    else
+        println(a[i])
+    end
 end
 
 println("---------------Ya Ordenado----------------------")
@@ -41,7 +45,9 @@ println("---------------Ya Ordenado----------------------")
 quickSort(1, 11)
 
 for i = 1:11
-    println(a[i])
+    if(i != 11)
+        print(a[i], ", ")
+    else
+        println(a[i])
+    end
 end
-
-
