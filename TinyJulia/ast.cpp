@@ -27,6 +27,8 @@ void genDataSection() {
 	cout << "format db \"%d\", 0"<< endl;
 	cout << "formatString db \"%s\", 0"<< endl;
     cout << "nothing db \"\",0"<<endl;
+    cout << "true db \"true\",0"<<endl;
+    cout << "false db \"false\",0"<<endl;
     cout << "newline db \"\" ,10 ,0"<<endl;
 
     for(auto &lit : stringLiterals){
@@ -643,6 +645,7 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
         ctx.code += "not eax\n";
         ctx.place = newTemp();
         ctx.code += "mov " + ctx.place+", eax\n";
+        ctx.type = INT_TYPE;
 		
 	 }else{
         ctx.code = ctx1.code + "\n";
@@ -652,8 +655,9 @@ void UnaryNotExpr::genCode(ExprContext &ctx){
         ctx.code += "setz cl\n";
         ctx.place = newTemp();
         ctx.code += "mov " + ctx.place+", ecx\n";
+        ctx.type = BOOL_TYPE;
      }
-	 ctx.type = INT_TYPE;
+	
      releaseTemp(ctx1.place);
 }
 
@@ -1128,17 +1132,39 @@ string PrintStatement::genCode()
             ss << "sub esp, 8"<<endl;
             ss << "push "<<pointer <<endl;
             ss << "push  formatString" <<endl;
+            ss<< "call printf"<<endl
+	            << "add esp, 8"<<endl;
                 
         }else{
             expr->genCode(ctx);
-            ss << ctx.code << endl
-            << "sub esp, 8"<<endl
-	        << "push " << ctx.place << endl;
-            ss << "push format" <<endl;
-            releaseTemp(ctx.place);
+            if(ctx.type == BOOL_TYPE){
+                auto flaseLabel = newLabel();
+                auto endLabel = newLabel();
+                ss << ctx.code << endl
+                << "mov edx, "<<ctx.place<<endl
+                << "cmp edx, 0"<<endl
+                <<"je "<<flaseLabel<<endl
+                << "sub esp, 8"<<endl
+                << "push true" << endl
+                << "jmp "<<endLabel<<endl;
+                ss << "push formatString" <<endl;
+                ss <<flaseLabel <<":"<<endl
+                << "push false" << endl
+                << "push formatString" <<endl
+                << endLabel<<":"<<endl;
+                ss<< "call printf"<<endl
+	            << "add esp, 8"<<endl;
+            }else{
+                ss << ctx.code << endl
+                << "sub esp, 8"<<endl
+                << "push " << ctx.place << endl;
+                ss << "push format" <<endl;
+                ss<< "call printf"<<endl
+	            << "add esp, 8"<<endl;
+                releaseTemp(ctx.place);
+            }     
         }
-        ss<< "call printf"<<endl
-	    << "add esp, 8"<<endl;
+       
     }
     if(this->hasNewLine){
         ss << "sub esp, 4"<<endl;

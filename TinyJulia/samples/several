@@ -1,4 +1,3 @@
-
 el_global::Int = 100
 el_bool::Bool = false
 function IsPair(val::Int)::Bool
