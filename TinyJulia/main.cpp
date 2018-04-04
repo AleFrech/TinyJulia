@@ -28,6 +28,7 @@ int main (int argc , char * args[]){
             cout << "main:" <<endl
                  << "push ebp"<<endl << "mov ebp, esp"<<endl
                  << code
+                 << "mov eax, 0"<<endl
                  << "leave\nret\n";
             genFunctionSection();
 
