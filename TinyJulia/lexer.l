@@ -13,7 +13,7 @@
 [ \t] {}
 \n    { return TK_EOL;}
 "#="  {BEGIN(commentState);}
-"#".*  {}
+"#"[^=].*  {}
 "+"     {return '+';}
 "-"     {return '-';}
 "!"     {return '!';}  

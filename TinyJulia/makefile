@@ -1,4 +1,5 @@
 TARGET=exec
+TESTS=Arithmetic Arrays Bitwise BubbleSort comments Factorial functions helloworld if printFormat QuickSort recursion Relational several while_break while
 C_SRCFILES=main.cpp parser.cpp lexer.cpp ast.cpp
 OBJ_FILES=${C_SRCFILES:.cpp=.o}
 .PHONY: clean run
@@ -22,6 +23,19 @@ run: $(TARGET)
 	nasm -f elf32 -o asm.o main.S
 	gcc -m32 -c -o util.o util.c
 	gcc -m32 -o test asm.o util.o
+
+
+check: $(TARGET) $(TESTS)
+
+$(TESTS):
+	./$(TARGET) UnitTesting/tests/$@.jl > run.asm
+	nasm -felf run.asm
+	gcc -m32 -c -o util.o util.c
+	gcc -m32 -o run run.o util.o
+	./run > UnitTesting/generated/$@
+	./UnitTesting/compare.o UnitTesting/results/$@ UnitTesting/generated/$@
+	rm -f run.asm run.o run
+	rm -f UnitTesting/generated/$@
 
 clean: 
 	rm -f $(OBJ_FILES) tokens.h 
